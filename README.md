@@ -32,7 +32,9 @@ First, create a configuration file `mgit.json`:
 {
   "packages": "packages/",
   "dependencies": {
-    "organization/repository": "organization/repository"
+    "package-name": "organization/repository",
+    "foo": "cksource/foo",
+    "bar": "git@github.com:cksource/bar.git"
   }
 }
 ```
@@ -42,27 +44,27 @@ First, create a configuration file `mgit.json`:
 
 ### Example configuration of `dependencies`
 
-Package will be installed in `packages/organization/repository` and checked out to branch `develop`. It will be cloned from `git@github.com:organization/repository.git`:
+Package will be installed in `packages/foo` and checked out to `master`:
 
 ```json
 {
-	"organization/repository": "organization/repository#develop"
+	"foo": "git@github.com:cksource/foo.git"
 }
 ```
 
-Package will be installed in `packages/organization` and checked out to `master`:
+Package will be installed in `packages/@scope/package-name` and checked out to branch `develop`. It will be cloned from `git@github.com:organization/repository.git`:
 
 ```json
 {
-	"repository": "git@github.com:organization/repository.git"
+	"@scope/package-name": "organization/repository#develop"
 }
 ```
 
-Package will be installed in `packages/organization/repository` from tag `v1.2.3`:
+Package will be installed in `packages/foo` from tag `v1.2.3`:
 
 ```json
 {
-	"organization/repository": "git@github.com:organization/repository.git#v1.2.3"
+	"foo": "git@github.com:cksource/foo.git#v1.2.3"
 }
 ```
 
