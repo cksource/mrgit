@@ -1,14 +1,14 @@
-# MGit2
+# mgit2
 
 <a href="https://www.npmjs.com/package/mgit2"><img src="https://img.shields.io/npm/v/mgit2.svg" alt="mgit2 npm package badge"></a>
-<!-- <a href="https://travis-ci.org/mgit2"><img src="https://img.shields.io/travis/mgit2/master.svg" alt="build status badge"></a>
-<a href="https://codeclimate.com/github/cksource/mgit2/coverage"><img src="https://img.shields.io/codeclimate/coverage/github/cksource/mgit2.svg" alt="mgit2 coverage badge"></a> -->
 <a href="https://david-dm.org/cksource/mgit2"><img src="https://david-dm.org/cksource/mgit2/status.svg" alt="mgit2 dependencies status badge"></a>
 <a href="https://david-dm.org/cksource/mgit2?type=dev"><img src="https://david-dm.org/cksource/mgit2/dev-status.svg" alt="mgit2 devDependencies status badge"></a>
+<!-- <a href="https://travis-ci.org/mgit2"><img src="https://img.shields.io/travis/mgit2/master.svg" alt="build status badge"></a>
+<a href="https://codeclimate.com/github/cksource/mgit2/coverage"><img src="https://img.shields.io/codeclimate/coverage/github/cksource/mgit2.svg" alt="mgit2 coverage badge"></a> -->
 
 Multi-repo manager for git. A tool for managing projects build using multiple repositories.
 
-mgit2 is designed to work with [Lerna](https://github.com/lerna/lerna) ("A tool for managing JavaScript projects with multiple packages.") out of the box, hence, it mixes the "package" and "repository" concepts. In other words, every repository is meant to be a single [npm](https://npmjs.com) package. It doesn't mean that you must use it with Lerna and npm, but don't be surprised that mgit2 talks about "packages" and works best with npm packages.
+mgit2 is designed to work with [Lerna](https://github.com/lerna/lerna) (*"A tool for managing JavaScript projects with multiple packages."*) out of the box, hence, it mixes the "package" and "repository" concepts. In other words, every repository is meant to be a single [npm](https://npmjs.com) package. It doesn't mean that you must use it with Lerna and npm, but don't be surprised that mgit2 talks about "packages" and works best with npm packages.
 
 ## Installation
 
@@ -171,3 +171,7 @@ module.exports = function repositoryResolver( name, cwd ) {
 	// Additional conditions...
 };
 ```
+
+## Projects using mgit2
+
+* [CKEditor 5](https://github.com/ckeditor/ckerditor5)
