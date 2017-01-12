@@ -1,7 +1,7 @@
 {
   "name": "mgit2",
   "version": "0.1.0",
-  "description": "Manage multi-repository with mgit2.",
+  "description": "A tool for managing projects build using multiple repositories.",
   "keywords": [
     "git",
     "repository",
