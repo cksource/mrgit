@@ -68,8 +68,6 @@ Package will be installed in `packages/organization/repository` from tag `v1.2.3
 
 If you don't specify the branch, then by default it will be `master`.
 
-At this moment mgit2 supports only repositories hosted on https://github.com.
-
 ## Commands
 
 ```
@@ -174,4 +172,4 @@ module.exports = function repositoryResolver( name, cwd ) {
 
 ## Projects using mgit2
 
-* [CKEditor 5](https://github.com/ckeditor/ckerditor5)
+* [CKEditor 5](https://github.com/ckeditor/ckeditor5)
