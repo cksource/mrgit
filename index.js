@@ -38,7 +38,8 @@ const cli = meow( `
                                   Needs to be used together with --repository-resolver.
                                   Default: false.
 
-        --repository-resolver     Module which will resolve repositories for packages.
+        --repository-resolver     JS module used to resolve repository URL and branch name
+                                  for a package.
                                   Default: 'lib/utils/default-repository-resolver.js'.
 `, {
 	default: {
