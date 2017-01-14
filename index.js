@@ -46,7 +46,7 @@ const cli = meow( `
 		fetch: true,
 		recursive: false,
 		cwd: cwdResolver(),
-		repositoryResolver: path.join( __dirname, 'lib', 'utils', 'default-repository-resolver.js' )
+		repositoryResolver: path.join( __dirname, 'lib', 'default-repository-resolver.js' )
 	}
 } );
 
