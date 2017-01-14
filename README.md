@@ -147,12 +147,15 @@ Such a resolver is only needed if you use the `--recursive` option, because in o
 
 The resolver is called with two arguments:
 
-* `{String} packageName` Name of package that will be resolved,
+* `{String} packageName` Name of the package to resolve,
 * `{String} cwd` Current working directory. Not the same as `process.pwd()` because `mgit` might've been executed in a child directory.
 
-Example:
+For example, the default resolver implementation looks as follows:
 
 ```js
+const path = require( 'path' );
+const parseRepositoryUrl = require( 'mgit/utils/parserepositoryurl' );
+
 /**
  * Resolves repository URL for a given package name.
  *
@@ -164,19 +167,24 @@ Example:
  */
 module.exports = function repositoryResolver( name, cwd ) {
 	const mgitConf = require( path.join( cwd, 'mgit.json' ) );
-	const dependencyUrl = mgitConf.dependencies[ name ];
+	const repositoryUrl = mgitConf.dependencies[ name ];
 
-	if ( !dependencyUrl ) {
+	if ( !repositoryUrl ) {
 		return null;
 	}
 
-	const parsedUrl = url.parse( dependencyUrl );
-
-	return {
-		url: `git@github.com:${ parsedUrl.path }.git`,
-		branch: parsedUrl.hash ? parsedUrl.hash.slice( 1 ) : 'master'
-	};
+	return parseRepositoryUrl( repositoryUrl );
 };
+```
+
+The `parseRepositoryUrl` function accepts `options.urlTemplate` which allows define what kind of
+URLs should be used by mgit to clone dependencies. E.g.:
+
+```js
+parseRepositoryUrl( 'organization/repository', {
+	urlTemplate: 'https://github.com/${ path }.git'
+} );
+// -> 'https://github.com/organization/repository.git'
 ```
 
 ## Projects using mgit2
