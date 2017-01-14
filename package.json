@@ -19,10 +19,11 @@
   },
   "devDependencies": {
     "@ckeditor/ckeditor5-dev-lint": "^2.0.0",
+    "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "guppy-pre-commit": "^0.4.0",
-    "istanbul": "^0.4.4",
-    "mocha": "^3.0.2"
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0"
   },
   "repository": {
     "type": "git",

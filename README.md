@@ -91,7 +91,7 @@ mgit bootstrap --recursive --repository-resolver ./dev/custom-repository-resolve
 Options:
 
 * `--recursive` – whether to clones also dependencies of your main project dependencies (finds them in `package.json`); needs to be used with `--repository-resolver`,
-* `--repository-resolver` – path to a function which gets a package name and should return a falsy value if this repository should not be installed by mgit2 or a git URL if should; read more in [Custom repository resolver](#custom-repository-resolver).
+* `--repository-resolver` – path to a function which gets a package name and should return a falsy value if this repository should not be installed by mgit2 or an object representing git URL and branch name if should; read more in [Custom repository resolver](#custom-repository-resolver).
 
 ### update
 
@@ -139,7 +139,7 @@ mgit exec 'echo `pwd`'
 
 ## Custom repository resolver
 
-By default, mgit2 uses a simple repository resolver which returns git URL for a package name based on dependencies specified in `mgit.json`.
+By default, mgit2 uses a simple repository resolver which returns git URL and branch name for a package name based on dependencies specified in `mgit.json`.
 
 If you want to create a custom resolver, you need to create a module which returns a repository or a falsy value if the repository cannot be resolved (and should not be cloned by mgit2).
 
@@ -148,27 +148,34 @@ Such a resolver is only needed if you use the `--recursive` option, because in o
 The resolver is called with two arguments:
 
 * `{String} packageName` Name of package that will be resolved,
-* `{String} cwd` Current work directory. Not the same as `process.pwd()` because `mgit` might've been executed in a child directory.
+* `{String} cwd` Current working directory. Not the same as `process.pwd()` because `mgit` might've been executed in a child directory.
 
 Example:
 
 ```js
 /**
+ * Resolves repository URL for a given package name.
+ *
  * @param {String} name Package name.
- * @param {String} cwd Current work directory. Not the same as `process.pwd()` because
- * `mgit` might've been executed in a child directory.
+ * @param {String} cwd Current working directory.
+ * @returns {Object|null}
+ * @returns {String} return.url Repository URL. E.g. `'git@github.com:ckeditor/ckeditor5.git'`
+ * @returns {String} return.branch Branch name. E.g. `'master'`
  */
 module.exports = function repositoryResolver( name, cwd ) {
 	const mgitConf = require( path.join( cwd, 'mgit.json' ) );
+	const dependencyUrl = mgitConf.dependencies[ name ];
 
-	// Read from mgit.json.
-	if ( mgitConf.dependencies[ name ] ) {
-
-		// Default repository resolver does it.
-		return mgitConf.dependencies[ name ];
+	if ( !dependencyUrl ) {
+		return null;
 	}
 
-	// Additional conditions...
+	const parsedUrl = url.parse( dependencyUrl );
+
+	return {
+		url: `git@github.com:${ parsedUrl.path }.git`,
+		branch: parsedUrl.hash ? parsedUrl.hash.slice( 1 ) : 'master'
+	};
 };
 ```
 

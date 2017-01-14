@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "foo": "a/b",
+    "bar": "a/b#dev",
+    "@foo/bar": "c/d"
+  }
+}
