@@ -1,7 +1,10 @@
 {
   "dependencies": {
-    "foo": "a/b",
-    "bar": "a/b#dev",
-    "@foo/bar": "c/d"
+    "simple-package": "a/b",
+    "package-with-branch": "a/b#dev",
+    "@scoped/package": "c/d",
+    "full-url-git": "git@github.com:cksource/mgit2.git",
+    "full-url-git-with-branch": "git@github.com:cksource/mgit2.git#xyz",
+    "full-url-https": "https://github.com/cksource/mgit2.git"
   }
 }
