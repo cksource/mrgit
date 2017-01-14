@@ -154,7 +154,7 @@ For example, the default resolver implementation looks as follows:
 
 ```js
 const path = require( 'path' );
-const parseRepositoryUrl = require( 'mgit/utils/parserepositoryurl' );
+const parseRepositoryUrl = require( 'mgit2/lib/utils/parserepositoryurl' );
 
 /**
  * Resolves repository URL for a given package name.
