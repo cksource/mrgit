@@ -40,7 +40,7 @@ const cli = meow( `
 
         --repository-resolver     JS module used to resolve repository URL and branch name
                                   for a package.
-                                  Default: 'lib/utils/default-repository-resolver.js'.
+                                  Default: 'lib/default-repository-resolver.js'.
 `, {
 	default: {
 		fetch: true,
