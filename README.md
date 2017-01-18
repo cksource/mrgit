@@ -162,8 +162,11 @@ const parseRepositoryUrl = require( 'mgit2/lib/utils/parserepositoryurl' );
  * @param {String} name Package name.
  * @param {String} cwd Current working directory.
  * @returns {Object|null}
- * @returns {String} return.url Repository URL. E.g. `'git@github.com:ckeditor/ckeditor5.git'`
- * @returns {String} return.branch Branch name. E.g. `'master'`
+ * @returns {String} return.url Repository URL. E.g. `'git@github.com:ckeditor/ckeditor5.git'`.
+ * @returns {String} return.branch Branch name. E.g. `'master'`.
+ * @returns {String} return.directory Directory to which the repository will be cloned.
+ * The final path is created by concatenating the `packages` option from `mgit.json` and the
+ * returned value. E.g. if `'ckeditor5'` was returned, then the package will be cloned to `packages/ckeditor5`.
  */
 module.exports = function repositoryResolver( name, cwd ) {
 	const mgitConf = require( path.join( cwd, 'mgit.json' ) );
@@ -184,7 +187,12 @@ URLs should be used by mgit to clone dependencies. E.g.:
 parseRepositoryUrl( 'organization/repository', {
 	urlTemplate: 'https://github.com/${ path }.git'
 } );
-// -> 'https://github.com/organization/repository.git'
+
+//	{
+//		url: 'https://github.com/organization/repository.git',
+//		branch: 'master',
+//		directory: 'repository'
+//	}
 ```
 
 ## Projects using mgit2

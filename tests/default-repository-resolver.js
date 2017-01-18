@@ -20,42 +20,48 @@ describe( 'utils', () => {
 		it( 'returns Git over SSH URL', () => {
 			expect( repositoryResolver( 'simple-package', cwd ) ).to.deep.equal( {
 				url: 'git@github.com:a/b.git',
-				branch: 'master'
+				branch: 'master',
+				directory: 'b'
 			} );
 		} );
 
 		it( 'returns Git over SSH URL with branch name', () => {
 			expect( repositoryResolver( 'package-with-branch', cwd ) ).to.deep.equal( {
 				url: 'git@github.com:a/b.git',
-				branch: 'dev'
+				branch: 'dev',
+				directory: 'b'
 			} );
 		} );
 
 		it( 'returns Git over SSH URL for a scoped package', () => {
 			expect( repositoryResolver( '@scoped/package', cwd ) ).to.deep.equal( {
 				url: 'git@github.com:c/d.git',
-				branch: 'master'
+				branch: 'master',
+				directory: 'd'
 			} );
 		} );
 
 		it( 'returns original URL if git URL is specified', () => {
 			expect( repositoryResolver( 'full-url-git', cwd ) ).to.deep.equal( {
 				url: 'git@github.com:cksource/mgit2.git',
-				branch: 'master'
+				branch: 'master',
+				directory: 'mgit2'
 			} );
 		} );
 
 		it( 'returns original URL and branch if git URL is specified', () => {
 			expect( repositoryResolver( 'full-url-git-with-branch', cwd ) ).to.deep.equal( {
 				url: 'git@github.com:cksource/mgit2.git',
-				branch: 'xyz'
+				branch: 'xyz',
+				directory: 'mgit2'
 			} );
 		} );
 
 		it( 'returns original URL if HTTPS URL is specified', () => {
 			expect( repositoryResolver( 'full-url-https', cwd ) ).to.deep.equal( {
 				url: 'https://github.com/cksource/mgit2.git',
-				branch: 'master'
+				branch: 'master',
+				directory: 'mgit2'
 			} );
 		} );
 	} );
