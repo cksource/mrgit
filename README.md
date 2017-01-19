@@ -1,8 +1,8 @@
 # mgit2
 
 <a href="https://www.npmjs.com/package/mgit2"><img src="https://img.shields.io/npm/v/mgit2.svg" alt="mgit2 npm package badge"></a>
-<a href="https://david-dm.org/cksource/mgit2"><img src="https://david-dm.org/cksource/mgit2/status.svg" alt="mgit2 dependencies status badge"></a>
-<a href="https://david-dm.org/cksource/mgit2?type=dev"><img src="https://david-dm.org/cksource/mgit2/dev-status.svg" alt="mgit2 devDependencies status badge"></a>
+<a href="https://david-dm.org/cksource/mgit2"><img src="https://img.shields.io/david/cksource/mgit2.svg" alt="mgit2 dependencies status badge"></a>
+<a href="https://david-dm.org/cksource/mgit2?type=dev"><img src="https://img.shields.io/david/dev/cksource/mgit2.svg" alt="mgit2 devDependencies status badge"></a>
 <!-- <a href="https://travis-ci.org/mgit2"><img src="https://img.shields.io/travis/mgit2/master.svg" alt="build status badge"></a>
 <a href="https://codeclimate.com/github/cksource/mgit2/coverage"><img src="https://img.shields.io/codeclimate/coverage/github/cksource/mgit2.svg" alt="mgit2 coverage badge"></a> -->
 
@@ -143,7 +143,10 @@ By default, mgit2 uses a simple repository resolver which returns git URL and br
 
 If you want to create a custom resolver, you need to create a module which returns a repository or a falsy value if the repository cannot be resolved (and should not be cloned by mgit2).
 
-Such a resolver is only needed if you use the `--recursive` option, because in other cases, all the git URLs are defined in `mgit.json` anyway.
+Such a resolver is only needed if:
+
+* you use the `--recursive` option, because mgit2 needs to know how to clone dependencies of the packages listed in `mgit.json`,
+* you use the simple `'organization/repository'` format of dependencies in `mgit.json` and would like to use an HTTPS version of a repository URL (mgit2 defaults to Git+SSH URLs which doesn't work on e.g. Travis).
 
 The resolver is called with two arguments:
 
