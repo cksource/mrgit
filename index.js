@@ -63,7 +63,11 @@ const cli = meow( `
         --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
 
                                     Default: 'master'
-` );
+`, {
+	alias: {
+		v: 'version'
+	}
+} );
 
 if ( cli.input.length === 0 ) {
 	cli.showHelp();
