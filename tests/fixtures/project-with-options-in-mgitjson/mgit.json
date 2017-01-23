@@ -1,0 +1,7 @@
+{
+  "packages": "foo",
+  "recursive": true,
+  "dependencies": {
+    "simple-package": "a/b"
+  }
+}

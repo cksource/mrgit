@@ -7,10 +7,8 @@
 
 'use strict';
 
-const path = require( 'path' );
 const meow = require( 'meow' );
 const mgit = require( './lib/index' );
-const cwdResolver = require( './lib/utils/cwd-resolver' );
 
 const cli = meow( `
                      _ _
@@ -26,29 +24,46 @@ const cli = meow( `
         $ mgit [command]
 
     Commands:
-        bootstrap                 Install packages (i.e. clone dependent repositories).
-        exec                      Exec shell command in each package.
-        update                    Update packages to the latest versions (i.e. pull changes).
+        bootstrap                   Install packages (i.e. clone dependent repositories).
+        exec                        Exec shell command in each package.
+        update                      Update packages to the latest versions (i.e. pull changes).
 
     Options:
-        --fetch                   Whether to fetch changes from remote repositories.
-                                  Default: true.
+        --recursive                 Whether to install dependencies recursively.
+                                    Needs to be used together with --repository-include. Only packages
+                                    matching these patterns will be cloned recursively.
 
-        --recursive               Whether to install dependencies recursively.
-                                  Needs to be used together with --repository-resolver.
-                                  Default: false.
+                                    Default: false.
 
-        --repository-resolver     JS module used to resolve repository URL and branch name
-                                  for a package.
-                                  Default: 'lib/default-repository-resolver.js'.
-`, {
-	default: {
-		fetch: true,
-		recursive: false,
-		cwd: cwdResolver(),
-		repositoryResolver: path.join( __dirname, 'lib', 'default-repository-resolver.js' )
-	}
-} );
+        --packages                  Directory to which all repositories will be cloned.
+
+                                    Default: '<cwd>/packages/'
+
+        --resolver-path             Path to a custom repository resolver function.
+
+                                    Default: '@mgit2/lib/default-resolver.js'.
+
+        --resolver-url-template     Template used to generate repository URL out of a
+                                    simplified 'organization/repository' format of the dependencies option.
+
+                                    Default: 'git@github.com:\${ path }.git'.
+
+        --resolver-directory-name   Defines how the target directory (where the repository will be cloned)
+                                    is resolved. Supported options are: 'git' (default), 'npm'.
+
+                                    * If 'git' was specified, then the directory name will be extracted from
+                                    the git URL (e.g. for 'git@github.com:a/b.git' it will be 'b').
+                                    * If 'npm' was specified, then the package name will be used as a directory name.
+
+                                    This option can be useful when scoped npm packages are used and one wants to decide
+                                    whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
+
+                                    Default: 'git'
+
+        --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
+
+                                    Default: 'master'
+` );
 
 if ( cli.input.length === 0 ) {
 	cli.showHelp();
