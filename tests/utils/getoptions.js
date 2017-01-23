@@ -1,0 +1,96 @@
+/**
+ * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md.
+ */
+
+/* jshint mocha:true */
+
+'use strict';
+
+const getOptions = require( '../../lib/utils/getoptions' );
+const path = require( 'path' );
+const expect = require( 'chai' ).expect;
+const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-a' );
+
+describe( 'utils', () => {
+	describe( 'getOptions()', () => {
+		it( 'returns default options', () => {
+			const options = getOptions( {}, cwd );
+
+			expect( options ).to.have.property( 'dependencies' );
+
+			delete options.dependencies;
+
+			expect( options ).to.deep.equal( {
+				cwd: cwd,
+				packages: path.resolve( cwd, 'packages' ),
+				recursive: false,
+				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				resolverUrlTemplate: 'git@github.com:${ path }.git',
+				resolverTargetDirectory: 'git',
+				resolverDefaultBranch: 'master'
+			} );
+		} );
+
+		it( 'returns depepndencies read from mgit.json', () => {
+			const options = getOptions( {}, cwd );
+			const mgitJson = require( path.join( cwd, 'mgit.json' ) );
+
+			expect( options.dependencies ).to.deep.equal( mgitJson.dependencies );
+		} );
+
+		it( 'does not fail if mgit.json is not defined ', () => {
+			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-no-mgitjson' );
+			const options = getOptions( {}, cwd );
+
+			expect( options ).to.deep.equal( {
+				cwd: cwd,
+				packages: path.resolve( cwd, 'packages' ),
+				recursive: false,
+				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				resolverUrlTemplate: 'git@github.com:${ path }.git',
+				resolverTargetDirectory: 'git',
+				resolverDefaultBranch: 'master'
+			} );
+		} );
+
+		it( 'reads options from mgit.json', () => {
+			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mgitjson' );
+			const options = getOptions( {}, cwd );
+
+			expect( options ).to.deep.equal( {
+				dependencies: {
+					'simple-package': 'a/b'
+				},
+				cwd: cwd,
+				packages: path.resolve( cwd, 'foo' ),
+				recursive: true,
+				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				resolverUrlTemplate: 'git@github.com:${ path }.git',
+				resolverTargetDirectory: 'git',
+				resolverDefaultBranch: 'master'
+			} );
+		} );
+
+		it( 'priorities passed options', () => {
+			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mgitjson' );
+			const options = getOptions( {
+				resolverUrlTemplate: 'a/b/c',
+				packages: 'bar'
+			}, cwd );
+
+			expect( options ).to.deep.equal( {
+				dependencies: {
+					'simple-package': 'a/b'
+				},
+				cwd: cwd,
+				packages: path.resolve( cwd, 'bar' ),
+				recursive: true,
+				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				resolverUrlTemplate: 'a/b/c',
+				resolverTargetDirectory: 'git',
+				resolverDefaultBranch: 'master'
+			} );
+		} );
+	} );
+} );
