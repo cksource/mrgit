@@ -3,8 +3,8 @@
 <a href="https://www.npmjs.com/package/mgit2"><img src="https://img.shields.io/npm/v/mgit2.svg" alt="mgit2 npm package badge"></a>
 <a href="https://david-dm.org/cksource/mgit2"><img src="https://img.shields.io/david/cksource/mgit2.svg" alt="mgit2 dependencies status badge"></a>
 <a href="https://david-dm.org/cksource/mgit2?type=dev"><img src="https://img.shields.io/david/dev/cksource/mgit2.svg" alt="mgit2 devDependencies status badge"></a>
-<!-- <a href="https://travis-ci.org/mgit2"><img src="https://img.shields.io/travis/mgit2/master.svg" alt="build status badge"></a>
-<a href="https://codeclimate.com/github/cksource/mgit2/coverage"><img src="https://img.shields.io/codeclimate/coverage/github/cksource/mgit2.svg" alt="mgit2 coverage badge"></a> -->
+<a href="https://travis-ci.org/cksource/mgit2"><img src="https://img.shields.io/travis/cksource/mgit2/master.svg" alt="build status badge"></a>
+<a href="https://codeclimate.com/github/cksource/mgit2/coverage"><img src="https://img.shields.io/codeclimate/coverage/github/cksource/mgit2.svg" alt="mgit2 coverage badge"></a>
 
 Multi-repo manager for git. A tool for managing projects build using multiple repositories.
 
