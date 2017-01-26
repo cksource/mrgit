@@ -30,45 +30,152 @@ First, create a configuration file `mgit.json`:
 
 ```json
 {
-  "packages": "packages/",
   "dependencies": {
-    "package-name": "organization/repository",
-    "foo": "cksource/foo",
-    "bar": "git@github.com:cksource/bar.git"
+    "@ckeditor/ckeditor5-engine": "ckeditor/ckeditor5-engine",
+    "mgit": "cksource/mgit"
   }
 }
 ```
 
-* `packages` - the directory where dependencies will be cloned,
-* `dependencies` - list of dependencies (git repositories).
+And run `mgit bootstrap` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
 
-### Example configuration of `dependencies`
+```
+packages/
+  ckeditor5-engine/
+  mgit/
+```
 
-Package will be installed in `packages/foo` and checked out to `master`:
+## Configuration
 
-```json
+CLI options:
+
+```
+--recursive                 Whether to install dependencies recursively.
+                            Needs to be used together with --repository-include. Only packages
+                            matching these patterns will be cloned recursively.
+
+                            Default: false.
+
+--packages                  Directory to which all repositories will be cloned.
+
+                            Default: '<cwd>/packages/'
+
+--resolver-path             Path to a custom repository resolver function.
+
+                            Default: '@mgit2/lib/default-resolver.js'.
+
+--resolver-url-template     Template used to generate repository URL out of a
+                            simplified 'organization/repository' format of the dependencies option.
+
+                            Default: 'git@github.com:${ path }.git'.
+
+--resolver-directory-name   Defines how the target directory (where the repository will be cloned)
+                            is resolved. Supported options are: 'git' (default), 'npm'.
+
+                            * If 'git' was specified, then the directory name will be extracted from
+                            the git URL (e.g. for 'git@github.com:a/b.git' it will be 'b').
+                            * If 'npm' was specified, then the package name will be used as a directory name.
+
+                            This option can be useful when scoped npm packages are used and one wants to decide
+                            whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
+
+                            Default: 'git'
+
+--resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
+
+                            Default: 'master'
+```
+
+All these options can also be specified in `mgit.json` (options passed through CLI takes precedence):
+
+```js
+{
+	"packages": "/workspace/modules",
+	"resolverDirectoryName": "npm",
+	"resolverDefaultBranch": "dev",
+	"dependencies": {
+		"foo": "bar"
+	}
+}
+```
+
+### The `dependencies` option
+
+This option specifies repositories which mgit is supposed to clone. It can also clone its dependencies recursively (see [Recursive cloning](#recursive-cloning)).
+
+The dependency keys can be any strings, but it's recommended to use package names (e.g. npm package names, just like in `package.json`). The values are repository URLs which mgit will clone.
+
+Examples:
+
+```js
+// Clone 'git@github.com:cksource/foo.git' and check out to 'master'.
 {
 	"foo": "git@github.com:cksource/foo.git"
 }
 ```
 
-Package will be installed in `packages/@scope/package-name` and checked out to branch `develop`. It will be cloned from `git@github.com:organization/repository.git`:
-
-```json
+```js
+// Short format. Clone 'git@github.com:cksource/foo.git' and check out to branch 'dev'.
 {
-	"@scope/package-name": "organization/repository#develop"
+	"@cksource/foo": "cksource/foo#dev"
 }
 ```
 
-Package will be installed in `packages/foo` from tag `v1.2.3`:
-
-```json
+```js
+// Clone 'https://github.com/cksource/foo.git' (via HTTPS) and check out to branch tag 'v1.2.3'.
 {
-	"foo": "git@github.com:cksource/foo.git#v1.2.3"
+	"foo": "https://github.com/cksource/foo.git#v1.2.3"
 }
 ```
 
-If you don't specify the branch, then by default it will be `master`.
+### Recursive cloning
+
+When the `--recursive` option is used mgit will clone repositories recursively. First, it will clone the `dependencies` specified in `mgit.json` and, then, their `dependencies` and `devDependencies` specified in `package.json` files located in cloned repositories.
+
+However, mgit needs to know repository URLs of those dependencies, as well as which dependencies to clone (usually, only the ones maintained by you). In order to configure that you need to use a custom repository resolver (`--resolver-path`).
+
+Resolver is a simple Node.js module which exports the resolver function.
+
+For example, assuming that you want to clone all `@ckeditor/ckeditor5-*` packages, your resolver could look like this:
+
+```js
+'use strict';
+
+const parseRepositoryUrl = require( 'mgit2/lib/utils/parserepositoryurl' );
+
+/**
+ * Resolves repository URL for a given package name.
+ *
+ * @param {String} packageName Package name.
+ * @param {Options} data.options The options object.
+ * @returns {Repository|null}
+ */
+module.exports = function resolver( packageName, options ) {
+	// If package name starts with '@ckeditor/ckeditor5-*' clone it from 'ckeditor/ckeditor5-*'.
+	if ( packageName.startsWith( '@ckeditor/ckeditor5-' ) ) {
+		repositoryUrl = packageName.slice( 1 );
+
+		return parseRepositoryUrl( repositoryUrl );
+	}
+
+	// Don't clone any other dependencies.
+	return null;
+};
+```
+
+You can also check the [default resolver](https://github.com/cksource/mgit2/blob/master/lib/default-resolver.js) used by mgit and [the config object definition](https://github.com/cksource/mgit2/blob/master/lib/utils/getconfig.js).
+
+### Cloning repositories on CI servers
+
+CI servers, such as Travis, can't clone repositories using Git URLs (such as `git@github.com:cksource/mgit.git`). By default, mgit uses Git URLs because it assumes that you'll want to commit to these repositories (and don't want to be asked for a password every time).
+
+If you need to run mgit on a CI server, then configure it to use HTTP URLs:
+
+```bash
+mgit --resolver-url-template="https://github.com/\${ path }.git"
+```
+
+You can also use full HTTPs URLs to configure `dependencies` in your `mgit.json`.
 
 ## Commands
 
@@ -85,117 +192,42 @@ This command will not change existing repositories, so you can always safely use
 Example:
 
 ```bash
-mgit bootstrap --recursive --repository-resolver ./dev/custom-repository-resolver.js
+mgit bootstrap --recursive --resolver=path ./dev/custom-repository-resolver.js
 ```
-
-Options:
-
-* `--recursive` – whether to clones also dependencies of your main project dependencies (finds them in `package.json`); needs to be used with `--repository-resolver`,
-* `--repository-resolver` – path to a function which gets a package name and should return a falsy value if this repository should not be installed by mgit2 or an object representing git URL and branch name if should; read more in [Custom repository resolver](#custom-repository-resolver).
 
 ### update
 
 Updates dependencies. Switches repositories to correct branches (specified in `mgit.json`) and pulls changes.
 
-If any dependency is missing, the it will install it too.
+If any dependency is missing, the command will install it too.
 
 This command does not touch repositories in which there are uncommitted changes.
 
 Examples:
 
 ```bash
-# Updates existing packages. Clones missing packages and their dependencies.
 mgit update --recursive
-
-# Updates existing packages. Does not execute the "git fetch" command.
-mgit update --no-fetch
 ```
-
-Options:
-
-* `--no-fetch` – do not fetch (or pull) changes – only switch branches,
-* `--recursive` – like in the bootstrap command,
-* `--repository-resolver` – like in the bootstrap command.
 
 ### exec
 
-For every repository executes the specified shell command.
+For every cloned repository executes the specified shell command.
 
 Example:
 
 ```bash
-# Executes `git status` command on each repository.
 mgit exec 'git status'
+
+# Executes `git status` command on each repository.
 ```
 
-During the task, `cwd` is set to the repository path:
+During the task execution, `cwd` is set to the repository path:
 
 ```bash
 mgit exec 'echo `pwd`'
 
 # /home/mgit/packages/organization/repository-1
 # /home/mgit/packages/organization/repository-2
-```
-
-## Custom repository resolver
-
-By default, mgit2 uses a simple repository resolver which returns git URL and branch name for a package name based on dependencies specified in `mgit.json`.
-
-If you want to create a custom resolver, you need to create a module which returns a repository or a falsy value if the repository cannot be resolved (and should not be cloned by mgit2).
-
-Such a resolver is only needed if:
-
-* you use the `--recursive` option, because mgit2 needs to know how to clone dependencies of the packages listed in `mgit.json`,
-* you use the simple `'organization/repository'` format of dependencies in `mgit.json` and would like to use an HTTPS version of a repository URL (mgit2 defaults to Git+SSH URLs which doesn't work on e.g. Travis).
-
-The resolver is called with two arguments:
-
-* `{String} packageName` Name of the package to resolve,
-* `{String} cwd` Current working directory. Not the same as `process.pwd()` because `mgit` might've been executed in a child directory.
-
-For example, the default resolver implementation looks as follows:
-
-```js
-const path = require( 'path' );
-const parseRepositoryUrl = require( 'mgit2/lib/utils/parserepositoryurl' );
-
-/**
- * Resolves repository URL for a given package name.
- *
- * @param {String} name Package name.
- * @param {String} cwd Current working directory.
- * @returns {Object|null}
- * @returns {String} return.url Repository URL. E.g. `'git@github.com:ckeditor/ckeditor5.git'`.
- * @returns {String} return.branch Branch name. E.g. `'master'`.
- * @returns {String} return.directory Directory to which the repository will be cloned.
- * The final path is created by concatenating the `packages` option from `mgit.json` and the
- * returned value. E.g. if `'ckeditor5'` was returned, then the package will be cloned to `packages/ckeditor5`.
- */
-module.exports = function repositoryResolver( name, cwd ) {
-	const mgitConf = require( path.join( cwd, 'mgit.json' ) );
-	const repositoryUrl = mgitConf.dependencies[ name ];
-
-	if ( !repositoryUrl ) {
-		return null;
-	}
-
-	return parseRepositoryUrl( repositoryUrl );
-};
-```
-
-The `parseRepositoryUrl` function accepts `options.urlTemplate` which allows define what kind of
-URLs should be used by mgit to clone dependencies. E.g.:
-
-```js
-parseRepositoryUrl( 'organization/repository', {
-	urlTemplate: 'https://github.com/${ path }.git'
-} );
-
-//	{
-//		url: 'https://github.com/organization/repository.git',
-//		branch: 'master',
-//		directory: 'repository'
-//	}
 ```
 
 ## Projects using mgit2
