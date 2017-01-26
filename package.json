@@ -44,5 +44,9 @@
   "bin": {
     "mgit": "./index.js",
     "mgit2": "./index.js"
-  }
+  },
+  "files": [
+    "./index.js",
+    "./lib"
+  ]
 }
