@@ -24,9 +24,10 @@ const cli = meow( `
         $ mgit [command]
 
     Commands:
-        bootstrap                   Install packages (i.e. clone dependent repositories).
-        exec                        Exec shell command in each package.
-        update                      Update packages to the latest versions (i.e. pull changes).
+        bootstrap                   Installs packages (i.e. clone dependent repositories).
+        exec                        Executes shell command in each package.
+        update                      Updates packages to the latest versions (i.e. pull changes).
+        save-hashes                 Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
 
     Options:
         --recursive                 Whether to install dependencies recursively.

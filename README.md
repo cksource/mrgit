@@ -230,6 +230,17 @@ mgit exec 'echo `pwd`'
 # /home/mgit/packages/organization/repository-2
 ```
 
+
+### save-hashes
+
+Saves hashes of packages in `mgit.json`. It allows to easily fix project to a specific state.
+
+Example:
+
+```bash
+mgit save-hashes
+```
+
 ## Projects using mgit2
 
 * [CKEditor 5](https://github.com/ckeditor/ckeditor5)
