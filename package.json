@@ -24,7 +24,8 @@
     "gulp": "^3.9.1",
     "guppy-pre-commit": "^0.4.0",
     "istanbul": "^0.4.5",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "sinon": "^1.17.7"
   },
   "repository": {
     "type": "git",
