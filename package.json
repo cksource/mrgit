@@ -18,6 +18,7 @@
     "shelljs": "^0.7.6"
   },
   "devDependencies": {
+    "@ckeditor/ckeditor5-dev-env": "^3.0.0",
     "@ckeditor/ckeditor5-dev-lint": "^2.0.0",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
