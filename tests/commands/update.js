@@ -131,7 +131,7 @@ describe( 'commands/update', () => {
 			const exec = stubs.execCommand.execute;
 
 			exec.returns( Promise.resolve( {
-				logs: getCommandLogs( ' M first-file.js\ ?? second-file.js' )
+				logs: getCommandLogs( ' M first-file.js\n ?? second-file.js' )
 			} ) );
 
 			return updateCommand.execute( data )
