@@ -113,7 +113,7 @@ describe( 'commands/update', () => {
 					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
 					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
 					expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git checkout master' );
-					expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch -a' );
+					expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch' );
 					expect( exec.getCall( 4 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git pull origin master' );
 
 					expect( response.logs.info ).to.deep.equal( [
@@ -125,7 +125,7 @@ describe( 'commands/update', () => {
 				} );
 		} );
 
-		it( 'aborts if package has uncommmitted changes', () => {
+		it( 'aborts if package has uncommitted changes', () => {
 			stubs.fs.existsSync.returns( true );
 
 			const exec = stubs.execCommand.execute;
@@ -186,7 +186,7 @@ describe( 'commands/update', () => {
 				} );
 		} );
 
-		it( 'aborts if a remote branch does not exist anymore', () => {
+		it( 'aborts if user wants to pull changes from non-existing branch', () => {
 			stubs.fs.existsSync.returns( true );
 
 			data.repository.branch = 'develop';
@@ -206,7 +206,11 @@ describe( 'commands/update', () => {
 			} ) );
 
 			exec.onCall( 3 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '* develop\n  master\n  remotes/origin/master' )
+				logs: getCommandLogs( '* develop' )
+			} ) );
+
+			exec.onCall( 4 ).returns( Promise.reject( {
+				logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true )
 			} ) );
 
 			return updateCommand.execute( data )
@@ -219,10 +223,43 @@ describe( 'commands/update', () => {
 							'Already on \'develop\'.'
 						] );
 
-						const errMsg = 'Error: Branch "develop" is not available on server.';
+						const errMsg = 'Error: fatal: Couldn\'t find remote ref develop';
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
 
-						expect( exec.callCount ).to.equal( 4 );
+						expect( exec.callCount ).to.equal( 5 );
+					}
+				);
+		} );
+
+		it( 'aborts if user wants to check out to non-existing branch', () => {
+			stubs.fs.existsSync.returns( true );
+
+			data.repository.branch = 'non-existing-branch';
+
+			const exec = stubs.execCommand.execute;
+
+			exec.onCall( 0 ).returns( Promise.resolve( {
+				logs: getCommandLogs( '' )
+			} ) );
+
+			exec.onCall( 1 ).returns( Promise.resolve( {
+				logs: getCommandLogs( '' )
+			} ) );
+
+			exec.onCall( 2 ).returns( Promise.reject( {
+				logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true ),
+			} ) );
+
+			return updateCommand.execute( data )
+				.then(
+					() => {
+						throw new Error( 'Supposed to be rejected.' );
+					},
+					( response ) => {
+						const errMsg = 'Error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
+
+						expect( exec.callCount ).to.equal( 3 );
 					}
 				);
 		} );
