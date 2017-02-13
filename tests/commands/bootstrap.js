@@ -36,7 +36,6 @@ describe( 'commands/bootstrap', () => {
 		};
 
 		data = {
-			args: [ 'exec', 'pwd' ],
 			packageName: 'test-package',
 			options: {
 				cwd: __dirname,
