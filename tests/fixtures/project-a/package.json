@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"test-foo": "organization/test-foo"
+	}
+}

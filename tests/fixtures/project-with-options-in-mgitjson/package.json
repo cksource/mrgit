@@ -1,0 +1,5 @@
+{
+	"devDependencies": {
+		"test-bar": "organization/test-bar"
+	}
+}
