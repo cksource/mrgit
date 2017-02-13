@@ -82,6 +82,12 @@ describe( 'commands/savehashes', () => {
 
 			return saveHashesCommand.execute( data )
 				.then( ( commandResponse ) => {
+					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+						packageName: data.packageName,
+						arguments: [ 'git rev-parse HEAD' ]
+					} );
+
 					expect( commandResponse.response ).to.deep.equal( {
 						packageName: data.packageName,
 						commit: '584f34152d782cc2f26453e10b93c4a16ef01925'

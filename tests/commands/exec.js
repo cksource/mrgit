@@ -39,7 +39,8 @@ describe( 'commands/exec', () => {
 		};
 
 		data = {
-			args: [ 'exec', 'pwd' ],
+			// `execute` is called without the "exec" command (`mgit exec first-cmd other-cmd` => [ 'first-cmd', 'other-cmd' ]).
+			arguments: [ 'pwd' ],
 			packageName: 'test-package',
 			options: {
 				cwd: __dirname,
@@ -63,6 +64,7 @@ describe( 'commands/exec', () => {
 	describe( 'beforeExecute()', () => {
 		it( 'throws an error if command to execute is not specified', () => {
 			expect( () => {
+				// `beforeExecute` is called with full user's input (mgit exec [command-to-execute]).
 				execCommand.beforeExecute( [ 'exec' ] );
 			} ).to.throw( Error, 'Missing command to execute. Use: mgit exec [command-to-execute].' );
 		} );
