@@ -122,7 +122,7 @@ describe( 'commands/bootstrap', () => {
 				} );
 		} );
 
-		it( 'installs dependencies of cloned package', () => {
+		it( 'installs devDependencies of cloned package', () => {
 			data.options.recursive = true;
 			data.options.packages = __dirname + '/../fixtures';
 			data.repository.directory = 'project-with-options-in-mgitjson';
