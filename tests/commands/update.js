@@ -67,10 +67,14 @@ describe( 'commands/update', () => {
 
 	describe( 'execute()', () => {
 		it( 'clones a package if is not available', () => {
+			data.options.recursive = true;
 			stubs.fs.existsSync.returns( false );
-			stubs.bootstrapCommand.execute.returns( Promise.resolve( {
-				logs: getCommandLogs( 'Cloned.' )
-			} ) );
+
+			stubs.bootstrapCommand.execute = sinon.spy( ( commandData, logger ) => {
+				logger.info( 'Cloned.' );
+
+				return Promise.resolve( { packages: [] } );
+			} );
 
 			return updateCommand.execute( data )
 				.then( ( response ) => {
@@ -79,6 +83,9 @@ describe( 'commands/update', () => {
 						'Cloned.'
 					] );
 
+					expect( response.packages ).to.be.an( 'array' );
+					expect( response.packages.length ).to.equal( 0 );
+
 					expect( stubs.bootstrapCommand.execute.calledOnce ).to.equal( true );
 				} );
 		} );
@@ -86,30 +93,42 @@ describe( 'commands/update', () => {
 		it( 'resolves promise after pulling the changes', () => {
 			stubs.fs.existsSync.returns( true );
 
-			const exec = stubs.execCommand.execute;
+			let callCounter = 0;
 
-			exec.onCall( 0 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '' )
-			} ) );
+			stubs.execCommand.execute = sinon.spy( ( commandData, logger ) => {
+				switch ( callCounter++ ) {
 
-			exec.onCall( 1 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '' )
-			} ) );
+					case 0:
+						return Promise.resolve( {
+							logs: getCommandLogs( '' )
+						} );
 
-			exec.onCall( 2 ).returns( Promise.resolve( {
-				logs: getCommandLogs( 'Already on \'master\'.' )
-			} ) );
+					case 1:
+						logger.info( '' );
+						break;
 
-			exec.onCall( 3 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '* master\n  remotes/origin/master' )
-			} ) );
+					case 2:
+						logger.info( 'Already on \'master\'.' );
+						break;
 
-			exec.onCall( 4 ).returns( Promise.resolve( {
-				logs: getCommandLogs( 'Already up-to-date.' )
-			} ) );
+					case 3:
+						return Promise.resolve( {
+							logs: getCommandLogs( '* master\n  remotes/origin/master' )
+						} );
+
+					case 4:
+						logger.info( 'Already up-to-date.' );
+						break;
+				}
+
+				return Promise.resolve();
+			} );
 
 			return updateCommand.execute( data )
 				.then( ( response ) => {
+					const exec = stubs.execCommand.execute;
+
+					expect( exec.callCount ).to.equal( 5 );
 					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
 					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
 					expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git checkout master' );
@@ -120,8 +139,6 @@ describe( 'commands/update', () => {
 						'Already on \'master\'.',
 						'Already up-to-date.'
 					] );
-
-					expect( exec.callCount ).to.equal( 5 );
 				} );
 		} );
 
@@ -140,7 +157,7 @@ describe( 'commands/update', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					( response ) => {
-						const errMsg = 'Error: Package "test-package" has uncommitted changes. Aborted.';
+						const errMsg = 'Package "test-package" has uncommitted changes. Aborted.';
 
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
 						expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
@@ -153,36 +170,45 @@ describe( 'commands/update', () => {
 
 			data.repository.branch = '1a0ff0a2ee60549656177cd2a18b057764ec2146';
 
-			const exec = stubs.execCommand.execute;
+			let callCounter = 0;
 
-			exec.onCall( 0 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '' )
-			} ) );
+			stubs.execCommand.execute = sinon.spy( ( commandData, logger ) => {
+				switch ( callCounter++ ) {
 
-			exec.onCall( 1 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '' )
-			} ) );
+					case 0:
+						return Promise.resolve( {
+							logs: getCommandLogs( '' )
+						} );
 
-			exec.onCall( 2 ).returns( Promise.resolve( {
-				logs: getCommandLogs( 'Note: checking out \'1a0ff0a2ee60549656177cd2a18b057764ec2146\'.' )
-			} ) );
+					case 1:
+						logger.info( '' );
+						break;
 
-			exec.onCall( 3 ).returns( Promise.resolve( {
-				logs: getCommandLogs( [
-					'* (HEAD detached at 1a0ff0a2ee60549656177cd2a18b057764ec2146)',
-					'  master',
-					'  remotes/origin/master'
-				].join( '\n' ) )
-			} ) );
+					case 2:
+						logger.info( 'Note: checking out \'1a0ff0a2ee60549656177cd2a18b057764ec2146\'.' );
+						break;
+
+					case 3:
+						return Promise.resolve( {
+							logs: getCommandLogs( [
+								'* (HEAD detached at 1a0ff0a2ee60549656177cd2a18b057764ec2146)',
+								'  master',
+								'  remotes/origin/master'
+							].join( '\n' ) )
+						} );
+				}
+
+				return Promise.resolve();
+			} );
 
 			return updateCommand.execute( data )
 				.then( ( response ) => {
 					expect( response.logs.info ).to.deep.equal( [
 						'Note: checking out \'1a0ff0a2ee60549656177cd2a18b057764ec2146\'.',
-						'Package "test-package" is on a detached commit.'
+						'Package "test-package" is on a detached commit or tag.'
 					] );
 
-					expect( exec.callCount ).to.equal( 4 );
+					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
 				} );
 		} );
 
@@ -191,27 +217,37 @@ describe( 'commands/update', () => {
 
 			data.repository.branch = 'develop';
 
-			const exec = stubs.execCommand.execute;
+			let callCounter = 0;
 
-			exec.onCall( 0 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '' )
-			} ) );
+			stubs.execCommand.execute = sinon.spy( ( commandData, logger ) => {
+				switch ( callCounter++ ) {
 
-			exec.onCall( 1 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '' )
-			} ) );
+					case 0:
+						return Promise.resolve( {
+							logs: getCommandLogs( '' )
+						} );
 
-			exec.onCall( 2 ).returns( Promise.resolve( {
-				logs: getCommandLogs( 'Already on \'develop\'.' )
-			} ) );
+					case 1:
+						logger.info( '' );
+						break;
 
-			exec.onCall( 3 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '* develop' )
-			} ) );
+					case 2:
+						logger.info( 'Already on \'develop\'.' );
+						break;
 
-			exec.onCall( 4 ).returns( Promise.reject( {
-				logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true )
-			} ) );
+					case 3:
+						return Promise.resolve( {
+							logs: getCommandLogs( '* develop' )
+						} );
+
+					case 4:
+						logger.error( 'fatal: Couldn\'t find remote ref develop' );
+
+						return Promise.reject();
+				}
+
+				return Promise.resolve();
+			} );
 
 			return updateCommand.execute( data )
 				.then(
@@ -223,10 +259,10 @@ describe( 'commands/update', () => {
 							'Already on \'develop\'.'
 						] );
 
-						const errMsg = 'Error: fatal: Couldn\'t find remote ref develop';
+						const errMsg = 'fatal: Couldn\'t find remote ref develop';
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
 
-						expect( exec.callCount ).to.equal( 5 );
+						expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
 					}
 				);
 		} );
@@ -236,19 +272,37 @@ describe( 'commands/update', () => {
 
 			data.repository.branch = 'non-existing-branch';
 
-			const exec = stubs.execCommand.execute;
+			let callCounter = 0;
 
-			exec.onCall( 0 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '' )
-			} ) );
+			stubs.execCommand.execute = sinon.spy( ( commandData, logger ) => {
+				switch ( callCounter++ ) {
 
-			exec.onCall( 1 ).returns( Promise.resolve( {
-				logs: getCommandLogs( '' )
-			} ) );
+					case 0:
+						return Promise.resolve( {
+							logs: getCommandLogs( '' )
+						} );
 
-			exec.onCall( 2 ).returns( Promise.reject( {
-				logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true ),
-			} ) );
+					case 1:
+						logger.info( '' );
+						break;
+
+					case 2:
+						logger.error( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.' );
+
+						return Promise.reject();
+
+					case 3:
+						return Promise.resolve( {
+							logs: getCommandLogs( '* master\n  remotes/origin/master' )
+						} );
+
+					case 4:
+						logger.info( 'Already up-to-date.' );
+						break;
+				}
+
+				return Promise.resolve();
+			} );
 
 			return updateCommand.execute( data )
 				.then(
@@ -256,10 +310,10 @@ describe( 'commands/update', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					( response ) => {
-						const errMsg = 'Error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
+						const errMsg = 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
 
-						expect( exec.callCount ).to.equal( 3 );
+						expect( stubs.execCommand.execute.callCount ).to.equal( 3 );
 					}
 				);
 		} );

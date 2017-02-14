@@ -78,22 +78,26 @@ describe( 'commands/savehashes', () => {
 				}
 			};
 
-			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
+			stubs.execCommand.execute = sinon.spy( ( commandData, logger ) => {
+				expect( commandData.packageName ).to.equal( data.packageName );
+				expect( commandData.arguments ).to.be.an( 'array' );
+				expect( commandData.arguments[ 0 ] ).to.equal( 'git rev-parse HEAD' );
+
+				logger.info( execCommandResponse.logs.info[ 0 ] );
+
+				return Promise.resolve( execCommandResponse );
+			} );
 
 			return saveHashesCommand.execute( data )
 				.then( ( commandResponse ) => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
-						packageName: data.packageName,
-						arguments: [ 'git rev-parse HEAD' ]
-					} );
 
 					expect( commandResponse.response ).to.deep.equal( {
 						packageName: data.packageName,
 						commit: '584f34152d782cc2f26453e10b93c4a16ef01925'
 					} );
 
-					expect( commandResponse.logs.info[ 0 ] ).to.equal( 'Commit: "584f34152d782cc2f26453e10b93c4a16ef01925".' );
+					expect( commandResponse.logs.info[ 0 ] ).to.equal( '584f34152d782cc2f26453e10b93c4a16ef01925' );
 				} );
 		} );
 	} );
