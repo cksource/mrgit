@@ -26,13 +26,12 @@ describe( 'utils', () => {
 			it( 'allows collecting the messages', () => {
 				expect( logger.info ).to.be.a( 'function' );
 				expect( logger.error ).to.be.a( 'function' );
-				expect( logger.all ).to.be.a( 'function' );
-				expect( logger.concat ).to.be.a( 'function' );
+				expect( logger.getAll ).to.be.a( 'function' );
 				expect( logger.getLastInserted ).to.be.a( 'function' );
 			} );
 
 			it( 'returns all collected logs', () => {
-				const logs = logger.all();
+				const logs = logger.getAll();
 
 				expect( logs.info ).be.an( 'array' );
 				expect( logs.error ).be.an( 'array' );
@@ -41,13 +40,13 @@ describe( 'utils', () => {
 			it( 'logs an "info" message', () => {
 				logger.info( 'Test.' );
 
-				expect( logger.all().info ).to.deep.equal( [ 'Test.' ] );
+				expect( logger.getAll().info ).to.deep.equal( [ 'Test.' ] );
 			} );
 
 			it( 'logs an "error" message', () => {
 				logger.error( 'Test.' );
 
-				expect( logger.all().error ).to.deep.equal( [ 'Test.' ] );
+				expect( logger.getAll().error ).to.deep.equal( [ 'Test.' ] );
 			} );
 
 			it( 'returns last inserted log', () => {
@@ -58,32 +57,6 @@ describe( 'utils', () => {
 				logger.info( 'Error Test.' );
 
 				expect( logger.getLastInserted() ).to.equal( 'Error Test.' );
-			} );
-
-			it( 'merges logs from other logger', () => {
-				const otherLogger = getLogger();
-
-				otherLogger.info( 'Other Logger 1.' );
-				otherLogger.info( 'Other Logger 2.' );
-				otherLogger.error( 'Other Logger 3.' );
-
-				logger.info( 'Logger 1.' );
-				logger.error( 'Logger 2.' );
-
-				logger.concat( otherLogger.all() );
-
-				const logs = logger.all();
-
-				expect( logs.info ).to.deep.equal( [
-					'Logger 1.',
-					'Other Logger 1.',
-					'Other Logger 2.'
-				] );
-
-				expect( logs.error ).to.deep.equal( [
-					'Logger 2.',
-					'Other Logger 3.'
-				] );
 			} );
 
 			it( 'does not log an empty message', () => {
