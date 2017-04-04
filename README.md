@@ -84,6 +84,14 @@ CLI options:
 --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
 
                             Default: 'master'
+
+--ignore                    Ignores packages with names matching the given glob.
+
+                            Default: null
+
+--scope                     Restricts the scope to package names matching the given glob.
+
+                            Default: null
 ```
 
 All these options can also be specified in `mgit.json` (options passed through CLI takes precedence):

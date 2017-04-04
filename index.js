@@ -64,6 +64,14 @@ const cli = meow( `
         --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
 
                                     Default: 'master'
+
+        --ignore                    Ignores packages with names matching the given glob.
+
+                                    Default: null
+
+        --scope                     Restricts the scope to package names matching the given glob.
+
+                                    Default: null
 `, {
 	alias: {
 		v: 'version'
