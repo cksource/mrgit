@@ -24,7 +24,7 @@ describe( 'utils', () => {
 			expect( packages ).to.deep.equal( Object.keys( dependencies ) );
 		} );
 
-		it( 'returns specified packages which matches to specified pattern (scope)', () => {
+		it( 'returns specified packages which match to specified pattern (scope)', () => {
 			const dependencies = {
 				'@ckeditor/ckeditor5-core': '*',
 				'@ckeditor/ckeditor5-engine': '*',
@@ -44,7 +44,7 @@ describe( 'utils', () => {
 			] );
 		} );
 
-		it( 'returns specified packages which matches to specified pattern (ignore)', () => {
+		it( 'returns specified packages which match to specified pattern (ignore)', () => {
 			const dependencies = {
 				'@ckeditor/ckeditor5-core': '*',
 				'@ckeditor/ckeditor5-engine': '*',
@@ -64,7 +64,7 @@ describe( 'utils', () => {
 			] );
 		} );
 
-		it( 'returns specified packages which matches to specified patterns (scope and ignore)', () => {
+		it( 'returns specified packages which match to specified patterns (scope and ignore)', () => {
 			const dependencies = {
 				'@ckeditor/ckeditor5-engine': '*',
 				'@ckeditor/ckeditor5-editor-classic': '*',
