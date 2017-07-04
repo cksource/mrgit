@@ -22,7 +22,7 @@ describe( 'utils', () => {
 			delete options.dependencies;
 
 			expect( options ).to.deep.equal( {
-				cwd: cwd,
+				cwd,
 				packages: path.resolve( cwd, 'packages' ),
 				recursive: false,
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
@@ -46,7 +46,7 @@ describe( 'utils', () => {
 			const options = getOptions( {}, cwd );
 
 			expect( options ).to.deep.equal( {
-				cwd: cwd,
+				cwd,
 				packages: path.resolve( cwd, 'packages' ),
 				recursive: false,
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
@@ -66,7 +66,7 @@ describe( 'utils', () => {
 				dependencies: {
 					'simple-package': 'a/b'
 				},
-				cwd: cwd,
+				cwd,
 				packages: path.resolve( cwd, 'foo' ),
 				recursive: true,
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
@@ -89,7 +89,7 @@ describe( 'utils', () => {
 				dependencies: {
 					'simple-package': 'a/b'
 				},
-				cwd: cwd,
+				cwd,
 				packages: path.resolve( cwd, 'bar' ),
 				recursive: true,
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),

@@ -31,7 +31,7 @@ describe( 'commands/update', () => {
 				existsSync: sandbox.stub( fs, 'existsSync' )
 			},
 			path: {
-				join: sandbox.stub( path, 'join', ( ...chunks ) => chunks.join( '/' ) )
+				join: sandbox.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
 			},
 			bootstrapCommand: {
 				execute: sandbox.stub()
@@ -73,7 +73,7 @@ describe( 'commands/update', () => {
 			} ) );
 
 			return updateCommand.execute( data )
-				.then( ( response ) => {
+				.then( response => {
 					expect( response.logs.info ).to.deep.equal( [
 						'Package "test-package" was not found. Cloning...',
 						'Cloned.'
@@ -109,7 +109,7 @@ describe( 'commands/update', () => {
 			} ) );
 
 			return updateCommand.execute( data )
-				.then( ( response ) => {
+				.then( response => {
 					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
 					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
 					expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git checkout master' );
@@ -139,7 +139,7 @@ describe( 'commands/update', () => {
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
-					( response ) => {
+					response => {
 						const errMsg = 'Error: Package "test-package" has uncommitted changes. Aborted.';
 
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
@@ -176,7 +176,7 @@ describe( 'commands/update', () => {
 			} ) );
 
 			return updateCommand.execute( data )
-				.then( ( response ) => {
+				.then( response => {
 					expect( response.logs.info ).to.deep.equal( [
 						'Note: checking out \'1a0ff0a2ee60549656177cd2a18b057764ec2146\'.',
 						'Package "test-package" is on a detached commit.'
@@ -218,7 +218,7 @@ describe( 'commands/update', () => {
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
-					( response ) => {
+					response => {
 						expect( response.logs.info ).to.deep.equal( [
 							'Already on \'develop\'.'
 						] );
@@ -255,7 +255,7 @@ describe( 'commands/update', () => {
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
-					( response ) => {
+					response => {
 						const errMsg = 'Error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
 

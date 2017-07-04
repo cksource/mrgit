@@ -31,7 +31,7 @@ describe( 'commands/bootstrap', () => {
 				existsSync: sandbox.stub( fs, 'existsSync' )
 			},
 			path: {
-				join: sandbox.stub( path, 'join', ( ...chunks ) => chunks.join( '/' ) )
+				join: sandbox.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
 			}
 		};
 
@@ -70,7 +70,7 @@ describe( 'commands/bootstrap', () => {
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
-					( response ) => {
+					response => {
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
 					}
 				);
@@ -81,13 +81,14 @@ describe( 'commands/bootstrap', () => {
 			stubs.exec.returns( Promise.resolve( 'Git clone log.' ) );
 
 			return bootstrapCommand.execute( data )
-				.then( ( response ) => {
+				.then( response => {
 					expect( stubs.exec.calledOnce ).to.equal( true );
 
 					const cloneCommand = stubs.exec.firstCall.args[ 0 ].split( ' && ' );
 
 					// Clone the repository.
-					expect( cloneCommand[ 0 ] ).to.equal( 'git clone --progress git@github.com/organization/test-package.git packages/test-package' );
+					expect( cloneCommand[ 0 ] )
+						.to.equal( 'git clone --progress git@github.com/organization/test-package.git packages/test-package' );
 					// Change the directory to cloned package.
 					expect( cloneCommand[ 1 ] ).to.equal( 'cd packages/test-package' );
 					// And check out to proper branch.
@@ -101,7 +102,7 @@ describe( 'commands/bootstrap', () => {
 			stubs.fs.existsSync.returns( true );
 
 			return bootstrapCommand.execute( data )
-				.then( ( response ) => {
+				.then( response => {
 					expect( stubs.exec.called ).to.equal( false );
 
 					expect( response.logs.info[ 0 ] ).to.equal( 'Package "test-package" is already cloned.' );
@@ -116,7 +117,7 @@ describe( 'commands/bootstrap', () => {
 			stubs.fs.existsSync.returns( true );
 
 			return bootstrapCommand.execute( data )
-				.then( ( response ) => {
+				.then( response => {
 					expect( response.packages ).is.an( 'array' );
 					expect( response.packages ).to.deep.equal( [ 'test-foo' ] );
 				} );
@@ -130,7 +131,7 @@ describe( 'commands/bootstrap', () => {
 			stubs.fs.existsSync.returns( true );
 
 			return bootstrapCommand.execute( data )
-				.then( ( response ) => {
+				.then( response => {
 					expect( response.packages ).is.an( 'array' );
 					expect( response.packages ).to.deep.equal( [ 'test-bar' ] );
 				} );

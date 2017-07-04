@@ -29,7 +29,7 @@ describe( 'commands/savehashes', () => {
 				execute: sandbox.stub()
 			},
 			path: {
-				join: sandbox.stub( path, 'join', ( ...chunks ) => chunks.join( '/' ) )
+				join: sandbox.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
 			}
 		};
 
@@ -65,7 +65,7 @@ describe( 'commands/savehashes', () => {
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
-					( response ) => {
+					response => {
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
 					}
 				);
@@ -81,7 +81,7 @@ describe( 'commands/savehashes', () => {
 			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
 
 			return saveHashesCommand.execute( data )
-				.then( ( commandResponse ) => {
+				.then( commandResponse => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
 						packageName: data.packageName,

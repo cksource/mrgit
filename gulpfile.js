@@ -7,18 +7,20 @@
 
 const gulp = require( 'gulp' );
 
-const ckeditor5Lint = require( '@ckeditor/ckeditor5-dev-lint' )();
+const ckeditor5Lint = require( '@ckeditor/ckeditor5-dev-lint' );
 
-gulp.task( 'lint', ckeditor5Lint.lint );
-gulp.task( 'lint-staged', ckeditor5Lint.lintStaged );
+gulp.task( 'lint', () => ckeditor5Lint.lint() );
+gulp.task( 'lint-staged', () => ckeditor5Lint.lintStaged() );
 gulp.task( 'pre-commit', [ 'lint-staged' ] );
 
 gulp.task( 'changelog', () => {
-	return require( '@ckeditor/ckeditor5-dev-env' ).generateChangelog();
+	return require( '@ckeditor/ckeditor5-dev-env' ).generateChangelogForSinglePackage();
 } );
 
 gulp.task( 'release', () => {
-	const options = require( '@ckeditor/ckeditor5-dev-env/lib/release-tools/utils/getoptions' )();
+	const ckeditor5DevEnv = require( '@ckeditor/ckeditor5-dev-env' );
+	const { configureReleaseOptions } = require( '@ckeditor/ckeditor5-dev-env/lib/release-tools/utils/cli' );
 
-	return require( '@ckeditor/ckeditor5-dev-env' ).createRelease( options );
+	return configureReleaseOptions()
+		.then( options => ckeditor5DevEnv.releaseRepository( options ) );
 } );
