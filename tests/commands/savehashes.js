@@ -74,7 +74,7 @@ describe( 'commands/savehashes', () => {
 		it( 'resolves promise with last commit id', () => {
 			const execCommandResponse = {
 				logs: {
-					info: [ '584f34152d782cc2f26453e10b93c4a16ef01925' ]
+					info: [ '584f341' ]
 				}
 			};
 
@@ -90,10 +90,10 @@ describe( 'commands/savehashes', () => {
 
 					expect( commandResponse.response ).to.deep.equal( {
 						packageName: data.packageName,
-						commit: '584f34152d782cc2f26453e10b93c4a16ef01925'
+						commit: '584f341'
 					} );
 
-					expect( commandResponse.logs.info[ 0 ] ).to.equal( 'Commit: "584f34152d782cc2f26453e10b93c4a16ef01925".' );
+					expect( commandResponse.logs.info[ 0 ] ).to.equal( 'Commit: "584f341".' );
 				} );
 		} );
 	} );
@@ -108,11 +108,11 @@ describe( 'commands/savehashes', () => {
 
 			commandResponses.add( {
 				packageName: 'test-package',
-				commit: '584f34152d782cc2f26453e10b93c4a16ef01925'
+				commit: '584f341'
 			} );
 			commandResponses.add( {
 				packageName: 'package-test',
-				commit: '52910fe61a4c39b01e35462f2cc287d25143f485'
+				commit: '52910fe'
 			} );
 
 			saveHashesCommand.afterExecute( processedPackages, commandResponses );
@@ -131,8 +131,8 @@ describe( 'commands/savehashes', () => {
 			json = updateFunction( json );
 
 			expect( json.dependencies ).to.deep.equal( {
-				'test-package': 'organization/test-package#584f34152d782cc2f26453e10b93c4a16ef01925',
-				'package-test': 'organization/package-test#52910fe61a4c39b01e35462f2cc287d25143f485',
+				'test-package': 'organization/test-package#584f341',
+				'package-test': 'organization/package-test#52910fe',
 				'other-package': 'organization/other-package'
 			} );
 		} );
