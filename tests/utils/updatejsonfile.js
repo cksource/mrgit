@@ -25,7 +25,7 @@ describe( 'utils', () => {
 		it( 'should read, update and save JSON file', () => {
 			const path = 'path/to/file.json';
 			const fs = require( 'fs' );
-			const readFileStub = sandbox.stub( fs, 'readFileSync', () => '{}' );
+			const readFileStub = sandbox.stub( fs, 'readFileSync' ).callsFake( () => '{}' );
 			const modifiedJSON = { modified: true };
 			const writeFileStub = sandbox.stub( fs, 'writeFileSync' );
 

@@ -31,7 +31,7 @@ describe( 'commands/exec', () => {
 				existsSync: sandbox.stub( fs, 'existsSync' )
 			},
 			path: {
-				join: sandbox.stub( path, 'join', ( ...chunks ) => chunks.join( '/' ) )
+				join: sandbox.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
 			},
 			process: {
 				chdir: sandbox.stub( process, 'chdir' )
@@ -85,7 +85,7 @@ describe( 'commands/exec', () => {
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
-					( response ) => {
+					response => {
 						expect( stubs.path.join.calledOnce ).to.equal( true );
 
 						const err = 'Package "test-package" is not available. Run "mgit bootstrap" in order to download the package.';
@@ -105,7 +105,7 @@ describe( 'commands/exec', () => {
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
-					( response ) => {
+					response => {
 						expect( stubs.process.chdir.calledTwice ).to.equal( true );
 						expect( stubs.process.chdir.firstCall.args[ 0 ] ).to.equal( 'packages/test-package' );
 						expect( stubs.process.chdir.secondCall.args[ 0 ] ).to.equal( __dirname );
@@ -120,7 +120,7 @@ describe( 'commands/exec', () => {
 			stubs.exec.returns( Promise.resolve( pwd ) );
 
 			return execCommand.execute( data )
-				.then( ( response ) => {
+				.then( response => {
 					expect( stubs.process.chdir.calledTwice ).to.equal( true );
 					expect( stubs.process.chdir.firstCall.args[ 0 ] ).to.equal( 'packages/test-package' );
 					expect( stubs.process.chdir.secondCall.args[ 0 ] ).to.equal( __dirname );
