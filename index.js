@@ -64,6 +64,20 @@ const cli = meow( `
         --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
 
                                     Default: 'master'
+
+        --ignore                    Ignores packages which names match the given glob pattern.
+
+                                    For example:
+
+                                        > mgit exec --ignore="foo*" "git st"
+
+                                    Will ignore all packages which names start from "foo".
+
+                                    Default: null
+
+        --scope                     Restricts the command to packages which names match the given glob pattern.
+
+                                    Default: null
 `, {
 	alias: {
 		v: 'version'

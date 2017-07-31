@@ -28,7 +28,9 @@ describe( 'utils', () => {
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
-				resolverDefaultBranch: 'master'
+				resolverDefaultBranch: 'master',
+				scope: null,
+				ignore: null
 			} );
 		} );
 
@@ -50,7 +52,9 @@ describe( 'utils', () => {
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
-				resolverDefaultBranch: 'master'
+				resolverDefaultBranch: 'master',
+				scope: null,
+				ignore: null
 			} );
 		} );
 
@@ -68,7 +72,9 @@ describe( 'utils', () => {
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
-				resolverDefaultBranch: 'master'
+				resolverDefaultBranch: 'master',
+				scope: null,
+				ignore: null
 			} );
 		} );
 
@@ -89,7 +95,9 @@ describe( 'utils', () => {
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'a/b/c',
 				resolverTargetDirectory: 'git',
-				resolverDefaultBranch: 'master'
+				resolverDefaultBranch: 'master',
+				scope: null,
+				ignore: null
 			} );
 		} );
 	} );
