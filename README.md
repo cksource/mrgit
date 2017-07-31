@@ -85,11 +85,17 @@ CLI options:
 
                             Default: 'master'
 
---ignore                    Ignores packages with names matching the given glob.
+--ignore                    Ignores packages which names match the given glob pattern.
+
+                            For example:
+
+                                > mgit exec --ignore="foo*" "git st"
+
+                            Will ignore all packages which names start from "foo".
 
                             Default: null
 
---scope                     Restricts the scope to package names matching the given glob.
+--scope                     Restricts the command to packages which names match the given glob pattern.
 
                             Default: null
 ```
