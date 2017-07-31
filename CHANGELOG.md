@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [0.6.0](https://github.com/cksource/mgit2/compare/v0.5.2...v0.6.0) (2017-07-31)
+
+### Features
+
+* Introduced `--ignore` and `--scope` options which allow executing the commands on a subset of packages. Closes [#50](https://github.com/cksource/mgit2/issues/50). ([061e32d](https://github.com/cksource/mgit2/commit/061e32d))
+
+
 ## [0.5.2](https://github.com/cksource/mgit2/compare/v0.5.1...v0.5.2) (2017-07-04)
 
 ### Bug fixes
