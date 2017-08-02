@@ -28,6 +28,7 @@ const cli = meow( `
         exec                        Executes shell command in each package.
         update                      Updates packages to the latest versions (i.e. pull changes).
         save-hashes                 Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
+        status                      Prints a table which contains useful information about the status of repositories.
 
     Options:
         --recursive                 Whether to install dependencies recursively.
@@ -76,6 +77,12 @@ const cli = meow( `
                                     Default: null
 
         --scope                     Restricts the command to packages which names match the given glob pattern.
+
+                                    Default: null
+                                    
+        --packages-prefix           The common name of the packages. The prefix will be removed from packages' names in order to
+                                    save space, e.g. 'mgit status' prints a table with the statuses of all packages.
+                                    Full names of packages aren't needed so we can cat the names.
 
                                     Default: null
 `, {

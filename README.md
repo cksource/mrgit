@@ -98,6 +98,12 @@ CLI options:
 --scope                     Restricts the command to packages which names match the given glob pattern.
 
                             Default: null
+                            
+--packages-prefix           The common name of the packages. The prefix will be removed from packages' names in order to
+                            save space, e.g. `mgit status` prints a table with the statuses of all packages.
+                            Full names of packages aren't needed so we can cat the names.
+
+                            Default: null
 ```
 
 All these options can also be specified in `mgit.json` (options passed through CLI takes precedence):
@@ -244,7 +250,6 @@ mgit exec 'echo `pwd`'
 # /home/mgit/packages/organization/repository-2
 ```
 
-
 ### save-hashes
 
 Saves hashes of packages in `mgit.json`. It allows to easily fix project to a specific state.
@@ -253,6 +258,19 @@ Example:
 
 ```bash
 mgit save-hashes
+```
+
+### status
+##### Available also `st`
+
+Prints a table which contains useful information about the status of repositories.
+
+Example:
+
+```bash
+mgit status 
+# or 
+mgit st
 ```
 
 ## Projects using mgit2
