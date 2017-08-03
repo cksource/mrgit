@@ -273,6 +273,34 @@ mgit status
 mgit st
 ```
 
+### diff
+
+Prints changes from packages where something has changed.
+
+It accepts additional options which will be passed directly to the `git diff` command which is used to gathering the changes.
+
+These options must be separated by a double dash `--`, in the same way as [`npm scripts`](https://docs.npmjs.com/cli/run-script#synopsis) 
+does.
+
+Example:
+
+Prints changes from all repositories:
+
+```bash
+mgit diff
+```
+
+Prints diffstat from all repositories:
+ 
+```bash
+mgit diff -- --stat
+```
+
+Prints staged changes from restricted scope:
+```bash
+mgit diff --scope=*@(engine|typing)* -- --staged
+```
+
 ## Projects using mgit2
 
 * [CKEditor 5](https://github.com/ckeditor/ckeditor5)
