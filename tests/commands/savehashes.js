@@ -58,7 +58,11 @@ describe( 'commands/savehashes', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			stubs.execCommand.execute.returns( Promise.reject( error ) );
+			stubs.execCommand.execute.returns( Promise.reject( {
+				logs: {
+					error: [ error.stack ]
+				}
+			} ) );
 
 			return saveHashesCommand.execute( data )
 				.then(

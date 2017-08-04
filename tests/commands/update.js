@@ -140,7 +140,7 @@ describe( 'commands/update', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						const errMsg = 'Error: Package "test-package" has uncommitted changes. Aborted.';
+						const errMsg = 'Package "test-package" has uncommitted changes. Aborted.';
 
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
 						expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
@@ -223,7 +223,7 @@ describe( 'commands/update', () => {
 							'Already on \'develop\'.'
 						] );
 
-						const errMsg = 'Error: fatal: Couldn\'t find remote ref develop';
+						const errMsg = 'fatal: Couldn\'t find remote ref develop';
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
 
 						expect( exec.callCount ).to.equal( 5 );
@@ -256,7 +256,7 @@ describe( 'commands/update', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						const errMsg = 'Error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
+						const errMsg = 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
 
 						expect( exec.callCount ).to.equal( 3 );
