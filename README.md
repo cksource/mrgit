@@ -297,8 +297,20 @@ mgit diff -- --stat
 ```
 
 Prints staged changes from restricted scope:
+
 ```bash
 mgit diff --scope=*@(engine|typing)* -- --staged
+```
+
+### checkout
+##### Available also `co`
+
+Changes branches in repositories according to the configuration file. It does not pull the changes. The command is helpful for bisecting.
+
+```bash
+mgit checkout
+# or
+mgit co
 ```
 
 ## Projects using mgit2

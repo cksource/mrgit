@@ -30,6 +30,7 @@ const cli = meow( `
         save-hashes                 Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
         status                      Prints a table which contains useful information about the status of repositories.
         diff                        Prints changes from packages where something has changed. 
+        checkout                    Changes branches in repositories according to the configuration file.
 
     Options:
         --recursive                 Whether to install dependencies recursively.
