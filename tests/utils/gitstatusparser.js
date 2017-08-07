@@ -119,5 +119,27 @@ describe( 'utils', () => {
 				'tests/utils/helper.js',
 			] );
 		} );
+
+		it( 'returns a list with modified files (staged and not staged)', () => {
+			const gitStatusResponse = [
+				'## master...origin/master',
+				' M lib/index.js', // modified, not staged
+				'MM lib/tasks/logger.js', // modified, a part of the changes is staged
+				'M  tests/index.js', // modified, the whole file is staged
+			].join( '\n' );
+
+			const status = gitStatusParser( gitStatusResponse );
+
+			expect( status.staged ).to.deep.equal( [
+				'lib/tasks/logger.js',
+				'tests/index.js'
+			] );
+
+			expect( status.modified ).to.deep.equal( [
+				'lib/index.js',
+				'lib/tasks/logger.js',
+				'tests/index.js'
+			] );
+		} );
 	} );
 } );
