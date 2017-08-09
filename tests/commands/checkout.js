@@ -84,7 +84,7 @@ describe( 'commands/checkout', () => {
 					} );
 
 					expect( commandResponse.logs.info[ 0 ] ).to.equal(
-						'Already on \'master\'\nYour branch is up-to-date with \'origin/master\'.'
+						'Your branch is up-to-date with \'origin/master\'.'
 					);
 				} );
 		} );
