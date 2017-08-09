@@ -10,6 +10,12 @@
 const meow = require( 'meow' );
 const mgit = require( './lib/index' );
 
+const meowOptions = {
+	alias: {
+		v: 'version'
+	}
+};
+
 const cli = meow( `
                      _ _
                     (_) |
@@ -81,11 +87,7 @@ const cli = meow( `
         --scope                     Restricts the command to packages which names match the given glob pattern.
 
                                     Default: null
-`, {
-	alias: {
-		v: 'version'
-	}
-} );
+`, meowOptions );
 
 if ( cli.input.length === 0 ) {
 	cli.showHelp();
