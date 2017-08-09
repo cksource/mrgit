@@ -254,8 +254,7 @@ Example:
 mgit save-hashes
 ```
 
-### status
-##### Available also `st`
+### status (alias: `st`)
 
 Prints a table which contains useful information about the status of repositories.
 
@@ -269,6 +268,8 @@ mgit st
 
 In order to save space in your terminal, you can define the `packagesPrefix` option in your configuration file.
 The prefix will be removed from packages' names. Full names of packages aren't needed so we can cat the names.
+
+![An example response of `mgit status` command.](https://user-images.githubusercontent.com/2270764/28871104-5915289e-7783-11e7-8d06-9eac6d7d96ab.png)
 
 ### diff
 
@@ -299,8 +300,9 @@ Prints staged changes from restricted scope:
 mgit diff --scope=*@(engine|typing)* -- --staged
 ```
 
-### checkout
-##### Available also `co`
+![An example response of `mgit diff` command.](https://user-images.githubusercontent.com/2270764/28918716-c6f90002-784a-11e7-95ae-8d08c47c5427.png)
+
+### checkout (alias: `co`)
 
 Changes branches in repositories according to the configuration file. It does not pull the changes. The command is helpful for bisecting.
 
