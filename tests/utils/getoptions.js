@@ -30,8 +30,7 @@ describe( 'utils', () => {
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
 				scope: null,
-				ignore: null,
-				packagesPrefix: null
+				ignore: null
 			} );
 		} );
 
@@ -55,8 +54,7 @@ describe( 'utils', () => {
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
 				scope: null,
-				ignore: null,
-				packagesPrefix: null
+				ignore: null
 			} );
 		} );
 
@@ -76,8 +74,7 @@ describe( 'utils', () => {
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
 				scope: null,
-				ignore: null,
-				packagesPrefix: null
+				ignore: null
 			} );
 		} );
 
@@ -100,8 +97,7 @@ describe( 'utils', () => {
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
 				scope: null,
-				ignore: null,
-				packagesPrefix: null
+				ignore: null
 			} );
 		} );
 	} );
