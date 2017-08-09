@@ -64,9 +64,7 @@ describe( 'utils', () => {
 
 			expect( status.modified ).to.deep.equal( [
 				'lib/index.js',
-				'lib/tasks/logger.js',
-				'tests/index.js',
-				'tests/tasks/logger.js',
+				'lib/tasks/logger.js'
 			] );
 		} );
 
@@ -137,8 +135,7 @@ describe( 'utils', () => {
 
 			expect( status.modified ).to.deep.equal( [
 				'lib/index.js',
-				'lib/tasks/logger.js',
-				'tests/index.js'
+				'lib/tasks/logger.js'
 			] );
 		} );
 	} );
