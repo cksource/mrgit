@@ -37,6 +37,8 @@ First, create a configuration file `mgit.json`:
 }
 ```
 
+(Keys of the `dependencies` object are package names and values are repository URLs (GitHub identifiers in this case). Read more about the [`dependencies` option](#the-dependencies-option).)
+
 And run `mgit bootstrap` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
 
 ```
