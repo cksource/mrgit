@@ -10,6 +10,12 @@
 const meow = require( 'meow' );
 const mgit = require( './lib/index' );
 
+const meowOptions = {
+	alias: {
+		v: 'version'
+	}
+};
+
 const cli = meow( `
                      _ _
                     (_) |
@@ -28,6 +34,9 @@ const cli = meow( `
         exec                        Executes shell command in each package.
         update                      Updates packages to the latest versions (i.e. pull changes).
         save-hashes                 Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
+        status                      Prints a table which contains useful information about the status of repositories.
+        diff                        Prints changes from packages where something has changed. 
+        checkout                    Changes branches in repositories according to the configuration file.
 
     Options:
         --recursive                 Whether to install dependencies recursively.
@@ -78,11 +87,7 @@ const cli = meow( `
         --scope                     Restricts the command to packages which names match the given glob pattern.
 
                                     Default: null
-`, {
-	alias: {
-		v: 'version'
-	}
-} );
+`, meowOptions );
 
 if ( cli.input.length === 0 ) {
 	cli.showHelp();

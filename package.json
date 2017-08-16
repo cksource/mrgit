@@ -13,6 +13,7 @@
   "main": "index.js",
   "dependencies": {
     "chalk": "^2.0.1",
+    "cli-table": "^0.3.1",
     "generic-pool": "^3.1.6",
     "meow": "^3.7.0",
     "minimatch": "^3.0.3",

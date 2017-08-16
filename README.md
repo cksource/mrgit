@@ -244,7 +244,6 @@ mgit exec 'echo `pwd`'
 # /home/mgit/packages/organization/repository-2
 ```
 
-
 ### save-hashes
 
 Saves hashes of packages in `mgit.json`. It allows to easily fix project to a specific state.
@@ -253,6 +252,64 @@ Example:
 
 ```bash
 mgit save-hashes
+```
+
+### status (alias: `st`)
+
+Prints a table which contains useful information about the status of repositories.
+
+Example:
+
+```bash
+mgit status 
+# or 
+mgit st
+```
+
+In order to save space in your terminal, you can define the `packagesPrefix` option in your configuration file.
+The prefix will be removed from packages' names. Full names of packages aren't needed so we can cat the names.
+
+![An example response of `mgit status` command.](https://user-images.githubusercontent.com/2270764/28871104-5915289e-7783-11e7-8d06-9eac6d7d96ab.png)
+
+### diff
+
+Prints changes from packages where something has changed.
+
+It accepts additional options which will be passed directly to the `git diff` command which is used to gathering the changes.
+
+These options must be separated by a double dash `--`, in the same way as [`npm scripts`](https://docs.npmjs.com/cli/run-script#synopsis) 
+does.
+
+Example:
+
+Prints changes from all repositories:
+
+```bash
+mgit diff
+```
+
+Prints diffstat from all repositories:
+ 
+```bash
+mgit diff -- --stat
+```
+
+Prints staged changes from restricted scope:
+
+```bash
+mgit diff --scope=*@(engine|typing)* -- --staged
+```
+
+![An example response of `mgit diff` command.](https://user-images.githubusercontent.com/2270764/28918716-c6f90002-784a-11e7-95ae-8d08c47c5427.png)
+
+### checkout (alias: `co`)
+
+Changes branches in repositories according to the configuration file. It does not pull the changes. The command is helpful for bisecting.
+
+```bash
+mgit checkout
+# or
+mgit co
 ```
 
 ## Projects using mgit2
