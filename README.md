@@ -261,8 +261,8 @@ Prints a table which contains useful information about the status of repositorie
 Example:
 
 ```bash
-mgit status 
-# or 
+mgit status
+# or
 mgit st
 ```
 
@@ -275,12 +275,11 @@ The prefix will be removed from packages' names. Full names of packages aren't n
 
 Prints changes from packages where something has changed.
 
-It accepts additional options which will be passed directly to the `git diff` command which is used to gathering the changes.
+It accepts additional options which will be passed directly to the `git diff` command which is used to gather the changes.
 
-These options must be separated by a double dash `--`, in the same way as [`npm scripts`](https://docs.npmjs.com/cli/run-script#synopsis) 
-does.
+These options must be separated by a double dash `--`, the same way as [`npm scripts`](https://docs.npmjs.com/cli/run-script#synopsis) does.
 
-Example:
+#### Examples
 
 Prints changes from all repositories:
 
@@ -289,7 +288,7 @@ mgit diff
 ```
 
 Prints diffstat from all repositories:
- 
+
 ```bash
 mgit diff -- --stat
 ```
@@ -300,11 +299,17 @@ Prints staged changes from restricted scope:
 mgit diff --scope=*@(engine|typing)* -- --staged
 ```
 
+Prints changes from repositories which are not on `master`:
+
+```bash
+mgit diff -- master...HEAD
+```
+
 ![An example response of `mgit diff` command.](https://user-images.githubusercontent.com/2270764/28918716-c6f90002-784a-11e7-95ae-8d08c47c5427.png)
 
 ### checkout (alias: `co`)
 
-Changes branches in repositories according to the configuration file. It does not pull the changes. The command is helpful for bisecting.
+Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit update`. The command is useful for bisecting if your main repository contain a revision log like CKEditor 5's [`master-revision`](https://github.com/ckeditor/ckeditor5/commits/master-revisions) branch.
 
 ```bash
 mgit checkout
