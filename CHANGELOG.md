@@ -1,6 +1,20 @@
 Changelog
 =========
 
+## [0.7.0](https://github.com/cksource/mgit2/compare/v0.6.0...v0.7.0) (2017-08-16)
+
+### Features
+
+* Introduced new commands and fixed bugs related to incorrectly displayed errors. Closes [#2](https://github.com/cksource/mgit2/issues/2). Closes [#45](https://github.com/cksource/mgit2/issues/45). Closes [#49](https://github.com/cksource/mgit2/issues/49). Closes [#52](https://github.com/cksource/mgit2/issues/52). ([c66c11a](https://github.com/cksource/mgit2/commit/c66c11a))
+
+  * New commands:
+    * `checkout` – changes branches in repositories according to the configuration file (see [#52](https://github.com/cksource/mgit2/issues/52)),
+    * `diff` – prints changes from all repositories (see [#2](https://github.com/cksource/mgit2/issues/2)),
+    * `status` – prints a table which contains useful information about the status of repositories (see [#2](https://github.com/cksource/mgit2/issues/2)).
+  * Bug fixes:
+    * known errors should not be logged as crashes (see [#45](https://github.com/cksource/mgit2/issues/45)).
+
+
 ## [0.6.0](https://github.com/cksource/mgit2/compare/v0.5.2...v0.6.0) (2017-07-31)
 
 ### Features
