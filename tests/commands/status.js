@@ -32,6 +32,15 @@ describe( 'commands/status', () => {
 				constructor: sandbox.stub(),
 				push: sandbox.stub(),
 				toString: sandbox.stub()
+			},
+			chalk: {
+				cyan: sandbox.stub(),
+				bold: sandbox.stub(),
+				yellow: sandbox.stub(),
+				green: sandbox.stub(),
+				red: sandbox.stub(),
+				blue: sandbox.stub(),
+				magenta: sandbox.stub(),
 			}
 		};
 
@@ -48,13 +57,13 @@ describe( 'commands/status', () => {
 
 		// Do not modify the color.
 		mockery.registerMock( 'chalk', {
-			cyan: text => text,
-			bold: text => text,
-			yellow: text => text,
-			green: text => text,
-			red: text => text,
-			blue: text => text,
-			magenta: text => text
+			cyan: stubs.chalk.cyan.callsFake( chalkCallsFake() ),
+			bold: stubs.chalk.bold.callsFake( chalkCallsFake() ),
+			yellow: stubs.chalk.yellow.callsFake( chalkCallsFake() ),
+			green: stubs.chalk.green.callsFake( chalkCallsFake() ),
+			red: stubs.chalk.red.callsFake( chalkCallsFake() ),
+			blue: stubs.chalk.blue.callsFake( chalkCallsFake() ),
+			magenta: stubs.chalk.magenta.callsFake( chalkCallsFake() )
 		} );
 		mockery.registerMock( 'cli-table', class Table {
 			constructor( ...args ) {
@@ -73,6 +82,10 @@ describe( 'commands/status', () => {
 		mockery.registerMock( '../utils/gitstatusparser', stubs.gitStatusParser );
 
 		statusCommand = require( '../../lib/commands/status' );
+
+		function chalkCallsFake() {
+			return ( ...args ) => args.join( ',' );
+		}
 	} );
 
 	afterEach( () => {
@@ -184,7 +197,7 @@ describe( 'commands/status', () => {
 	} );
 
 	describe( 'afterExecute()', () => {
-		it( 'do not display any thing if processed packages list is empty', () => {
+		it( 'do not display anything if processed packages list is empty', () => {
 			const logStub = sandbox.stub( console, 'log' );
 
 			const processedPackages = new Set();
@@ -198,7 +211,7 @@ describe( 'commands/status', () => {
 			logStub.restore();
 		} );
 
-		it( 'do not display any thing if command responses list is empty', () => {
+		it( 'do not display anything if command responses list is empty', () => {
 			const logStub = sandbox.stub( console, 'log' );
 
 			const processedPackages = new Set();
@@ -245,7 +258,7 @@ describe( 'commands/status', () => {
 					modified: [],
 					untracked: [ 'CHANGELOG.md' ],
 				},
-				mgitBranch: 'master',
+				mgitBranch: 't/1',
 				commit: 'ef45678'
 			} );
 
@@ -272,8 +285,100 @@ describe( 'commands/status', () => {
 			expect( logStub.firstCall.args[ 0 ] ).to.equal( '┻━┻' );
 			expect( logStub.secondCall.args[ 0 ] ).to.equal(
 				'Legend:\n' +
-				'↑ branch is ahead ↓ or behind, + staged files, M modified files, ? untracked files.'
+				'↑ branch is ahead ↓ or behind, + staged files, M modified files, ? untracked files, \n' +
+				'! current branch is other than specified in "mgit.json", highlighted row means the branch is other than "master".'
 			);
+			expect( stubs.chalk.cyan.calledOnce ).to.equal( true );
+
+			logStub.restore();
+		} );
+
+		it( 'highlights a row if current branch is other than master', () => {
+			const logStub = sandbox.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-foo' );
+
+			commandResponses.add( {
+				packageName: 'foo',
+				status: {
+					branch: 't/ckeditor5-bar/1',
+					ahead: 0,
+					behind: 0,
+					staged: [],
+					modified: [],
+					untracked: [],
+				},
+				mgitBranch: 'master',
+				commit: 'abcd123'
+			} );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+			expect( stubs.chalk.magenta.called ).to.equal( true );
+
+			logStub.restore();
+		} );
+
+		it( 'does not highlight a row if current branch is equal to master', () => {
+			const logStub = sandbox.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-foo' );
+
+			commandResponses.add( {
+				packageName: 'foo',
+				status: {
+					branch: 'master',
+					ahead: 0,
+					behind: 0,
+					staged: [],
+					modified: [],
+					untracked: [],
+				},
+				mgitBranch: 'master',
+				commit: 'abcd123'
+			} );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+			expect( stubs.chalk.magenta.called ).to.equal( false );
+
+			logStub.restore();
+		} );
+
+		it( 'adds "!" before the branch name if current branch is other than defined in "mgit.json"', () => {
+			const logStub = sandbox.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-bar' );
+
+			commandResponses.add( {
+				packageName: 'bar',
+				status: {
+					branch: 't/1',
+					ahead: 0,
+					behind: 0,
+					staged: [],
+					modified: [],
+					untracked: [],
+				},
+				mgitBranch: 'master',
+				commit: 'ef45678'
+			} );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'bar', '! t/1', 'ef45678', '' ]
+			);
+
+			// First - in the table, second - in the legend.
+			expect( stubs.chalk.cyan.calledTwice ).to.equal( true );
 
 			logStub.restore();
 		} );
