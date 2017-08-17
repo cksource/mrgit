@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## [0.7.1](https://github.com/cksource/mgit2/compare/v0.7.0...v0.7.1) (2017-08-17)
+
+### Other changes
+
+* Improved UI of the statuses table. Closes [#55](https://github.com/cksource/mgit2/issues/55). ([35349d0](https://github.com/cksource/mgit2/commit/35349d0))
+
+  * If current branch is other than specified in `mgit.json` – the branch will be prefixed with `!`,
+  * If current branch is other than `master` – the whole row will be highlighted (in pink).
+
+
 ## [0.7.0](https://github.com/cksource/mgit2/compare/v0.6.0...v0.7.0) (2017-08-16)
 
 ### Features
