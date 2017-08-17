@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## [0.7.2](https://github.com/cksource/mgit2/compare/v0.7.1...v0.7.2) (2017-08-17)
+
+Internal changes only (updated dependencies, documentation, etc.).
+
 ## [0.7.1](https://github.com/cksource/mgit2/compare/v0.7.0...v0.7.1) (2017-08-17)
 
 ### Other changes
