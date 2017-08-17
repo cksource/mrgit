@@ -283,11 +283,7 @@ describe( 'commands/status', () => {
 
 			expect( logStub.calledTwice ).to.equal( true );
 			expect( logStub.firstCall.args[ 0 ] ).to.equal( '┻━┻' );
-			expect( logStub.secondCall.args[ 0 ] ).to.equal(
-				'Legend:\n' +
-				'↑ branch is ahead ↓ or behind, + staged files, M modified files, ? untracked files, \n' +
-				'! current branch is other than specified in "mgit.json", highlighted row means the branch is other than "master".'
-			);
+			expect( logStub.secondCall.args[ 0 ] ).to.match( /^Legend:/ );
 			expect( stubs.chalk.cyan.calledOnce ).to.equal( true );
 
 			logStub.restore();
