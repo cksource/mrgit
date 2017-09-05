@@ -272,11 +272,12 @@ describe( 'commands/status', () => {
 					compact: true
 				}
 			} );
+
 			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
-				[ 'foo', 'master ↓2', 'abcd123', 'M1' ]
+				[ 'bar', 't/1 ↑3', 'ef45678', '+1 ?1' ]
 			);
 			expect( stubs.table.push.secondCall.args[ 0 ] ).to.deep.equal(
-				[ 'bar', 't/1 ↑3', 'ef45678', '+1 ?1' ]
+				[ 'foo', 'master ↓2', 'abcd123', 'M1' ]
 			);
 
 			expect( stubs.table.toString.calledOnce ).to.equal( true );
