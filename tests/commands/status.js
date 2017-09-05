@@ -378,5 +378,47 @@ describe( 'commands/status', () => {
 
 			logStub.restore();
 		} );
+
+		it( 'sorts packages by alphabetically', () => {
+			const logStub = sandbox.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-foo' );
+			processedPackages.add( '@ckeditor/ckeditor5-bar' );
+			processedPackages.add( '@ckeditor/ckeditor5-bom' );
+			processedPackages.add( '@ckeditor/ckeditor5-aaa' );
+
+			commandResponses.add( getCommandResponse( 'foo', '1111111' ) );
+			commandResponses.add( getCommandResponse( 'bar', '2222222' ) );
+			commandResponses.add( getCommandResponse( 'bom', '3333333' ) );
+			commandResponses.add( getCommandResponse( 'aaa', '4444444' ) );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.push.getCall( 0 ).args[ 0 ][ 0 ], 1 ).to.equal( 'aaa' );
+			expect( stubs.table.push.getCall( 1 ).args[ 0 ][ 0 ], 2 ).to.equal( 'bar' );
+			expect( stubs.table.push.getCall( 2 ).args[ 0 ][ 0 ], 3 ).to.equal( 'bom' );
+			expect( stubs.table.push.getCall( 3 ).args[ 0 ][ 0 ], 4 ).to.equal( 'foo' );
+
+			logStub.restore();
+
+			function getCommandResponse( packageName, commit ) {
+				return {
+					packageName,
+					status: {
+						branch: 'master',
+						ahead: 0,
+						behind: 0,
+						staged: [],
+						modified: [],
+						untracked: [],
+					},
+					mgitBranch: 'master',
+					commit
+				};
+			}
+		} );
 	} );
 } );
