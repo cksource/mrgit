@@ -269,7 +269,7 @@ mgit st
 ```
 
 In order to save space in your terminal, you can define the `packagesPrefix` option in your configuration file.
-The prefix will be removed from packages' names. Full names of packages aren't needed so we can cat the names.
+The prefix will be removed from packages' names. Full names of packages aren't needed so we can cut the names.
 
 ![An example response of `mgit status` command.](https://user-images.githubusercontent.com/2270764/28871104-5915289e-7783-11e7-8d06-9eac6d7d96ab.png)
 
