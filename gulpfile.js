@@ -19,8 +19,6 @@ gulp.task( 'changelog', () => {
 
 gulp.task( 'release', () => {
 	const ckeditor5DevEnv = require( '@ckeditor/ckeditor5-dev-env' );
-	const { configureReleaseOptions } = require( '@ckeditor/ckeditor5-dev-env/lib/release-tools/utils/cli' );
 
-	return configureReleaseOptions()
-		.then( options => ckeditor5DevEnv.releaseRepository( options ) );
+	return ckeditor5DevEnv.releaseRepository();
 } );
