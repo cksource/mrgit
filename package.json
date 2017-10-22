@@ -23,10 +23,11 @@
     "@ckeditor/ckeditor5-dev-env": "^5.1.2",
     "@ckeditor/ckeditor5-dev-lint": "^3.1.0",
     "chai": "^4.0.0",
+    "eslint": "^4.8.0",
     "eslint-config-ckeditor5": "^1.0.5",
-    "gulp": "^3.9.1",
-    "guppy-pre-commit": "^0.4.0",
+    "husky": "^0.14.3",
     "istanbul": "^0.4.5",
+    "lint-staged": "^4.2.3",
     "mocha": "^3.2.0",
     "mockery": "^2.0.0",
     "sinon": "^2.3.6"
@@ -45,7 +46,10 @@
   "homepage": "https://github.com/cksource/mgit2#readme",
   "scripts": {
     "test": "mocha tests --recursive",
-    "coverage": "istanbul cover _mocha tests -- --recursive"
+    "coverage": "istanbul cover _mocha tests -- --recursive",
+    "lint": "eslint --quiet '**/*.js'",
+    "precommit": "lint-staged",
+    "changelog": "node ./scripts/changelog.js"
   },
   "bin": {
     "mgit": "./index.js",
@@ -54,5 +58,10 @@
   "files": [
     "index.js",
     "lib"
-  ]
+  ],
+  "lint-staged": {
+    "**/*.js": [
+      "eslint --quiet"
+    ]
+  }
 }

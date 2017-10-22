@@ -7,7 +7,7 @@ install:
   - npm install
   - npm install codeclimate-test-reporter
 script:
-  - gulp lint
+  - npm run lint
   - npm run coverage
 after_success:
   - node_modules/.bin/codeclimate-test-reporter < coverage/lcov.info
