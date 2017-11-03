@@ -63,8 +63,10 @@ describe( 'utils', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
 			expect( status.modified ).to.deep.equal( [
+				'README.txt',
 				'lib/index.js',
-				'lib/tasks/logger.js'
+				'lib/tasks/logger.js',
+				'lib/tasks/.gitkeep'
 			] );
 		} );
 
