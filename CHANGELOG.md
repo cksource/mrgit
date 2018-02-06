@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## [0.7.3](https://github.com/cksource/mgit2/compare/v0.7.2...v0.7.3) (2018-02-06)
+
+### Bug fixes
+
+* Not staged, deleted files were not shown as modified during mgit status command. Closes [#58](https://github.com/cksource/mgit2/issues/58). ([52ee784](https://github.com/cksource/mgit2/commit/52ee784))
+* The `status` command will now sort packages alphabetically. Closes [#60](https://github.com/cksource/mgit2/issues/60). ([56a31ce](https://github.com/cksource/mgit2/commit/56a31ce))
+
+
 ## [0.7.2](https://github.com/cksource/mgit2/compare/v0.7.1...v0.7.2) (2017-08-17)
 
 Internal changes only (updated dependencies, documentation, etc.).
