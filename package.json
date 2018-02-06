@@ -12,25 +12,25 @@
   ],
   "main": "index.js",
   "dependencies": {
-    "chalk": "^2.0.1",
+    "chalk": "^2.3.0",
     "cli-table": "^0.3.1",
-    "generic-pool": "^3.1.6",
-    "meow": "^3.7.0",
-    "minimatch": "^3.0.3",
-    "shelljs": "^0.7.6"
+    "generic-pool": "^3.4.1",
+    "meow": "^4.0.0",
+    "minimatch": "^3.0.4",
+    "shelljs": "^0.8.1"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-env": "^5.1.2",
-    "@ckeditor/ckeditor5-dev-lint": "^3.1.0",
-    "chai": "^4.0.0",
-    "eslint": "^4.8.0",
-    "eslint-config-ckeditor5": "^1.0.5",
+    "@ckeditor/ckeditor5-dev-env": "^8.0.5",
+    "@ckeditor/ckeditor5-dev-lint": "^3.1.4",
+    "chai": "^4.1.2",
+    "eslint": "^4.17.0",
+    "eslint-config-ckeditor5": "^1.0.8",
     "husky": "^0.14.3",
     "istanbul": "^0.4.5",
-    "lint-staged": "^4.2.3",
-    "mocha": "^3.2.0",
-    "mockery": "^2.0.0",
-    "sinon": "^2.3.6"
+    "lint-staged": "^6.1.0",
+    "mocha": "^5.0.0",
+    "mockery": "^2.1.0",
+    "sinon": "^4.2.2"
   },
   "repository": {
     "type": "git",
