@@ -8,7 +8,7 @@
 'use strict';
 
 const fs = require( 'fs' );
-const path = require( 'path' );
+const path = require( 'upath' );
 const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
@@ -86,8 +86,6 @@ describe( 'commands/exec', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( stubs.path.join.calledOnce ).to.equal( true );
-
 						const err = 'Package "test-package" is not available. Run "mgit bootstrap" in order to download the package.';
 						expect( response.logs.error[ 0 ] ).to.equal( err );
 					}

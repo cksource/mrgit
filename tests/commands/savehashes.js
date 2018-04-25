@@ -7,7 +7,7 @@
 
 'use strict';
 
-const path = require( 'path' );
+const path = require( 'upath' );
 const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;

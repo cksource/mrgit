@@ -8,7 +8,7 @@
 'use strict';
 
 const getOptions = require( '../../lib/utils/getoptions' );
-const path = require( 'path' );
+const path = require( 'upath' );
 const expect = require( 'chai' ).expect;
 const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-a' );
 
