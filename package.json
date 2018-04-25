@@ -17,7 +17,8 @@
     "generic-pool": "^3.4.1",
     "meow": "^4.0.0",
     "minimatch": "^3.0.4",
-    "shelljs": "^0.8.1"
+    "shelljs": "^0.8.1",
+    "upath": "^1.0.4"
   },
   "devDependencies": {
     "@ckeditor/ckeditor5-dev-env": "^8.0.5",
