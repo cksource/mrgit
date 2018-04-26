@@ -65,12 +65,5 @@ describe( 'utils', () => {
 
 			expect( () => getCwd() ).to.throw( Error, 'Cannot find the "mgit.json" file.' );
 		} );
-
-		it( 'escapes the spaces in the returned path', () => {
-			sandbox.stub( process, 'cwd' ).returns( '/workspace/ckeditor copy/ckeditor5 fork' );
-			sandbox.stub( fs, 'existsSync' ).returns( true );
-
-			expect( getCwd() ).to.equal( '/workspace/ckeditor\\ copy/ckeditor5\\ fork' );
-		} );
 	} );
 } );
