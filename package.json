@@ -1,6 +1,6 @@
 {
   "name": "mgit2",
-  "version": "0.7.5",
+  "version": "0.8.0",
   "description": "A tool for managing projects build using multiple repositories.",
   "keywords": [
     "git",
