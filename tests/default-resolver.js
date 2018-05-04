@@ -10,7 +10,7 @@
 const resolver = require( '../lib/default-resolver' );
 const getOptions = require( '../lib/utils/getoptions' );
 const expect = require( 'chai' ).expect;
-const cwd = require( 'path' ).resolve( __dirname, 'fixtures', 'project-a' );
+const cwd = require( 'upath' ).resolve( __dirname, 'fixtures', 'project-a' );
 
 describe( 'default resolver()', () => {
 	describe( 'with default options', () => {
