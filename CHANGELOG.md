@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [0.8.0](https://github.com/cksource/mgit2/compare/v0.7.5...v0.8.0) (2018-05-04)
+
+### Features
+
+* Introduced a smarter `cwd` resolver which scans directory tree up in order to find the `mgit.json` file. If the file won't be found, an exception will be thrown. Closes [#1](https://github.com/cksource/mgit2/issues/1). ([751c10f](https://github.com/cksource/mgit2/commit/751c10f))
+
+
 ## [0.7.5](https://github.com/cksource/mgit2/compare/v0.7.4...v0.7.5) (2018-05-04)
 
 ### Bug fixes
