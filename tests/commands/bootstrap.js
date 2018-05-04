@@ -88,9 +88,9 @@ describe( 'commands/bootstrap', () => {
 
 					// Clone the repository.
 					expect( cloneCommand[ 0 ] )
-						.to.equal( 'git clone --progress git@github.com/organization/test-package.git packages/test-package' );
+						.to.equal( 'git clone --progress "git@github.com/organization/test-package.git" "packages/test-package"' );
 					// Change the directory to cloned package.
-					expect( cloneCommand[ 1 ] ).to.equal( 'cd packages/test-package' );
+					expect( cloneCommand[ 1 ] ).to.equal( 'cd "packages/test-package"' );
 					// And check out to proper branch.
 					expect( cloneCommand[ 2 ] ).to.equal( 'git checkout --quiet master' );
 
