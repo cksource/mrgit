@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [0.7.5](https://github.com/cksource/mgit2/compare/v0.7.4...v0.7.5) (2018-05-04)
+
+### Bug fixes
+
+* Whitespaces in a CWD should not break the `bootstrap` command. Closes [#74](https://github.com/cksource/mgit2/issues/74). ([3a5eaac](https://github.com/cksource/mgit2/commit/3a5eaac))
+
+
 ## [0.7.4](https://github.com/cksource/mgit2/compare/v0.7.3...v0.7.4) (2018-02-06)
 
 Internal changes only (updated dependencies, documentation, etc.).
