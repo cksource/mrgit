@@ -12,11 +12,9 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/diff', () => {
-	let diffCommand, sandbox, stubs, data;
+	let diffCommand, stubs, data;
 
 	beforeEach( () => {
-		sandbox = sinon.sandbox.create();
-
 		mockery.enable( {
 			useCleanCache: true,
 			warnOnReplace: false,
@@ -25,7 +23,7 @@ describe( 'commands/diff', () => {
 
 		stubs = {
 			execCommand: {
-				execute: sandbox.stub()
+				execute: sinon.stub()
 			}
 		};
 
@@ -39,7 +37,7 @@ describe( 'commands/diff', () => {
 	} );
 
 	afterEach( () => {
-		sandbox.restore();
+		sinon.restore();
 		mockery.disable();
 	} );
 
@@ -125,7 +123,7 @@ describe( 'commands/diff', () => {
 
 	describe( 'afterExecute()', () => {
 		it( 'should describe what kind of logs are displayed', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			diffCommand.afterExecute();
 

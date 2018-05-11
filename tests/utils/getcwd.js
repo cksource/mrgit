@@ -13,27 +13,22 @@ const expect = require( 'chai' ).expect;
 const sinon = require( 'sinon' );
 
 describe( 'utils', () => {
-	let sandbox;
-
-	beforeEach( () => {
-		sandbox = sinon.sandbox.create();
-	} );
-
 	afterEach( () => {
-		sandbox.restore();
+		sinon.restore();
 	} );
+
 	describe( 'getCwd()', () => {
 		it( 'returns "process.cwd()" value if the "mgit.json" has been found', () => {
-			sandbox.stub( process, 'cwd' ).returns( '/workspace/ckeditor/ckeditor5' );
-			sandbox.stub( fs, 'existsSync' ).returns( true );
+			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor/ckeditor5' );
+			sinon.stub( fs, 'existsSync' ).returns( true );
 
 			expect( getCwd() ).to.equal( '/workspace/ckeditor/ckeditor5' );
 		} );
 
 		it( 'scans dir tree up in order to find "mgit.json" file', () => {
-			sandbox.stub( process, 'cwd' ).returns( '/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor' );
+			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor' );
 
-			const existsSync = sandbox.stub( fs, 'existsSync' );
+			const existsSync = sinon.stub( fs, 'existsSync' );
 
 			// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor
 			existsSync.onCall( 0 ).returns( false );
@@ -60,8 +55,8 @@ describe( 'utils', () => {
 		} );
 
 		it( 'throws an error if the "mgit.json" cannot be found', () => {
-			sandbox.stub( process, 'cwd' ).returns( '/workspace/ckeditor' );
-			sandbox.stub( fs, 'existsSync' ).returns( false );
+			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor' );
+			sinon.stub( fs, 'existsSync' ).returns( false );
 
 			expect( () => getCwd() ).to.throw( Error, 'Cannot find the "mgit.json" file.' );
 		} );

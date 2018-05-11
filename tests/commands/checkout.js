@@ -12,11 +12,9 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/checkout', () => {
-	let checkoutCommand, sandbox, stubs, data;
+	let checkoutCommand, stubs, data;
 
 	beforeEach( () => {
-		sandbox = sinon.sandbox.create();
-
 		mockery.enable( {
 			useCleanCache: true,
 			warnOnReplace: false,
@@ -25,7 +23,7 @@ describe( 'commands/checkout', () => {
 
 		stubs = {
 			execCommand: {
-				execute: sandbox.stub()
+				execute: sinon.stub()
 			}
 		};
 
@@ -41,7 +39,7 @@ describe( 'commands/checkout', () => {
 	} );
 
 	afterEach( () => {
-		sandbox.restore();
+		sinon.restore();
 		mockery.disable();
 	} );
 

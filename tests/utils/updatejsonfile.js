@@ -12,22 +12,17 @@ const expect = require( 'chai' ).expect;
 const sinon = require( 'sinon' );
 
 describe( 'utils', () => {
-	let sandbox;
-
-	beforeEach( () => {
-		sandbox = sinon.sandbox.create();
-	} );
-
 	afterEach( () => {
-		sandbox.restore();
+		sinon.restore();
 	} );
+
 	describe( 'updateJsonFile()', () => {
 		it( 'should read, update and save JSON file', () => {
 			const path = 'path/to/file.json';
 			const fs = require( 'fs' );
-			const readFileStub = sandbox.stub( fs, 'readFileSync' ).callsFake( () => '{}' );
+			const readFileStub = sinon.stub( fs, 'readFileSync' ).callsFake( () => '{}' );
 			const modifiedJSON = { modified: true };
-			const writeFileStub = sandbox.stub( fs, 'writeFileSync' );
+			const writeFileStub = sinon.stub( fs, 'writeFileSync' );
 
 			updateJsonFile( path, () => {
 				return modifiedJSON;

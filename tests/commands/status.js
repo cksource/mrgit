@@ -12,11 +12,9 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/status', () => {
-	let statusCommand, sandbox, stubs, data;
+	let statusCommand, stubs, data;
 
 	beforeEach( () => {
-		sandbox = sinon.sandbox.create();
-
 		mockery.enable( {
 			useCleanCache: true,
 			warnOnReplace: false,
@@ -24,23 +22,23 @@ describe( 'commands/status', () => {
 		} );
 
 		stubs = {
-			gitStatusParser: sandbox.stub(),
+			gitStatusParser: sinon.stub(),
 			execCommand: {
-				execute: sandbox.stub()
+				execute: sinon.stub()
 			},
 			table: {
-				constructor: sandbox.stub(),
-				push: sandbox.stub(),
-				toString: sandbox.stub()
+				constructor: sinon.stub(),
+				push: sinon.stub(),
+				toString: sinon.stub()
 			},
 			chalk: {
-				cyan: sandbox.stub(),
-				bold: sandbox.stub(),
-				yellow: sandbox.stub(),
-				green: sandbox.stub(),
-				red: sandbox.stub(),
-				blue: sandbox.stub(),
-				magenta: sandbox.stub(),
+				cyan: sinon.stub(),
+				bold: sinon.stub(),
+				yellow: sinon.stub(),
+				green: sinon.stub(),
+				red: sinon.stub(),
+				blue: sinon.stub(),
+				magenta: sinon.stub(),
 			}
 		};
 
@@ -89,13 +87,13 @@ describe( 'commands/status', () => {
 	} );
 
 	afterEach( () => {
-		sandbox.restore();
+		sinon.restore();
 		mockery.disable();
 	} );
 
 	describe( 'beforeExecute()', () => {
 		it( 'should describe why logs are not display in "real-time"', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			statusCommand.beforeExecute();
 
@@ -198,7 +196,7 @@ describe( 'commands/status', () => {
 
 	describe( 'afterExecute()', () => {
 		it( 'do not display anything if processed packages list is empty', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			const commandResponses = new Set();
@@ -212,7 +210,7 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'do not display anything if command responses list is empty', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			const commandResponses = new Set();
@@ -226,7 +224,7 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'draws the table with statuses of the repositories', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			const commandResponses = new Set();
@@ -291,7 +289,7 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'highlights a row if current branch is other than master', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			const commandResponses = new Set();
@@ -319,7 +317,7 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'does not highlight a row if current branch is equal to master', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			const commandResponses = new Set();
@@ -347,7 +345,7 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'adds "!" before the branch name if current branch is other than defined in "mgit.json"', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			const commandResponses = new Set();
@@ -381,7 +379,7 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'sorts packages by alphabetically', () => {
-			const logStub = sandbox.stub( console, 'log' );
+			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			const commandResponses = new Set();
