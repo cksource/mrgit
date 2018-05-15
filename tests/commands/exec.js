@@ -14,11 +14,9 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/exec', () => {
-	let execCommand, sandbox, stubs, data;
+	let execCommand, stubs, data;
 
 	beforeEach( () => {
-		sandbox = sinon.sandbox.create();
-
 		mockery.enable( {
 			useCleanCache: true,
 			warnOnReplace: false,
@@ -26,15 +24,15 @@ describe( 'commands/exec', () => {
 		} );
 
 		stubs = {
-			exec: sandbox.stub(),
+			exec: sinon.stub(),
 			fs: {
-				existsSync: sandbox.stub( fs, 'existsSync' )
+				existsSync: sinon.stub( fs, 'existsSync' )
 			},
 			path: {
-				join: sandbox.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
+				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
 			},
 			process: {
-				chdir: sandbox.stub( process, 'chdir' )
+				chdir: sinon.stub( process, 'chdir' )
 			}
 		};
 
@@ -57,7 +55,7 @@ describe( 'commands/exec', () => {
 	} );
 
 	afterEach( () => {
-		sandbox.restore();
+		sinon.restore();
 		mockery.disable();
 	} );
 

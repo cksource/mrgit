@@ -14,11 +14,9 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/update', () => {
-	let updateCommand, sandbox, stubs, data;
+	let updateCommand, stubs, data;
 
 	beforeEach( () => {
-		sandbox = sinon.sandbox.create();
-
 		mockery.enable( {
 			useCleanCache: true,
 			warnOnReplace: false,
@@ -26,18 +24,18 @@ describe( 'commands/update', () => {
 		} );
 
 		stubs = {
-			exec: sandbox.stub(),
+			exec: sinon.stub(),
 			fs: {
-				existsSync: sandbox.stub( fs, 'existsSync' )
+				existsSync: sinon.stub( fs, 'existsSync' )
 			},
 			path: {
-				join: sandbox.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
+				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
 			},
 			bootstrapCommand: {
-				execute: sandbox.stub()
+				execute: sinon.stub()
 			},
 			execCommand: {
-				execute: sandbox.stub()
+				execute: sinon.stub()
 			}
 		};
 
@@ -61,7 +59,7 @@ describe( 'commands/update', () => {
 	} );
 
 	afterEach( () => {
-		sandbox.restore();
+		sinon.restore();
 		mockery.disable();
 	} );
 
@@ -267,7 +265,7 @@ describe( 'commands/update', () => {
 
 	describe( 'afterExecute()', () => {
 		it( 'informs about number of processed packages', () => {
-			const consoleLog = sandbox.stub( console, 'log' );
+			const consoleLog = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			processedPackages.add( 'package-1' );

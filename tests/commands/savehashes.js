@@ -13,11 +13,9 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/savehashes', () => {
-	let saveHashesCommand, sandbox, stubs, data, mgitJsonPath, updateFunction;
+	let saveHashesCommand, stubs, data, mgitJsonPath, updateFunction;
 
 	beforeEach( () => {
-		sandbox = sinon.sandbox.create();
-
 		mockery.enable( {
 			useCleanCache: true,
 			warnOnReplace: false,
@@ -26,10 +24,10 @@ describe( 'commands/savehashes', () => {
 
 		stubs = {
 			execCommand: {
-				execute: sandbox.stub()
+				execute: sinon.stub()
 			},
 			path: {
-				join: sandbox.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
+				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
 			}
 		};
 
@@ -50,7 +48,7 @@ describe( 'commands/savehashes', () => {
 	} );
 
 	afterEach( () => {
-		sandbox.restore();
+		sinon.restore();
 		mockery.disable();
 	} );
 

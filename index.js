@@ -11,8 +11,10 @@ const meow = require( 'meow' );
 const mgit = require( './lib/index' );
 
 const meowOptions = {
-	alias: {
-		v: 'version'
+	flags: {
+		version: {
+			alias: 'v'
+		}
 	}
 };
 
