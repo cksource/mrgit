@@ -35,6 +35,43 @@ const gitStatusResponse = [
 
 describe( 'utils', () => {
 	describe( 'gitStatusParser()', () => {
+		describe( '#anythingToCommit', () => {
+			it( 'returns false for untracked files', () => {
+				const gitStatusResponse = [
+					'## master...origin/master',
+					'?? README.md',
+					'?? .eslintrc.js'
+				].join( '\n' );
+
+				const status = gitStatusParser( gitStatusResponse );
+
+				expect( status.anythingToCommit ).to.equal( false );
+			} );
+
+			it( 'returns true for any tracked file', () => {
+				const gitStatusResponse = [
+					'## master...origin/master',
+					' M lib/index.js'
+				].join( '\n' );
+
+				const status = gitStatusParser( gitStatusResponse );
+
+				expect( status.anythingToCommit ).to.equal( true );
+			} );
+
+			it( 'returns true for any tracked file and some untracked', () => {
+				const gitStatusResponse = [
+					'## master...origin/master',
+					' M lib/index.js',
+					'?? README.md',
+				].join( '\n' );
+
+				const status = gitStatusParser( gitStatusResponse );
+
+				expect( status.anythingToCommit ).to.equal( true );
+			} );
+		} );
+
 		it( 'returns branch name for freshly created', () => {
 			const status = gitStatusParser( '## master' );
 
