@@ -41,7 +41,7 @@ First, create a configuration file `mgit.json`:
 
 And run `mgit bootstrap` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
 
-```
+```bash
 packages/
   ckeditor5-engine/
   mgit/
@@ -52,23 +52,18 @@ packages/
 CLI options:
 
 ```
---recursive                 Whether to install dependencies recursively.
-                            Needs to be used together with --repository-include. Only packages
-                            matching these patterns will be cloned recursively.
-
+--recursive                 Whether to install dependencies recursively. Only packages matching 
+                            these patterns will be cloned recursively.
                             Default: false.
 
 --packages                  Directory to which all repositories will be cloned.
-
                             Default: '<cwd>/packages/'
 
 --resolver-path             Path to a custom repository resolver function.
-
                             Default: '@mgit2/lib/default-resolver.js'.
 
 --resolver-url-template     Template used to generate repository URL out of a
                             simplified 'organization/repository' format of the dependencies option.
-
                             Default: 'git@github.com:${ path }.git'.
 
 --resolver-directory-name   Defines how the target directory (where the repository will be cloned)
@@ -80,31 +75,24 @@ CLI options:
 
                             This option can be useful when scoped npm packages are used and one wants to decide
                             whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
-
                             Default: 'git'
 
 --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
-
                             Default: 'master'
 
---ignore                    Ignores packages which names match the given glob pattern.
-
-                            For example:
-
-                                > mgit exec --ignore="foo*" "git st"
+--ignore                    Ignores packages which names match the given glob pattern. E.g.:
+                            > mgit exec --ignore="foo*" "git st"
 
                             Will ignore all packages which names start from "foo".
-
                             Default: null
 
 --scope                     Restricts the command to packages which names match the given glob pattern.
-
                             Default: null
 ```
 
 All these options can also be specified in `mgit.json` (options passed through CLI takes precedence):
 
-```js
+```json
 {
 	"packages": "/workspace/modules",
 	"resolverDirectoryName": "npm",
@@ -169,7 +157,7 @@ const parseRepositoryUrl = require( 'mgit2/lib/utils/parserepositoryurl' );
 module.exports = function resolver( packageName, options ) {
 	// If package name starts with '@ckeditor/ckeditor5-*' clone it from 'ckeditor/ckeditor5-*'.
 	if ( packageName.startsWith( '@ckeditor/ckeditor5-' ) ) {
-		repositoryUrl = packageName.slice( 1 );
+		const repositoryUrl = packageName.slice( 1 );
 
 		return parseRepositoryUrl( repositoryUrl );
 	}
@@ -185,18 +173,24 @@ You can also check the [default resolver](https://github.com/cksource/mgit2/blob
 
 CI servers, such as Travis, can't clone repositories using Git URLs (such as `git@github.com:cksource/mgit.git`). By default, mgit uses Git URLs because it assumes that you'll want to commit to these repositories (and don't want to be asked for a password every time).
 
-If you need to run mgit on a CI server, then configure it to use HTTP URLs:
+If you need to run mgit on a CI server, then configure it to use HTTPS URLs:
 
 ```bash
 mgit --resolver-url-template="https://github.com/\${ path }.git"
 ```
 
-You can also use full HTTPs URLs to configure `dependencies` in your `mgit.json`.
+You can also use full HTTPS URLs to configure `dependencies` in your `mgit.json`.
 
 ## Commands
 
+```bash
+$ mgit [command]
 ```
-mgit [command]
+
+For displaying help screen for commands, type:
+
+```bash
+$ mgit [command] --help
 ```
 
 ### bootstrap
