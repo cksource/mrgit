@@ -108,7 +108,7 @@ if ( !commandName || cli.flags.help ) {
 		}
 
 		console.log( mgitLogo );
-		console.log( `    ${ u( 'Command:' ) } ${ c( commandName ) } `);
+		console.log( `    ${ u( 'Command:' ) } ${ c( commandInstance.name || commandName ) } `);
 		console.log( commandInstance.helpMessage );
 	}
 } else {
