@@ -56,10 +56,6 @@ const cli = meow( ` ${ mgitLogo }
         ${ c( 'commit' ) }                      Commits all changes. A shorthand for "mgit exec 'git commit -a'"
 
     ${ u( 'Options:' ) }
-        ${ y( '--recursive' ) }                 Whether to install dependencies recursively. Only packages matching these 
-                                    patterns will be cloned recursively.
-                                    ${ g( 'Default: false' ) }
-
         ${ y( '--packages' ) }                  Directory to which all repositories will be cloned.
                                     ${ g( 'Default: \'<cwd>/packages/\'' ) }
 
