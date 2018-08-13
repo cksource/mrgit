@@ -35,11 +35,14 @@ const mgitLogo = `
                |___/
 `;
 
-const u = chalk.underline;
-const c = chalk.cyan;
-const g = chalk.gray;
-const m = chalk.magenta;
-const y = chalk.yellow;
+const {
+	italic: i,
+	cyan: c,
+	gray: g,
+	magenta: m,
+	underline: u,
+	yellow: y,
+} = chalk;
 
 const cli = meow( ` ${ mgitLogo }
     ${ u( 'Usage:' ) }
@@ -47,13 +50,14 @@ const cli = meow( ` ${ mgitLogo }
 
     ${ u( 'Commands:' ) }
         ${ c( 'bootstrap' ) }                   Installs packages (i.e. clone dependent repositories).
+        ${ c( 'checkout' ) }                    Changes branches in repositories according to the configuration file.
+        ${ c( 'commit' ) }                      Commits all changes. A shorthand for "mgit exec 'git commit -a'".
+        ${ c( 'diff' ) }                        Prints changes from packages where something has changed. 
         ${ c( 'exec' ) }                        Executes shell command in each package.
-        ${ c( 'update' ) }                      Updates packages to the latest versions (i.e. pull changes).
+        ${ c( 'merge' ) }                       Merges specified branch with the current one.
         ${ c( 'save-hashes' ) }                 Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
         ${ c( 'status' ) }                      Prints a table which contains useful information about the status of repositories.
-        ${ c( 'diff' ) }                        Prints changes from packages where something has changed. 
-        ${ c( 'checkout' ) }                    Changes branches in repositories according to the configuration file.
-        ${ c( 'commit' ) }                      Commits all changes. A shorthand for "mgit exec 'git commit -a'"
+        ${ c( 'update' ) }                      Updates packages to the latest versions (i.e. pull changes).
 
     ${ u( 'Options:' ) }
         ${ y( '--packages' ) }                  Directory to which all repositories will be cloned.
@@ -102,7 +106,7 @@ if ( !commandName || cli.flags.help ) {
 		const commandInstance = getCommandInstance( commandName );
 
 		if ( !commandInstance ) {
-			process.errorCode = -1;
+			process.errorCode = 1;
 
 			return;
 		}
