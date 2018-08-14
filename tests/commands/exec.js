@@ -37,7 +37,8 @@ describe( 'commands/exec', () => {
 		};
 
 		data = {
-			// `execute` is called without the "exec" command (`mgit exec first-cmd other-cmd` => [ 'first-cmd', 'other-cmd' ]).
+			// Command `#execute` function is called without the "exec" command.
+			// `mgit exec pwd` => [ 'pwd' ]
 			arguments: [ 'pwd' ],
 			packageName: 'test-package',
 			options: {
@@ -49,7 +50,7 @@ describe( 'commands/exec', () => {
 			}
 		};
 
-		mockery.registerMock( '../utils/exec', stubs.exec );
+		mockery.registerMock( '../utils/shell', stubs.exec );
 
 		execCommand = require( '../../lib/commands/exec' );
 	} );

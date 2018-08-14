@@ -24,7 +24,6 @@ describe( 'utils', () => {
 			expect( options ).to.deep.equal( {
 				cwd,
 				packages: path.resolve( cwd, 'packages' ),
-				recursive: false,
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
@@ -48,7 +47,6 @@ describe( 'utils', () => {
 			expect( options ).to.deep.equal( {
 				cwd,
 				packages: path.resolve( cwd, 'packages' ),
-				recursive: false,
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
@@ -68,7 +66,6 @@ describe( 'utils', () => {
 				},
 				cwd,
 				packages: path.resolve( cwd, 'foo' ),
-				recursive: true,
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
@@ -91,7 +88,6 @@ describe( 'utils', () => {
 				},
 				cwd,
 				packages: path.resolve( cwd, 'bar' ),
-				recursive: true,
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'a/b/c',
 				resolverTargetDirectory: 'git',

@@ -24,7 +24,7 @@ describe( 'commands/bootstrap', () => {
 		} );
 
 		stubs = {
-			exec: sinon.stub(),
+			shell: sinon.stub(),
 			fs: {
 				existsSync: sinon.stub( fs, 'existsSync' )
 			},
@@ -46,7 +46,7 @@ describe( 'commands/bootstrap', () => {
 			}
 		};
 
-		mockery.registerMock( '../utils/exec', stubs.exec );
+		mockery.registerMock( '../utils/shell', stubs.shell );
 
 		bootstrapCommand = require( '../../lib/commands/bootstrap' );
 	} );
@@ -61,7 +61,7 @@ describe( 'commands/bootstrap', () => {
 			const error = new Error( 'Unexpected error.' );
 
 			stubs.fs.existsSync.returns( false );
-			stubs.exec.returns( Promise.reject( error ) );
+			stubs.shell.returns( Promise.reject( error ) );
 
 			return bootstrapCommand.execute( data )
 				.then(
@@ -76,13 +76,13 @@ describe( 'commands/bootstrap', () => {
 
 		it( 'clones a repository if is not available', () => {
 			stubs.fs.existsSync.returns( false );
-			stubs.exec.returns( Promise.resolve( 'Git clone log.' ) );
+			stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
 
 			return bootstrapCommand.execute( data )
 				.then( response => {
-					expect( stubs.exec.calledOnce ).to.equal( true );
+					expect( stubs.shell.calledOnce ).to.equal( true );
 
-					const cloneCommand = stubs.exec.firstCall.args[ 0 ].split( ' && ' );
+					const cloneCommand = stubs.shell.firstCall.args[ 0 ].split( ' && ' );
 
 					// Clone the repository.
 					expect( cloneCommand[ 0 ] )
@@ -101,7 +101,7 @@ describe( 'commands/bootstrap', () => {
 
 			return bootstrapCommand.execute( data )
 				.then( response => {
-					expect( stubs.exec.called ).to.equal( false );
+					expect( stubs.shell.called ).to.equal( false );
 
 					expect( response.logs.info[ 0 ] ).to.equal( 'Package "test-package" is already cloned.' );
 				} );
