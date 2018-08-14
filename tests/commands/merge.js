@@ -11,8 +11,8 @@ const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
-describe( 'commands/checkout', () => {
-	let checkoutCommand, stubs, commandData;
+describe( 'commands/merge', () => {
+	let mergeCommand, stubs, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -24,8 +24,7 @@ describe( 'commands/checkout', () => {
 		stubs = {
 			execCommand: {
 				execute: sinon.stub()
-			},
-			gitStatusParser: sinon.stub()
+			}
 		};
 
 		commandData = {
@@ -36,9 +35,8 @@ describe( 'commands/checkout', () => {
 		};
 
 		mockery.registerMock( './exec', stubs.execCommand );
-		mockery.registerMock( '../utils/gitstatusparser', stubs.gitStatusParser );
 
-		checkoutCommand = require( '../../lib/commands/checkout' );
+		mergeCommand = require( '../../lib/commands/merge' );
 	} );
 
 	afterEach( () => {
@@ -49,13 +47,21 @@ describe( 'commands/checkout', () => {
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( checkoutCommand.helpMessage ).is.a( 'string' );
+			expect( mergeCommand.helpMessage ).is.a( 'string' );
 		} );
 	} );
 
-	describe( '#name', () => {
-		it( 'returns a full name of executed command', () => {
-			expect( checkoutCommand.name ).is.a( 'string' );
+	describe( 'beforeExecute()', () => {
+		it( 'throws an error if command to execute is not specified', () => {
+			expect( () => {
+				mergeCommand.beforeExecute( [ 'merge' ] );
+			} ).to.throw( Error, 'Missing branch to merge. Use: mgit merge [branch].' );
+		} );
+
+		it( 'does nothing if branch to merge is specified', () => {
+			expect( () => {
+				mergeCommand.beforeExecute( [ 'merge', 'develop' ] );
+			} ).to.not.throw( Error );
 		} );
 	} );
 
@@ -69,7 +75,7 @@ describe( 'commands/checkout', () => {
 				}
 			} );
 
-			return checkoutCommand.execute( commandData )
+			return mergeCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
@@ -80,70 +86,13 @@ describe( 'commands/checkout', () => {
 				);
 		} );
 
-		it( 'checkouts to the correct branch', () => {
-			stubs.execCommand.execute.resolves( {
-				logs: {
-					info: [
-						'Already on \'master\'',
-						'Already on \'master\'\nYour branch is up-to-date with \'origin/master\'.'
-					]
-				}
-			} );
-
-			return checkoutCommand.execute( commandData )
-				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git checkout master' ]
-					} );
-
-					expect( commandResponse.logs.info ).to.deep.equal( [
-						'Already on \'master\'',
-						'Already on \'master\'\nYour branch is up-to-date with \'origin/master\'.'
-					] );
-				} );
-		} );
-
-		it( 'checkouts to specified branch', () => {
-			commandData.arguments.push( 'develop' );
-
-			stubs.execCommand.execute.resolves( {
-				logs: {
-					info: [
-						'Switched to branch \'develop\'',
-						'Your branch is up to date with \'origin/develop\'.'
-					]
-				}
-			} );
-
-			return checkoutCommand.execute( commandData )
-				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git checkout develop' ]
-					} );
-
-					expect( commandResponse.logs.info ).to.deep.equal( [
-						'Switched to branch \'develop\'',
-						'Your branch is up to date with \'origin/develop\'.'
-					] );
-				} );
-		} );
-
-		it( 'creates a new branch if a repository has changes that could be committed and specified --branch option', () => {
-			commandData.arguments.push( '--branch' );
+		it( 'merges specified branch', () => {
 			commandData.arguments.push( 'develop' );
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
 					info: [
-						'Response returned by "git status" command.'
+						'* develop'
 					]
 				}
 			} );
@@ -151,14 +100,12 @@ describe( 'commands/checkout', () => {
 			stubs.execCommand.execute.onSecondCall().resolves( {
 				logs: {
 					info: [
-						'Switched to a new branch \'develop\''
+						'Merge made by the \'recursive\' strategy.'
 					]
 				}
 			} );
 
-			stubs.gitStatusParser.returns( { anythingToCommit: true } );
-
-			return checkoutCommand.execute( commandData )
+			return mergeCommand.execute( commandData )
 				.then( commandResponse => {
 					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
 
@@ -166,37 +113,81 @@ describe( 'commands/checkout', () => {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git status --branch --porcelain' ]
+						arguments: [ 'git branch --list develop' ]
 					} );
 
 					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git checkout -b develop' ]
+						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'"' ]
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
-						'Switched to a new branch \'develop\''
+						'Merge made by the \'recursive\' strategy.'
 					] );
 				} );
 		} );
 
-		it( 'does not create a branch if a repository has no-changes that could be committed when specified --branch option', () => {
-			commandData.arguments.push( '--branch' );
+		it( 'merges specified branch using specified message', () => {
 			commandData.arguments.push( 'develop' );
+			commandData.arguments.push( '--message' );
+			commandData.arguments.push( 'Test.' );
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
 					info: [
-						'Response returned by "git status" command.'
+						'* develop'
 					]
 				}
 			} );
 
-			stubs.gitStatusParser.returns( { anythingToCommit: false } );
+			stubs.execCommand.execute.onSecondCall().resolves( {
+				logs: {
+					info: [
+						'Merge made by the \'recursive\' strategy.'
+					]
+				}
+			} );
 
-			return checkoutCommand.execute( commandData )
+			return mergeCommand.execute( commandData )
+				.then( commandResponse => {
+					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git branch --list develop' ]
+					} );
+
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ]
+					} );
+
+					expect( commandResponse.logs.info ).to.deep.equal( [
+						'Merge made by the \'recursive\' strategy.'
+					] );
+				} );
+		} );
+
+		it( 'does not merge branch if it does not exist', () => {
+			commandData.arguments.push( 'develop' );
+			commandData.arguments.push( '--message' );
+			commandData.arguments.push( 'Test.' );
+
+			stubs.execCommand.execute.onFirstCall().resolves( {
+				logs: {
+					info: [
+						''
+					]
+				}
+			} );
+
+			return mergeCommand.execute( commandData )
 				.then( commandResponse => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
 
@@ -204,11 +195,11 @@ describe( 'commands/checkout', () => {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git status --branch --porcelain' ]
+						arguments: [ 'git branch --list develop' ]
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
-						'Repository does not contain changes to commit. New branch was not created.'
+						'Branch does not exist.'
 					] );
 				} );
 		} );

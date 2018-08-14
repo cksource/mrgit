@@ -14,7 +14,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/bootstrap', () => {
-	let bootstrapCommand, stubs, data;
+	let bootstrapCommand, stubs, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -33,9 +33,10 @@ describe( 'commands/bootstrap', () => {
 			}
 		};
 
-		data = {
+		commandData = {
+			arguments: [],
 			packageName: 'test-package',
-			options: {
+			mgitOptions: {
 				cwd: __dirname,
 				packages: 'packages'
 			},
@@ -53,7 +54,27 @@ describe( 'commands/bootstrap', () => {
 
 	afterEach( () => {
 		sinon.restore();
+		mockery.deregisterAll();
 		mockery.disable();
+	} );
+
+	describe( '#helpMessage', () => {
+		it( 'defines help screen', () => {
+			expect( bootstrapCommand.helpMessage ).is.a( 'string' );
+		} );
+	} );
+
+	describe( 'beforeExecute()', () => {
+		it( 'informs about starting the process', () => {
+			const consoleLog = sinon.stub( console, 'log' );
+
+			bootstrapCommand.beforeExecute();
+
+			expect( consoleLog.calledOnce ).to.equal( true );
+			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /Cloning missing packages\.\.\./ );
+
+			consoleLog.restore();
+		} );
 	} );
 
 	describe( 'execute()', () => {
@@ -63,7 +84,7 @@ describe( 'commands/bootstrap', () => {
 			stubs.fs.existsSync.returns( false );
 			stubs.shell.returns( Promise.reject( error ) );
 
-			return bootstrapCommand.execute( data )
+			return bootstrapCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
@@ -78,7 +99,7 @@ describe( 'commands/bootstrap', () => {
 			stubs.fs.existsSync.returns( false );
 			stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
 
-			return bootstrapCommand.execute( data )
+			return bootstrapCommand.execute( commandData )
 				.then( response => {
 					expect( stubs.shell.calledOnce ).to.equal( true );
 
@@ -99,7 +120,7 @@ describe( 'commands/bootstrap', () => {
 		it( 'does not clone a repository if is available', () => {
 			stubs.fs.existsSync.returns( true );
 
-			return bootstrapCommand.execute( data )
+			return bootstrapCommand.execute( commandData )
 				.then( response => {
 					expect( stubs.shell.called ).to.equal( false );
 
@@ -108,13 +129,13 @@ describe( 'commands/bootstrap', () => {
 		} );
 
 		it( 'installs dependencies of cloned package', () => {
-			data.options.recursive = true;
-			data.options.packages = __dirname + '/../fixtures';
-			data.repository.directory = 'project-a';
+			commandData.arguments.push( '--recursive' );
+			commandData.mgitOptions.packages = __dirname + '/../fixtures';
+			commandData.repository.directory = 'project-a';
 
 			stubs.fs.existsSync.returns( true );
 
-			return bootstrapCommand.execute( data )
+			return bootstrapCommand.execute( commandData )
 				.then( response => {
 					expect( response.packages ).is.an( 'array' );
 					expect( response.packages ).to.deep.equal( [ 'test-foo' ] );
@@ -122,13 +143,13 @@ describe( 'commands/bootstrap', () => {
 		} );
 
 		it( 'installs devDependencies of cloned package', () => {
-			data.options.recursive = true;
-			data.options.packages = __dirname + '/../fixtures';
-			data.repository.directory = 'project-with-options-in-mgitjson';
+			commandData.arguments.push( '--recursive' );
+			commandData.mgitOptions.packages = __dirname + '/../fixtures';
+			commandData.repository.directory = 'project-with-options-in-mgitjson';
 
 			stubs.fs.existsSync.returns( true );
 
-			return bootstrapCommand.execute( data )
+			return bootstrapCommand.execute( commandData )
 				.then( response => {
 					expect( response.packages ).is.an( 'array' );
 					expect( response.packages ).to.deep.equal( [ 'test-bar' ] );

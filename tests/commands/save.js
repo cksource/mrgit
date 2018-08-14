@@ -28,7 +28,8 @@ describe( 'commands/save', () => {
 			},
 			path: {
 				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
-			}
+			},
+			gitStatusParser: sinon.stub()
 		};
 
 		commandData = {
@@ -44,12 +45,14 @@ describe( 'commands/save', () => {
 		mockery.registerMock( '../utils/getcwd', () => {
 			return __dirname;
 		} );
+		mockery.registerMock( '../utils/gitstatusparser', stubs.gitStatusParser );
 
 		saveCommand = require( '../../lib/commands/save' );
 	} );
 
 	afterEach( () => {
 		sinon.restore();
+		mockery.deregisterAll();
 		mockery.disable();
 	} );
 
@@ -137,8 +140,10 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
 			commandData.arguments.push( '--branch' );
+
+			stubs.gitStatusParser.returns( { branch: 'master' } );
+			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
 
 			return saveCommand.execute( commandData )
 				.then( commandResponse => {

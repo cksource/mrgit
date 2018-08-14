@@ -12,7 +12,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/status', () => {
-	let statusCommand, stubs, data;
+	let statusCommand, stubs, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -42,8 +42,8 @@ describe( 'commands/status', () => {
 			}
 		};
 
-		data = {
-			options: {
+		commandData = {
+			mgitOptions: {
 				packagesPrefix: '@ckeditor/ckeditor5-'
 			},
 			repository: {
@@ -55,13 +55,14 @@ describe( 'commands/status', () => {
 
 		// Do not modify the color.
 		mockery.registerMock( 'chalk', {
-			cyan: stubs.chalk.cyan.callsFake( chalkCallsFake() ),
-			bold: stubs.chalk.bold.callsFake( chalkCallsFake() ),
-			yellow: stubs.chalk.yellow.callsFake( chalkCallsFake() ),
-			green: stubs.chalk.green.callsFake( chalkCallsFake() ),
-			red: stubs.chalk.red.callsFake( chalkCallsFake() ),
-			blue: stubs.chalk.blue.callsFake( chalkCallsFake() ),
-			magenta: stubs.chalk.magenta.callsFake( chalkCallsFake() )
+			cyan: stubs.chalk.cyan.callsFake( msg => msg ),
+			bold: stubs.chalk.bold.callsFake( msg => msg ),
+			yellow: stubs.chalk.yellow.callsFake( msg => msg ),
+			green: stubs.chalk.green.callsFake( msg => msg ),
+			red: stubs.chalk.red.callsFake( msg => msg ),
+			blue: stubs.chalk.blue.callsFake( msg => msg ),
+			magenta: stubs.chalk.magenta.callsFake( msg => msg ),
+			underline: stubs.chalk.magenta.callsFake( msg => msg )
 		} );
 		mockery.registerMock( 'cli-table', class Table {
 			constructor( ...args ) {
@@ -80,15 +81,24 @@ describe( 'commands/status', () => {
 		mockery.registerMock( '../utils/gitstatusparser', stubs.gitStatusParser );
 
 		statusCommand = require( '../../lib/commands/status' );
-
-		function chalkCallsFake() {
-			return ( ...args ) => args.join( ',' );
-		}
 	} );
 
 	afterEach( () => {
 		sinon.restore();
+		mockery.deregisterAll();
 		mockery.disable();
+	} );
+
+	describe( '#helpMessage', () => {
+		it( 'defines help screen', () => {
+			expect( statusCommand.helpMessage ).is.a( 'string' );
+		} );
+	} );
+
+	describe( '#name', () => {
+		it( 'returns a full name of executed command', () => {
+			expect( statusCommand.name ).is.a( 'string' );
+		} );
 	} );
 
 	describe( 'beforeExecute()', () => {
@@ -113,7 +123,7 @@ describe( 'commands/status', () => {
 				}
 			} );
 
-			return statusCommand.execute( data )
+			return statusCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
@@ -138,7 +148,7 @@ describe( 'commands/status', () => {
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
 
-			return statusCommand.execute( data )
+			return statusCommand.execute( commandData )
 				.then( statusResponse => {
 					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal(
@@ -160,14 +170,14 @@ describe( 'commands/status', () => {
 				} );
 
 			function getCommandArguments( command ) {
-				return Object.assign( {}, data, {
+				return Object.assign( {}, commandData, {
 					arguments: [ command ]
 				} );
 			}
 		} );
 
 		it( 'does not modify the package name if "packagesPrefix" option is not specified', () => {
-			delete data.options.packagesPrefix;
+			delete commandData.mgitOptions.packagesPrefix;
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
@@ -182,7 +192,7 @@ describe( 'commands/status', () => {
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
 
-			return statusCommand.execute( data )
+			return statusCommand.execute( commandData )
 				.then( statusResponse => {
 					expect( statusResponse.response ).to.deep.equal( {
 						packageName: '@ckeditor/ckeditor5-test-package',

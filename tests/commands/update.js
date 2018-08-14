@@ -14,7 +14,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/update', () => {
-	let updateCommand, stubs, data;
+	let updateCommand, stubs, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -39,9 +39,10 @@ describe( 'commands/update', () => {
 			}
 		};
 
-		data = {
+		commandData = {
+			arguments: [],
 			packageName: 'test-package',
-			options: {
+			mgitOptions: {
 				cwd: __dirname,
 				packages: 'packages'
 			},
@@ -60,17 +61,26 @@ describe( 'commands/update', () => {
 
 	afterEach( () => {
 		sinon.restore();
+		mockery.deregisterAll();
 		mockery.disable();
+	} );
+
+	describe( '#helpMessage', () => {
+		it( 'defines help screen', () => {
+			expect( updateCommand.helpMessage ).is.a( 'string' );
+		} );
 	} );
 
 	describe( 'execute()', () => {
 		it( 'clones a package if is not available', () => {
+			commandData.arguments.push( '--recursive' );
+
 			stubs.fs.existsSync.returns( false );
 			stubs.bootstrapCommand.execute.returns( Promise.resolve( {
 				logs: getCommandLogs( 'Cloned.' )
 			} ) );
 
-			return updateCommand.execute( data )
+			return updateCommand.execute( commandData )
 				.then( response => {
 					expect( response.logs.info ).to.deep.equal( [
 						'Package "test-package" was not found. Cloning...',
@@ -78,6 +88,7 @@ describe( 'commands/update', () => {
 					] );
 
 					expect( stubs.bootstrapCommand.execute.calledOnce ).to.equal( true );
+					expect( stubs.bootstrapCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( commandData )
 				} );
 		} );
 
@@ -106,7 +117,7 @@ describe( 'commands/update', () => {
 				logs: getCommandLogs( 'Already up-to-date.' )
 			} ) );
 
-			return updateCommand.execute( data )
+			return updateCommand.execute( commandData )
 				.then( response => {
 					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
 					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
@@ -132,7 +143,7 @@ describe( 'commands/update', () => {
 				logs: getCommandLogs( ' M first-file.js\n ?? second-file.js' )
 			} ) );
 
-			return updateCommand.execute( data )
+			return updateCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
@@ -149,7 +160,7 @@ describe( 'commands/update', () => {
 		it( 'does not pull the changes if detached on a commit or a tag', () => {
 			stubs.fs.existsSync.returns( true );
 
-			data.repository.branch = '1a0ff0a2ee60549656177cd2a18b057764ec2146';
+			commandData.repository.branch = '1a0ff0a';
 
 			const exec = stubs.execCommand.execute;
 
@@ -162,21 +173,21 @@ describe( 'commands/update', () => {
 			} ) );
 
 			exec.onCall( 2 ).returns( Promise.resolve( {
-				logs: getCommandLogs( 'Note: checking out \'1a0ff0a2ee60549656177cd2a18b057764ec2146\'.' )
+				logs: getCommandLogs( 'Note: checking out \'1a0ff0a\'.' )
 			} ) );
 
 			exec.onCall( 3 ).returns( Promise.resolve( {
 				logs: getCommandLogs( [
-					'* (HEAD detached at 1a0ff0a2ee60549656177cd2a18b057764ec2146)',
+					'* (HEAD detached at 1a0ff0a)',
 					'  master',
 					'  remotes/origin/master'
 				].join( '\n' ) )
 			} ) );
 
-			return updateCommand.execute( data )
+			return updateCommand.execute( commandData )
 				.then( response => {
 					expect( response.logs.info ).to.deep.equal( [
-						'Note: checking out \'1a0ff0a2ee60549656177cd2a18b057764ec2146\'.',
+						'Note: checking out \'1a0ff0a\'.',
 						'Package "test-package" is on a detached commit.'
 					] );
 
@@ -187,7 +198,7 @@ describe( 'commands/update', () => {
 		it( 'aborts if user wants to pull changes from non-existing branch', () => {
 			stubs.fs.existsSync.returns( true );
 
-			data.repository.branch = 'develop';
+			commandData.repository.branch = 'develop';
 
 			const exec = stubs.execCommand.execute;
 
@@ -211,7 +222,7 @@ describe( 'commands/update', () => {
 				logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true )
 			} ) );
 
-			return updateCommand.execute( data )
+			return updateCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
@@ -232,7 +243,7 @@ describe( 'commands/update', () => {
 		it( 'aborts if user wants to check out to non-existing branch', () => {
 			stubs.fs.existsSync.returns( true );
 
-			data.repository.branch = 'non-existing-branch';
+			commandData.repository.branch = 'non-existing-branch';
 
 			const exec = stubs.execCommand.execute;
 
@@ -248,7 +259,7 @@ describe( 'commands/update', () => {
 				logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true ),
 			} ) );
 
-			return updateCommand.execute( data )
+			return updateCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
