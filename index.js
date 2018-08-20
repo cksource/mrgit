@@ -12,19 +12,22 @@ const meow = require( 'meow' );
 const mgit = require( './lib/index' );
 const getCommandInstance = require( './lib/utils/getcommandinstance' );
 
-const meowOptions = {
-	autoHelp: false,
-	flags: {
-		version: {
-			alias: 'v'
-		},
-		help: {
-			alias: 'h'
-		}
-	}
-};
+handleCli();
 
-const mgitLogo = `
+function handleCli() {
+	const meowOptions = {
+		autoHelp: false,
+		flags: {
+			version: {
+				alias: 'v'
+			},
+			help: {
+				alias: 'h'
+			}
+		}
+	};
+
+	const mgitLogo = `
                      _ _
                     (_) |
      _ __ ___   __ _ _| |_
@@ -35,15 +38,15 @@ const mgitLogo = `
                |___/
 `;
 
-const {
-	cyan: c,
-	gray: g,
-	magenta: m,
-	underline: u,
-	yellow: y,
-} = chalk;
+	const {
+		cyan: c,
+		gray: g,
+		magenta: m,
+		underline: u,
+		yellow: y,
+	} = chalk;
 
-const cli = meow( ` ${ mgitLogo }
+	const cli = meow( `${ mgitLogo }
     ${ u( 'Usage:' ) }
         $ mgit ${ c( 'command' ) } ${ y( '[--options]' ) } -- ${ m( '[--command-options]' ) }
 
@@ -53,10 +56,13 @@ const cli = meow( ` ${ mgitLogo }
         ${ c( 'commit' ) }                      Commits all changes. A shorthand for "mgit exec 'git commit -a'".
         ${ c( 'diff' ) }                        Prints changes from packages where something has changed. 
         ${ c( 'exec' ) }                        Executes shell command in each package.
+        ${ c( 'fetch' ) }                       Fetches existing repositories.
         ${ c( 'merge' ) }                       Merges specified branch with the current one.
+        ${ c( 'pull' ) }                        Pulls changes in existing repositories and clones missing ones.
+        ${ c( 'push' ) }                        Pushes changes in existing repositories to remotes.
         ${ c( 'save-hashes' ) }                 Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
         ${ c( 'status' ) }                      Prints a table which contains useful information about the status of repositories.
-        ${ c( 'update' ) }                      Updates packages to the latest versions (i.e. pull changes).
+        ${ c( 'update' ) }                      Updates packages to the latest versions (pull changes and check out to proper branch).
 
     ${ u( 'Options:' ) }
         ${ y( '--packages' ) }                  Directory to which all repositories will be cloned.
@@ -93,9 +99,6 @@ const cli = meow( ` ${ mgitLogo }
                                     ${ g( 'Default: null' ) }
 `, meowOptions );
 
-handleCli();
-
-function handleCli() {
 	const commandName = cli.input[ 0 ];
 
 	// If user specified a command and `--help` flag wasn't active.
