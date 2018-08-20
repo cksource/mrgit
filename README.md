@@ -52,11 +52,7 @@ packages/
 CLI options:
 
 ```
---recursive                 Whether to install dependencies recursively. Only packages matching 
-                            these patterns will be cloned recursively.
-                            Default: false.
-
---packages                  Directory to which all repositories will be cloned.
+--packages                  Directory to which all repositories will be cloned or are already installed.
                             Default: '<cwd>/packages/'
 
 --resolver-path             Path to a custom repository resolver function.
@@ -134,6 +130,8 @@ Examples:
 
 ### Recursive cloning
 
+**Note**: `--recursive` option is a commands option, so remember about [`--`](https://unix.stackexchange.com/questions/147143/when-and-how-was-the-double-dash-introduced-as-an-end-of-options-delimiter) in order to separate options for mgit and specified command. 
+
 When the `--recursive` option is used mgit will clone repositories recursively. First, it will clone the `dependencies` specified in `mgit.json` and, then, their `dependencies` and `devDependencies` specified in `package.json` files located in cloned repositories.
 
 However, mgit needs to know repository URLs of those dependencies, as well as which dependencies to clone (usually, only the ones maintained by you). In order to configure that you need to use a custom repository resolver (`--resolver-path`).
@@ -151,7 +149,7 @@ const parseRepositoryUrl = require( 'mgit2/lib/utils/parserepositoryurl' );
  * Resolves repository URL for a given package name.
  *
  * @param {String} packageName Package name.
- * @param {Options} data.options The options object.
+ * @param {Options} options The options object.
  * @returns {Repository|null}
  */
 module.exports = function resolver( packageName, options ) {
@@ -187,7 +185,7 @@ You can also use full HTTPS URLs to configure `dependencies` in your `mgit.json`
 $ mgit [command]
 ```
 
-For displaying help screen for commands, type:
+For displaying help screen for specified command, type:
 
 ```bash
 $ mgit [command] --help
@@ -202,7 +200,7 @@ This command will not change existing repositories, so you can always safely use
 Example:
 
 ```bash
-mgit bootstrap --recursive --resolver=path ./dev/custom-repository-resolver.js
+mgit bootstrap --resolver=path ./dev/custom-repository-resolver.js -- --recursive 
 ```
 
 ### update
@@ -216,7 +214,43 @@ This command does not touch repositories in which there are uncommitted changes.
 Examples:
 
 ```bash
-mgit update --recursive
+mgit update -- --recursive
+```
+
+### pull
+
+Pulls changes in existing repositories.
+
+If any dependency is missing, the command will install it too.
+
+Examples:
+
+```bash
+mgit pull -- --recursive
+```
+
+### push
+
+Pushes changes in existing repositories.
+
+If any dependency is missing, the command will not be executed.
+
+Examples:
+
+```bash
+mgit push
+```
+
+### fetch
+
+Fetches changes in existing repositories.
+
+If any dependency is missing, the command will not be executed.
+
+Examples:
+
+```bash
+mgit fetch
 ```
 
 ### exec
@@ -240,14 +274,50 @@ mgit exec 'echo `pwd`'
 # /home/mgit/packages/organization/repository-2
 ```
 
-### save-hashes
+### commit (alias: `ci`)
+
+For every repository that contains changes which can be committed, makes a commit with these files. 
+You need to specify the message for the commit.
+
+Example:
+
+```bash
+mgit commit -- --message 'Introduce PULL_REQUEST_TEMPLATE.md.'
+
+# Executes `git commit --message 'Introduce PULL_REQUEST_TEMPLATE.md.'` command on each repository.
+# Commit will be made in repositories that "git status" returns a list if changed files (these files must be tracked by Git).
+```
+
+### merge
+
+Requires a second argument which is a branch name that will be merged to current one. You can also specify the message
+which will be added to the default git-merge message.
+
+Repositories which do not have specified branch will be ignored.
+
+Example:
+
+```bash
+# Assumptions: we are on "master" branch and "develop" branch exists.
+mgit merge develop -- --message 'These changes are required for the future release.'
+
+# Branch `develop` will be merged into `master`.
+```
+
+### save
 
 Saves hashes of packages in `mgit.json`. It allows to easily fix project to a specific state.
 
 Example:
 
 ```bash
-mgit save-hashes
+mgit save
+```
+
+If you would like to save name of branches instead of current commit, you can use an option `--branch`:
+
+```bash
+mgit save -- --branch
 ```
 
 ### status (alias: `st`)

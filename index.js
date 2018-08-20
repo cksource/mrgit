@@ -65,7 +65,7 @@ function handleCli() {
         ${ c( 'update' ) }                      Updates packages to the latest versions (pull changes and check out to proper branch).
 
     ${ u( 'Options:' ) }
-        ${ y( '--packages' ) }                  Directory to which all repositories will be cloned.
+        ${ y( '--packages' ) }                  Directory to which all repositories will be cloned or are already installed.
                                     ${ g( 'Default: \'<cwd>/packages/\'' ) }
 
         ${ y( '--resolver-path' ) }             Path to a custom repository resolver function.
