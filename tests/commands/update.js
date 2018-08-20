@@ -88,7 +88,7 @@ describe( 'commands/update', () => {
 					] );
 
 					expect( stubs.bootstrapCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.bootstrapCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( commandData )
+					expect( stubs.bootstrapCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( commandData );
 				} );
 		} );
 

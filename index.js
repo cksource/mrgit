@@ -36,7 +36,6 @@ const mgitLogo = `
 `;
 
 const {
-	italic: i,
 	cyan: c,
 	gray: g,
 	magenta: m,
@@ -94,27 +93,32 @@ const cli = meow( ` ${ mgitLogo }
                                     ${ g( 'Default: null' ) }
 `, meowOptions );
 
-const commandName = cli.input[ 0 ];
+handleCli();
 
-// If a user wants to see "help" screen.
-if ( !commandName || cli.flags.help ) {
-	// Checks whether specified a command. If not, displays default help screen.
-	// Buf if the command is available, displays the command's help.
-	if ( !commandName ) {
-		cli.showHelp( 0 );
-	} else {
-		const commandInstance = getCommandInstance( commandName );
+function handleCli() {
+	const commandName = cli.input[ 0 ];
 
-		if ( !commandInstance ) {
-			process.errorCode = 1;
-
-			return;
-		}
-
-		console.log( mgitLogo );
-		console.log( `    ${ u( 'Command:' ) } ${ c( commandInstance.name || commandName ) } `);
-		console.log( commandInstance.helpMessage );
+	// If user specified a command and `--help` flag wasn't active.
+	if ( commandName && !cli.flags.help ) {
+		return mgit( cli.input, cli.flags );
 	}
-} else {
-	mgit( cli.input, cli.flags );
+
+	// A user wants to see "help" screen.
+	// Missing command. Displays help screen for the entire Mgit.
+	if ( !commandName ) {
+		return cli.showHelp( 0 );
+	}
+
+	const commandInstance = getCommandInstance( commandName );
+
+	if ( !commandInstance ) {
+		process.errorCode = 1;
+
+		return;
+	}
+
+	// Specified command is is available, displays the command's help.
+	console.log( mgitLogo );
+	console.log( `    ${ u( 'Command:' ) } ${ c( commandInstance.name || commandName ) } ` );
+	console.log( commandInstance.helpMessage );
 }
