@@ -60,7 +60,7 @@ function handleCli() {
         ${ c( 'merge' ) }                       Merges specified branch with the current one.
         ${ c( 'pull' ) }                        Pulls changes in existing repositories and clones missing ones.
         ${ c( 'push' ) }                        Pushes changes in existing repositories to remotes.
-        ${ c( 'save-hashes' ) }                 Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
+        ${ c( 'save' ) }                        Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
         ${ c( 'status' ) }                      Prints a table which contains useful information about the status of repositories.
         ${ c( 'update' ) }                      Updates packages to the latest versions (pull changes and check out to proper branch).
 
