@@ -99,8 +99,9 @@ describe( 'commands/push', () => {
 				} );
 		} );
 
-		it( 'allows set upstream when pushing', () => {
-			commandData.arguments.push( '--set-upstream' );
+		it( 'allows modifying the "git push" command', () => {
+			commandData.arguments.push( '--verbose' );
+			commandData.arguments.push( '--all' );
 			stubs.fs.existsSync.returns( true );
 
 			const exec = stubs.execCommand.execute;
@@ -112,7 +113,7 @@ describe( 'commands/push', () => {
 			return pushCommand.execute( commandData )
 				.then( response => {
 					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git push -u' );
+					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git push --verbose --all' );
 
 					expect( response.logs.info ).to.deep.equal( [
 						'Everything up-to-date'
