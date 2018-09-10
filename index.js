@@ -51,18 +51,18 @@ function handleCli() {
         $ mgit ${ c( 'command' ) } ${ y( '[--options]' ) } -- ${ m( '[--command-options]' ) }
 
     ${ u( 'Commands:' ) }
-        ${ c( 'bootstrap' ) }                   Installs packages (i.e. clone dependent repositories).
         ${ c( 'checkout' ) }                    Changes branches in repositories according to the configuration file.
+        ${ c( 'close' ) }                       Merges specified branch with the current one and remove merged branch from the remote.
         ${ c( 'commit' ) }                      Commits all changes. A shorthand for "mgit exec 'git commit -a'".
         ${ c( 'diff' ) }                        Prints changes from packages where something has changed. 
         ${ c( 'exec' ) }                        Executes shell command in each package.
         ${ c( 'fetch' ) }                       Fetches existing repositories.
-        ${ c( 'merge' ) }                       Merges specified branch with the current one.
-        ${ c( 'pull' ) }                        Pulls changes in existing repositories and clones missing ones.
+        ${ c( 'pull' ) }                        Pulls changes in existing repositories.
         ${ c( 'push' ) }                        Pushes changes in existing repositories to remotes.
         ${ c( 'save' ) }                        Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
         ${ c( 'status' ) }                      Prints a table which contains useful information about the status of repositories.
-        ${ c( 'update' ) }                      Updates packages to the latest versions (pull changes and check out to proper branch).
+        ${ c( 'sync' ) }                        Updates packages to the latest versions or install missing ones.
+                                                
 
     ${ u( 'Options:' ) }
         ${ y( '--packages' ) }                  Directory to which all repositories will be cloned or are already installed.

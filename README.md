@@ -39,7 +39,7 @@ First, create a configuration file `mgit.json`:
 
 (Keys of the `dependencies` object are package names and values are repository URLs (GitHub identifiers in this case). Read more about the [`dependencies` option](#the-dependencies-option).)
 
-And run `mgit update` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
+And run `mgit sync` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
 
 ```bash
 packages/
@@ -191,25 +191,23 @@ For displaying help screen for specified command, type:
 $ mgit [command] --help
 ```
 
-### update
+### sync
 
 Updates dependencies. Switches repositories to correct branches (specified in `mgit.json`) and pulls changes.
 
-If any dependency is missing, the command will install this dependensy as well.
+If any dependency is missing, the command will install this dependency as well.
 
 This command does not touch repositories in which there are uncommitted changes.
 
 Examples:
 
 ```bash
-mgit update -- --recursive
+mgit sync -- --recursive
 ```
 
 ### pull
 
 Pulls changes in existing repositories.
-
-If any dependency is missing, the command will not be executed.
 
 Examples:
 
@@ -221,8 +219,6 @@ mgit pull -- --recursive
 
 Pushes changes in existing repositories.
 
-If any dependency is missing, the command will not be executed.
-
 Examples:
 
 ```bash
@@ -233,8 +229,6 @@ mgit push
 
 Fetches changes in existing repositories.
 
-If any dependency is missing, the command will not be executed.
-
 Examples:
 
 ```bash
@@ -243,7 +237,7 @@ mgit fetch
 
 ### exec
 
-For every cloned repository executes the specified shell command.
+Executes specified shell command in existing repositories.
 
 Example:
 
@@ -276,12 +270,14 @@ mgit commit -- --message 'Introduce PULL_REQUEST_TEMPLATE.md.'
 # Commit will be made in repositories that "git status" returns a list if changed files (these files must be tracked by Git).
 ```
 
-### merge
+### close
 
 Requires a second argument which is a branch name that will be merged to current one. You can also specify the message
 which will be added to the default git-merge message.
 
 Repositories which do not have specified branch will be ignored.
+
+After merging the branch, it will be removed from the remote.
 
 Example:
 
@@ -363,7 +359,7 @@ mgit diff -- master...HEAD
 
 ### checkout (alias: `co`)
 
-Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit update`. The command is useful for bisecting if your main repository contain a revision log like CKEditor 5's [`master-revision`](https://github.com/ckeditor/ckeditor5/commits/master-revisions) branch.
+Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit sync`. The command is useful for bisecting if your main repository contain a revision log like CKEditor 5's [`master-revision`](https://github.com/ckeditor/ckeditor5/commits/master-revisions) branch.
 
 ```bash
 mgit checkout
