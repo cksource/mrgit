@@ -119,6 +119,26 @@ describe( 'commands/fetch', () => {
 					] );
 				} );
 		} );
+
+		it( 'prints a log if repository is up-to-date', () => {
+			stubs.fs.existsSync.returns( true );
+
+			const exec = stubs.execCommand.execute;
+
+			exec.returns( Promise.resolve( {
+				logs: { info: [] }
+			} ) );
+
+			return fetchCommand.execute( commandData )
+				.then( response => {
+					expect( exec.callCount ).to.equal( 1 );
+					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
+
+					expect( response.logs.info ).to.deep.equal( [
+						'Repository is up-to-date.'
+					] );
+				} );
+		} );
 	} );
 
 	describe( 'afterExecute()', () => {
