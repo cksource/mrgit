@@ -11,8 +11,8 @@ const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
-describe( 'commands/merge', () => {
-	let mergeCommand, stubs, commandData;
+describe( 'commands/close', () => {
+	let closeCommand, stubs, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -36,7 +36,7 @@ describe( 'commands/merge', () => {
 
 		mockery.registerMock( './exec', stubs.execCommand );
 
-		mergeCommand = require( '../../lib/commands/merge' );
+		closeCommand = require( '../../lib/commands/close' );
 	} );
 
 	afterEach( () => {
@@ -47,20 +47,20 @@ describe( 'commands/merge', () => {
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( mergeCommand.helpMessage ).is.a( 'string' );
+			expect( closeCommand.helpMessage ).is.a( 'string' );
 		} );
 	} );
 
 	describe( 'beforeExecute()', () => {
 		it( 'throws an error if command to execute is not specified', () => {
 			expect( () => {
-				mergeCommand.beforeExecute( [ 'merge' ] );
+				closeCommand.beforeExecute( [ 'merge' ] );
 			} ).to.throw( Error, 'Missing branch to merge. Use: mgit merge [branch].' );
 		} );
 
 		it( 'does nothing if branch to merge is specified', () => {
 			expect( () => {
-				mergeCommand.beforeExecute( [ 'merge', 'develop' ] );
+				closeCommand.beforeExecute( [ 'merge', 'develop' ] );
 			} ).to.not.throw( Error );
 		} );
 	} );
@@ -75,7 +75,7 @@ describe( 'commands/merge', () => {
 				}
 			} );
 
-			return mergeCommand.execute( commandData )
+			return closeCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
@@ -86,14 +86,15 @@ describe( 'commands/merge', () => {
 				);
 		} );
 
-		it( 'merges specified branch', () => {
+		it( 'merges specified branch and remove it from remote', () => {
 			commandData.arguments.push( 'develop' );
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
 					info: [
 						'* develop'
-					]
+					],
+					error: []
 				}
 			} );
 
@@ -101,13 +102,24 @@ describe( 'commands/merge', () => {
 				logs: {
 					info: [
 						'Merge made by the \'recursive\' strategy.'
-					]
+					],
+					error: []
 				}
 			} );
 
-			return mergeCommand.execute( commandData )
+			stubs.execCommand.execute.onThirdCall().resolves( {
+				logs: {
+					info: [
+						'To github.com:foo/bar.git\n' +
+						' - [deleted]         develop'
+					],
+					error: []
+				}
+			} );
+
+			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.calledThrice ).to.equal( true );
 
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
 						repository: {
@@ -123,8 +135,20 @@ describe( 'commands/merge', () => {
 						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'"' ]
 					} );
 
+					expect( stubs.execCommand.execute.thirdCall.args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git push origin :develop' ]
+					} );
+
 					expect( commandResponse.logs.info ).to.deep.equal( [
-						'Merge made by the \'recursive\' strategy.'
+						'Merge made by the \'recursive\' strategy.',
+
+						'Removing "develop" branch from the remote.',
+
+						'To github.com:foo/bar.git\n' +
+						' - [deleted]         develop'
 					] );
 				} );
 		} );
@@ -138,7 +162,8 @@ describe( 'commands/merge', () => {
 				logs: {
 					info: [
 						'* develop'
-					]
+					],
+					error: []
 				}
 			} );
 
@@ -146,13 +171,24 @@ describe( 'commands/merge', () => {
 				logs: {
 					info: [
 						'Merge made by the \'recursive\' strategy.'
-					]
+					],
+					error: []
 				}
 			} );
 
-			return mergeCommand.execute( commandData )
+			stubs.execCommand.execute.onThirdCall().resolves( {
+				logs: {
+					info: [
+						'To github.com:foo/bar.git\n' +
+						' - [deleted]         develop'
+					],
+					error: []
+				}
+			} );
+
+			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.calledThrice ).to.equal( true );
 
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
 						repository: {
@@ -168,8 +204,20 @@ describe( 'commands/merge', () => {
 						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ]
 					} );
 
+					expect( stubs.execCommand.execute.thirdCall.args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git push origin :develop' ]
+					} );
+
 					expect( commandResponse.logs.info ).to.deep.equal( [
-						'Merge made by the \'recursive\' strategy.'
+						'Merge made by the \'recursive\' strategy.',
+
+						'Removing "develop" branch from the remote.',
+
+						'To github.com:foo/bar.git\n' +
+						' - [deleted]         develop'
 					] );
 				} );
 		} );
@@ -183,11 +231,12 @@ describe( 'commands/merge', () => {
 				logs: {
 					info: [
 						''
-					]
+					],
+					error: []
 				}
 			} );
 
-			return mergeCommand.execute( commandData )
+			return closeCommand.execute( commandData )
 				.then( commandResponse => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
 
