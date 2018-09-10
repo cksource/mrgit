@@ -92,7 +92,7 @@ describe( 'commands/exec', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						const err = 'Package "test-package" is not available. Run "mgit bootstrap" in order to download the package.';
+						const err = 'Package "test-package" is not available. Run "mgit sync" in order to download the package.';
 						expect( response.logs.error[ 0 ] ).to.equal( err );
 					}
 				);

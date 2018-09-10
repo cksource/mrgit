@@ -72,23 +72,14 @@ describe( 'commands/pull', () => {
 	} );
 
 	describe( 'execute()', () => {
-		it( 'clones a package if is not available', () => {
-			commandData.arguments.push( '--recursive' );
-
+		it( 'skips a package if is not available', () => {
 			stubs.fs.existsSync.returns( false );
-			stubs.bootstrapCommand.execute.returns( Promise.resolve( {
-				logs: getCommandLogs( 'Cloned.' )
-			} ) );
 
 			return pullCommand.execute( commandData )
 				.then( response => {
 					expect( response.logs.info ).to.deep.equal( [
-						'Package "test-package" was not found. Cloning...',
-						'Cloned.'
+						'Package "test-package" was not found. Skipping...',
 					] );
-
-					expect( stubs.bootstrapCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.bootstrapCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( commandData );
 				} );
 		} );
 

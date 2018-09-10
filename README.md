@@ -39,7 +39,7 @@ First, create a configuration file `mgit.json`:
 
 (Keys of the `dependencies` object are package names and values are repository URLs (GitHub identifiers in this case). Read more about the [`dependencies` option](#the-dependencies-option).)
 
-And run `mgit bootstrap` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
+And run `mgit update` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
 
 ```bash
 packages/
@@ -191,23 +191,11 @@ For displaying help screen for specified command, type:
 $ mgit [command] --help
 ```
 
-### bootstrap
-
-Installs missing packages (i.e. clone them) and check them out to correct branches.
-
-This command will not change existing repositories, so you can always safely use it. It's useful to bootstrap the project initially, but later you'll rather want to use `mgit update`.
-
-Example:
-
-```bash
-mgit bootstrap --resolver=path ./dev/custom-repository-resolver.js -- --recursive 
-```
-
 ### update
 
 Updates dependencies. Switches repositories to correct branches (specified in `mgit.json`) and pulls changes.
 
-If any dependency is missing, the command will install it too.
+If any dependency is missing, the command will install this dependensy as well.
 
 This command does not touch repositories in which there are uncommitted changes.
 
@@ -221,7 +209,7 @@ mgit update -- --recursive
 
 Pulls changes in existing repositories.
 
-If any dependency is missing, the command will install it too.
+If any dependency is missing, the command will not be executed.
 
 Examples:
 
