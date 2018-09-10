@@ -207,7 +207,8 @@ mgit sync -- --recursive
 
 ### pull
 
-Pulls changes in existing repositories.
+Pulls changes in existing repositories. It does not change branches in the repositories and pull the changes even if
+the repository contains uncommitted changes.
 
 Examples:
 
@@ -277,7 +278,7 @@ which will be added to the default git-merge message.
 
 Repositories which do not have specified branch will be ignored.
 
-After merging the branch, it will be removed from the remote.
+After merging, the merged branch will be removed from the remote.
 
 Example:
 
@@ -285,7 +286,8 @@ Example:
 # Assumptions: we are on "master" branch and "develop" branch exists.
 mgit merge develop -- --message 'These changes are required for the future release.'
 
-# Branch `develop` will be merged into `master`.
+# Branch "develop" will be merged into "master".
+# Branch "develop" will be removed from the origin.
 ```
 
 ### save
