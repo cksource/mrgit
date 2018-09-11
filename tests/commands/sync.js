@@ -28,7 +28,6 @@ describe( 'commands/sync', () => {
 			exec: sinon.stub(),
 			fs: {
 				existsSync: sinon.stub( fs, 'existsSync' ),
-				lstatSync: sinon.stub( fs, 'lstatSync' ),
 				readdirSync: sinon.stub( fs, 'readdirSync' )
 			},
 			path: {
@@ -324,6 +323,8 @@ describe( 'commands/sync', () => {
 
 	describe( 'afterExecute()', () => {
 		it( 'informs about number of processed packages and differences between packages in directory and defined in mgit.json', () => {
+			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
+
 			const consoleLog = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
