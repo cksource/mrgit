@@ -14,7 +14,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/sync', () => {
-	let syncCommand, stubs, commandData;
+	let syncCommand, stubs, mgitOptions, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -27,7 +27,9 @@ describe( 'commands/sync', () => {
 			shell: sinon.stub(),
 			exec: sinon.stub(),
 			fs: {
-				existsSync: sinon.stub( fs, 'existsSync' )
+				existsSync: sinon.stub( fs, 'existsSync' ),
+				lstatSync: sinon.stub( fs, 'lstatSync' ),
+				readdirSync: sinon.stub( fs, 'readdirSync' )
 			},
 			path: {
 				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
@@ -37,16 +39,20 @@ describe( 'commands/sync', () => {
 			},
 			execCommand: {
 				execute: sinon.stub()
-			}
+			},
+			repositoryResolver: sinon.stub()
+		};
+
+		mgitOptions = {
+			cwd: __dirname,
+			packages: __dirname + '/packages',
+			resolverPath: 'PATH_TO_RESOLVER'
 		};
 
 		commandData = {
 			arguments: [],
 			packageName: 'test-package',
-			mgitOptions: {
-				cwd: __dirname,
-				packages: 'packages'
-			},
+			mgitOptions,
 			repository: {
 				directory: 'test-package',
 				url: 'git@github.com/organization/test-package.git',
@@ -56,6 +62,7 @@ describe( 'commands/sync', () => {
 
 		mockery.registerMock( './exec', stubs.execCommand );
 		mockery.registerMock( '../utils/shell', stubs.shell );
+		mockery.registerMock( 'PATH_TO_RESOLVER', stubs.repositoryResolver );
 
 		syncCommand = require( '../../lib/commands/sync' );
 	} );
@@ -85,10 +92,11 @@ describe( 'commands/sync', () => {
 						const cloneCommand = stubs.shell.firstCall.args[ 0 ].split( ' && ' );
 
 						// Clone the repository.
-						expect( cloneCommand[ 0 ] )
-							.to.equal( 'git clone --progress "git@github.com/organization/test-package.git" "packages/test-package"' );
+						expect( cloneCommand[ 0 ] ).to.equal(
+							`git clone --progress "git@github.com/organization/test-package.git" "${ __dirname }/packages/test-package"`
+						);
 						// Change the directory to cloned package.
-						expect( cloneCommand[ 1 ] ).to.equal( 'cd "packages/test-package"' );
+						expect( cloneCommand[ 1 ] ).to.equal( `cd "${ __dirname }/packages/test-package"` );
 						// And check out to proper branch.
 						expect( cloneCommand[ 2 ] ).to.equal( 'git checkout --quiet master' );
 
@@ -315,17 +323,48 @@ describe( 'commands/sync', () => {
 	} );
 
 	describe( 'afterExecute()', () => {
-		it( 'informs about number of processed packages', () => {
+		it( 'informs about number of processed packages and differences between packages in directory and defined in mgit.json', () => {
 			const consoleLog = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			processedPackages.add( 'package-1' );
 			processedPackages.add( 'package-2' );
 
-			syncCommand.afterExecute( processedPackages );
+			mgitOptions.dependencies = {
+				'package-1': 'foo/package-1',
+				'package-2': 'foo/package-2',
+			};
 
-			expect( consoleLog.calledOnce ).to.equal( true );
+			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
+			stubs.repositoryResolver.onSecondCall().returns( { directory: 'package-2' } );
+
+			stubs.fs.readdirSync.returns( [
+				'package-1',
+				'package-2',
+				'package-3',
+				'.DS_Store'
+			] );
+
+			stubs.fs.lstatSync.returns( {
+				isDirectory() {
+					return true;
+				}
+			} );
+
+			stubs.fs.lstatSync.withArgs( __dirname + '/packages/.DS_Store' ).returns( {
+				isDirectory() {
+					return false;
+				}
+			} );
+
+			syncCommand.afterExecute( processedPackages, null, mgitOptions );
+
+			expect( consoleLog.callCount ).to.equal( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
+			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
+				/Paths to directories listed below are skipped by mgit because they are not defined in "mgit\.json":/
+			);
+			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/package-3/ );
 
 			consoleLog.restore();
 		} );
