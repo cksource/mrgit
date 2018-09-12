@@ -55,7 +55,7 @@ describe( 'commands/close', () => {
 		it( 'throws an error if command to execute is not specified', () => {
 			expect( () => {
 				closeCommand.beforeExecute( [ 'merge' ] );
-			} ).to.throw( Error, 'Missing branch to merge. Use: mgit merge [branch].' );
+			} ).to.throw( Error, 'Missing branch to merge. Use: mgit close [branch].' );
 		} );
 
 		it( 'does nothing if branch to merge is specified', () => {
@@ -86,10 +86,10 @@ describe( 'commands/close', () => {
 				);
 		} );
 
-		it( 'merges specified branch and remove it from remote', () => {
+		it( 'merges specified branch and remove it from local and remote', () => {
 			commandData.arguments.push( 'develop' );
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
+			stubs.execCommand.execute.onCall( 0 ).resolves( {
 				logs: {
 					info: [
 						'* develop'
@@ -98,7 +98,7 @@ describe( 'commands/close', () => {
 				}
 			} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
+			stubs.execCommand.execute.onCall( 1 ).resolves( {
 				logs: {
 					info: [
 						'Merge made by the \'recursive\' strategy.'
@@ -107,7 +107,16 @@ describe( 'commands/close', () => {
 				}
 			} );
 
-			stubs.execCommand.execute.onThirdCall().resolves( {
+			stubs.execCommand.execute.onCall( 2 ).resolves( {
+				logs: {
+					info: [
+						'Deleted branch develop (was e6bda2e9).'
+					],
+					error: []
+				}
+			} );
+
+			stubs.execCommand.execute.onCall( 3 ).resolves( {
 				logs: {
 					info: [
 						'To github.com:foo/bar.git\n' +
@@ -119,23 +128,30 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledThrice ).to.equal( true );
+					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
 						arguments: [ 'git branch --list develop' ]
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
 						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'"' ]
 					} );
 
-					expect( stubs.execCommand.execute.thirdCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git branch -d develop' ]
+					} );
+
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
@@ -144,6 +160,10 @@ describe( 'commands/close', () => {
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
 						'Merge made by the \'recursive\' strategy.',
+
+						'Removing "develop" branch from the local registry.',
+
+						'Deleted branch develop (was e6bda2e9).',
 
 						'Removing "develop" branch from the remote.',
 
@@ -158,7 +178,7 @@ describe( 'commands/close', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
+			stubs.execCommand.execute.onCall( 0 ).resolves( {
 				logs: {
 					info: [
 						'* develop'
@@ -167,7 +187,7 @@ describe( 'commands/close', () => {
 				}
 			} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
+			stubs.execCommand.execute.onCall( 1 ).resolves( {
 				logs: {
 					info: [
 						'Merge made by the \'recursive\' strategy.'
@@ -176,7 +196,16 @@ describe( 'commands/close', () => {
 				}
 			} );
 
-			stubs.execCommand.execute.onThirdCall().resolves( {
+			stubs.execCommand.execute.onCall( 2 ).resolves( {
+				logs: {
+					info: [
+						'Deleted branch develop (was e6bda2e9).'
+					],
+					error: []
+				}
+			} );
+
+			stubs.execCommand.execute.onCall( 3 ).resolves( {
 				logs: {
 					info: [
 						'To github.com:foo/bar.git\n' +
@@ -188,23 +217,30 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledThrice ).to.equal( true );
+					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
 						arguments: [ 'git branch --list develop' ]
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
 						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ]
 					} );
 
-					expect( stubs.execCommand.execute.thirdCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git branch -d develop' ]
+					} );
+
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
@@ -213,6 +249,10 @@ describe( 'commands/close', () => {
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
 						'Merge made by the \'recursive\' strategy.',
+
+						'Removing "develop" branch from the local registry.',
+
+						'Deleted branch develop (was e6bda2e9).',
 
 						'Removing "develop" branch from the remote.',
 

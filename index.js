@@ -23,6 +23,12 @@ function handleCli() {
 			},
 			help: {
 				alias: 'h'
+			},
+			branch: {
+				alias: 'b'
+			},
+			message: {
+				alias: 'm'
 			}
 		}
 	};

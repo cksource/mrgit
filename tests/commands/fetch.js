@@ -73,9 +73,7 @@ describe( 'commands/fetch', () => {
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( response.logs.info ).to.deep.equal( [
-						'Package "test-package" was not found. Skipping...',
-					] );
+					expect( response ).to.deep.equal( {} );
 				} );
 		} );
 
@@ -135,7 +133,7 @@ describe( 'commands/fetch', () => {
 					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
 
 					expect( response.logs.info ).to.deep.equal( [
-						'Repository is up-to-date.'
+						'Repository is up to date.'
 					] );
 				} );
 		} );

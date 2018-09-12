@@ -13,7 +13,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/save', () => {
-	let saveCommand, stubs, commandData, mgitJsonPath, updateFunction;
+	let saveCommand, stubs, commandData, mgitOptions, mgitJsonPath, updateFunction;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -32,9 +32,12 @@ describe( 'commands/save', () => {
 			gitStatusParser: sinon.stub()
 		};
 
+		mgitOptions = {};
+
 		commandData = {
 			packageName: 'test-package',
-			arguments: []
+			arguments: [],
+			mgitOptions
 		};
 
 		mockery.registerMock( './exec', stubs.execCommand );
@@ -63,29 +66,27 @@ describe( 'commands/save', () => {
 	} );
 
 	describe( 'beforeExecute()', () => {
-		it( 'throws an error if default option is canceled', () => {
-			const errorMessage = 'Need to specify what kind of information you want to save. Call "mgit save -h" in order to read more.';
+		it( 'defined which type of data should be saved', () => {
+			saveCommand.beforeExecute( [], mgitOptions );
+			expect( mgitOptions.hash ).to.equal( true );
+		} );
+
+		it( 'throws an error if used both options', () => {
+			const errorMessage = 'Cannot use "hash" and "branch" options at the same time.';
+
+			mgitOptions.branch = true;
+			mgitOptions.hash = true;
 
 			expect( () => {
-				saveCommand.beforeExecute( [ 'hash', '--no-hash' ] );
+				saveCommand.beforeExecute( [], mgitOptions );
 			} ).to.throw( Error, errorMessage );
-		} );
-
-		it( 'does nothing if options are valid (--branch)', () => {
-			expect( () => {
-				saveCommand.beforeExecute( [ 'hash', '--branch' ] );
-			} ).to.not.throw( Error );
-		} );
-
-		it( 'does nothing if called only command (without options)', () => {
-			expect( () => {
-				saveCommand.beforeExecute( [ 'hash' ] );
-			} ).to.not.throw( Error );
 		} );
 	} );
 
 	describe( 'execute()', () => {
 		it( 'rejects promise if called command returned an error', () => {
+			mgitOptions.hash = true;
+
 			const error = new Error( 'Unexpected error.' );
 
 			stubs.execCommand.execute.returns( Promise.reject( {
@@ -106,6 +107,8 @@ describe( 'commands/save', () => {
 		} );
 
 		it( 'resolves promise with last commit id', () => {
+			mgitOptions.hash = true;
+
 			const execCommandResponse = {
 				logs: {
 					info: [ '584f341' ]
@@ -119,14 +122,17 @@ describe( 'commands/save', () => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
 						packageName: commandData.packageName,
-						arguments: [ 'git rev-parse HEAD' ]
+						arguments: [ 'git rev-parse HEAD' ],
+						mgitOptions: {
+							hash: true,
+						}
 					} );
 
 					expect( commandResponse.response ).to.deep.equal( {
 						packageName: commandData.packageName,
 						data: '584f341',
-						branch: false,
-						hash: true
+						hash: true,
+						branch: undefined
 					} );
 
 					expect( commandResponse.logs.info[ 0 ] ).to.equal( 'Commit: "584f341".' );
@@ -140,7 +146,7 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			commandData.arguments.push( '--branch' );
+			mgitOptions.branch = true;
 
 			stubs.gitStatusParser.returns( { branch: 'master' } );
 			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
@@ -150,14 +156,17 @@ describe( 'commands/save', () => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
 						packageName: commandData.packageName,
-						arguments: [ 'git status --branch --porcelain' ]
+						arguments: [ 'git status --branch --porcelain' ],
+						mgitOptions: {
+							branch: true,
+						}
 					} );
 
 					expect( commandResponse.response ).to.deep.equal( {
 						packageName: commandData.packageName,
 						data: 'master',
 						branch: true,
-						hash: false
+						hash: undefined
 					} );
 
 					expect( commandResponse.logs.info[ 0 ] ).to.equal( 'Branch: "master".' );

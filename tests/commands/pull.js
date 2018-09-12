@@ -77,9 +77,7 @@ describe( 'commands/pull', () => {
 
 			return pullCommand.execute( commandData )
 				.then( response => {
-					expect( response.logs.info ).to.deep.equal( [
-						'Package "test-package" was not found. Skipping...',
-					] );
+					expect( response ).to.deep.equal( {} );
 				} );
 		} );
 
