@@ -107,7 +107,7 @@ describe( 'commands/sync', () => {
 			} );
 
 			it( 'clones dependencies of installed package', () => {
-				commandData.arguments.push( '--recursive' );
+				mgitOptions.recursive = true;
 				commandData.mgitOptions.packages = __dirname + '/../fixtures';
 				commandData.repository.directory = 'project-a';
 
@@ -122,7 +122,7 @@ describe( 'commands/sync', () => {
 			} );
 
 			it( 'clones dev-dependencies of installed package', () => {
-				commandData.arguments.push( '--recursive' );
+				mgitOptions.recursive = true;
 				commandData.mgitOptions.packages = __dirname + '/../fixtures';
 				commandData.repository.directory = 'project-with-options-in-mgitjson';
 
