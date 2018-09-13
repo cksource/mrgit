@@ -52,38 +52,48 @@ packages/
 CLI options:
 
 ```
---packages                  Directory to which all repositories will be cloned or are already installed.
-                            Default: '<cwd>/packages/'
+--branch                    For "save" command: whether to save branch names.
+							For "checkout" command: name of branch that would be created.
 
---resolver-path             Path to a custom repository resolver function.
-                            Default: '@mgit2/lib/default-resolver.js'.
-
---resolver-url-template     Template used to generate repository URL out of a
-                            simplified 'organization/repository' format of the dependencies option.
-                            Default: 'git@github.com:${ path }.git'.
-
---resolver-directory-name   Defines how the target directory (where the repository will be cloned)
-                            is resolved. Supported options are: 'git' (default), 'npm'.
-
-                            * If 'git' was specified, then the directory name will be extracted from
-                            the git URL (e.g. for 'git@github.com:a/b.git' it will be 'b').
-                            * If 'npm' was specified, then the package name will be used as a directory name.
-
-                            This option can be useful when scoped npm packages are used and one wants to decide
-                            whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
-                            Default: 'git'
-
---resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
-                            Default: 'master'
+--hash                      Whether to save current commit hashes. Used only by "save" command.
 
 --ignore                    Ignores packages which names match the given glob pattern. E.g.:
-                            > mgit exec --ignore="foo*" "git st"
+							> mgit exec --ignore="foo*" "git status"
 
-                            Will ignore all packages which names start from "foo".
-                            Default: null
+							Will ignore all packages which names start from "foo".
+							Default: null
+
+--message                   Message that will be used as an option for git command. Required for "commit"
+							command but it is also used by "close" command (append the message to the default).
+
+--packages                  Directory to which all repositories will be cloned or are already installed.
+							Default: '<cwd>/packages/'
+
+--recursive                 Whether to install dependencies recursively. Used only by "sync" command.
+
+--resolver-path             Path to a custom repository resolver function.
+							Default: '@mgit2/lib/default-resolver.js'
+
+--resolver-url-template     Template used to generate repository URL out of a
+							simplified 'organization/repository' format of the dependencies option.
+							Default: 'git@github.com:${ path }.git'.
+
+--resolver-directory-name   Defines how the target directory (where the repository will be cloned)
+							is resolved. Supported options are: 'git' (default), 'npm'.
+
+							* If 'git' was specified, then the directory name will be extracted from
+							the git URL (e.g. for 'git@github.com:a/b.git' it will be 'b').
+							* If 'npm' was specified, then the package name will be used as a directory name.
+
+							This option can be useful when scoped npm packages are used and one wants to decide
+							whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
+							Default: 'git'
+
+--resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
+							Default: master
 
 --scope                     Restricts the command to packages which names match the given glob pattern.
-                            Default: null
+							Default: null
 ```
 
 All these options can also be specified in `mgit.json` (options passed through CLI takes precedence):
@@ -129,8 +139,6 @@ Examples:
 ```
 
 ### Recursive cloning
-
-**Note**: `--recursive` option is a commands option, so remember about [`--`](https://unix.stackexchange.com/questions/147143/when-and-how-was-the-double-dash-introduced-as-an-end-of-options-delimiter) in order to separate options for mgit and specified command. 
 
 When the `--recursive` option is used mgit will clone repositories recursively. First, it will clone the `dependencies` specified in `mgit.json` and, then, their `dependencies` and `devDependencies` specified in `package.json` files located in cloned repositories.
 
@@ -199,10 +207,13 @@ If any dependency is missing, the command will install this dependency as well.
 
 This command does not touch repositories in which there are uncommitted changes.
 
+If in the packages directory will be located some directories that are not specified in `mgit.json`, paths to these directories
+will be printed out on the screen.
+
 Examples:
 
 ```bash
-mgit sync -- --recursive
+mgit sync --recursive
 ```
 
 ### pull
@@ -213,7 +224,7 @@ the repository contains uncommitted changes.
 Examples:
 
 ```bash
-mgit pull -- --recursive
+mgit pull
 ```
 
 ### push
@@ -265,7 +276,7 @@ You need to specify the message for the commit.
 Example:
 
 ```bash
-mgit commit -- --message 'Introduce PULL_REQUEST_TEMPLATE.md.'
+mgit commit --message 'Introduce PULL_REQUEST_TEMPLATE.md.'
 
 # Executes `git commit --message 'Introduce PULL_REQUEST_TEMPLATE.md.'` command on each repository.
 # Commit will be made in repositories that "git status" returns a list if changed files (these files must be tracked by Git).
@@ -278,13 +289,13 @@ which will be added to the default git-merge message.
 
 Repositories which do not have specified branch will be ignored.
 
-After merging, the merged branch will be removed from the remote.
+After merging, the merged branch will be removed from the remote and the local registry.
 
 Example:
 
 ```bash
 # Assumptions: we are on "master" branch and "develop" branch exists.
-mgit merge develop -- --message 'These changes are required for the future release.'
+mgit merge develop --message 'These changes are required for the future release.'
 
 # Branch "develop" will be merged into "master".
 # Branch "develop" will be removed from the origin.
@@ -303,7 +314,7 @@ mgit save
 If you would like to save name of branches instead of current commit, you can use an option `--branch`:
 
 ```bash
-mgit save -- --branch
+mgit save --branch
 ```
 
 ### status (alias: `st`)
@@ -361,12 +372,28 @@ mgit diff -- master...HEAD
 
 ### checkout (alias: `co`)
 
-Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit sync`. The command is useful for bisecting if your main repository contain a revision log like CKEditor 5's [`master-revision`](https://github.com/ckeditor/ckeditor5/commits/master-revisions) branch.
-
+Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit sync`. 
+The command is useful for bisecting if your main repository contain a revision log like CKEditor 5's [`master-revision`](https://github.com/ckeditor/ckeditor5/commits/master-revisions) branch.
+ 
 ```bash
 mgit checkout
 # or
 mgit co
+```
+
+If specified an argument, specified branch will be used instead of default or saved in `mgit.json` file.
+
+```bash
+# Checkout all repositories to "stable" branch.
+mgit checkout stable
+```
+
+Also you can specify the `--branch` option which means that mgit creates a new branches in repositories that contains changes (that could be committed).
+It works on the same terms like `mgit commit`.
+
+```bash
+# Create the branch "t/foo" in repositories where "git status" returns a list if changed files (these files must be tracked by Git).
+mgit checkout --branch t/foo
 ```
 
 ## Projects using mgit2

@@ -54,7 +54,7 @@ function handleCli() {
 
 	const cli = meow( `${ mgitLogo }
     ${ u( 'Usage:' ) }
-        $ mgit ${ c( 'command' ) } ${ y( '[--options]' ) } -- ${ m( '[--command-options]' ) }
+        $ mgit ${ c( 'command' ) } ${ y( '[--options]' ) } -- ${ m( '[--git-options]' ) }
 
     ${ u( 'Commands:' ) }
         ${ c( 'checkout' ) }                    Changes branches in repositories according to the configuration file.
@@ -71,8 +71,24 @@ function handleCli() {
                                                 
 
     ${ u( 'Options:' ) }
+        ${ y( '--branch' ) }                    For "${ u( 'save' ) }" command: whether to save branch names.
+                                    For "${ u( 'checkout' ) }" command: name of branch that would be created.
+
+        ${ y( '--hash' ) }                      Whether to save current commit hashes. Used only by "${ u( 'save' ) }" command.
+
+        ${ y( '--ignore' ) }                    Ignores packages which names match the given glob pattern. E.g.:
+                                    ${ g( '> mgit exec --ignore="foo*" "git status"' ) }
+
+                                    Will ignore all packages which names start from "foo".
+                                    ${ g( 'Default: null' ) }
+                                    
+        ${ y( '--message' ) }                   Message that will be used as an option for git command. Required for "${ u( 'commit' ) }"
+                                    command but it is also used by "${ u( 'close' ) }" command (append the message to the default).
+
         ${ y( '--packages' ) }                  Directory to which all repositories will be cloned or are already installed.
                                     ${ g( 'Default: \'<cwd>/packages/\'' ) }
+
+        ${ y( '--recursive' ) }                 Whether to install dependencies recursively. Used only by "${ u( 'sync' ) }" command.
 
         ${ y( '--resolver-path' ) }             Path to a custom repository resolver function.
                                     ${ g( 'Default: \'@mgit2/lib/default-resolver.js\'' ) }
@@ -95,14 +111,12 @@ function handleCli() {
         ${ y( '--resolver-default-branch' ) }   The branch name to use if not specified in mgit.json dependencies.
                                     ${ g( 'Default: master' ) }
 
-        ${ y( '--ignore' ) }                    Ignores packages which names match the given glob pattern. E.g.:
-                                    ${ g( '> mgit exec --ignore="foo*" "git status"' ) }
-
-                                    Will ignore all packages which names start from "foo".
-                                    ${ g( 'Default: null' ) }
-
         ${ y( '--scope' ) }                     Restricts the command to packages which names match the given glob pattern.
                                     ${ g( 'Default: null' ) }
+
+    ${ u( 'Git Options:' ) }
+        Git options are supported by the following commands: commit, diff, fetch, push.
+        Type "mgit [command] -h" in order to see which options are supported.
 `, meowOptions );
 
 	const commandName = cli.input[ 0 ];
