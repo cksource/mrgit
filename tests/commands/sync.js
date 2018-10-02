@@ -369,6 +369,101 @@ describe( 'commands/sync', () => {
 
 			consoleLog.restore();
 		} );
+
+		it( 'informs about differences between packages in directory and defined in mgit.json for scopes packages', () => {
+			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
+
+			const consoleLog = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			processedPackages.add( 'package-1' );
+			processedPackages.add( 'package-2' );
+
+			mgitOptions.dependencies = {
+				'package-1': 'foo/package-1',
+				'package-2': 'foo/package-2',
+			};
+
+			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
+			stubs.repositoryResolver.onSecondCall().returns( { directory: 'package-2' } );
+
+			stubs.fs.readdirSync.onFirstCall().returns( [
+				'package-1',
+				'package-2',
+				'@foo',
+				'.DS_Store'
+			] );
+
+			stubs.fs.readdirSync.onSecondCall().returns( [
+				'.DS_Store',
+				'package-3'
+			] );
+
+			stubs.fs.lstatSync.returns( {
+				isDirectory() {
+					return true;
+				}
+			} );
+
+			stubs.fs.lstatSync.withArgs( __dirname + '/packages/@foo/.DS_Store' ).returns( {
+				isDirectory() {
+					return false;
+				}
+			} );
+
+			stubs.fs.lstatSync.withArgs( __dirname + '/packages/.DS_Store' ).returns( {
+				isDirectory() {
+					return false;
+				}
+			} );
+
+			syncCommand.afterExecute( processedPackages, null, mgitOptions );
+
+			expect( consoleLog.callCount ).to.equal( 3 );
+			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
+			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
+				/Paths to directories listed below are skipped by mgit because they are not defined in "mgit\.json":/
+			);
+			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/@foo\/package-3/ );
+
+			consoleLog.restore();
+		} );
+
+		it( 'does not inform about differences between packages in directory and defined in mgit.json if everything seems to be ok', () => {
+			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
+
+			const consoleLog = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			processedPackages.add( 'package-1' );
+			processedPackages.add( 'package-2' );
+
+			mgitOptions.dependencies = {
+				'package-1': 'foo/package-1',
+				'package-2': 'foo/package-2',
+			};
+
+			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
+			stubs.repositoryResolver.onSecondCall().returns( { directory: 'package-2' } );
+
+			stubs.fs.readdirSync.returns( [
+				'package-1',
+				'package-2',
+			] );
+
+			stubs.fs.lstatSync.returns( {
+				isDirectory() {
+					return true;
+				}
+			} );
+
+			syncCommand.afterExecute( processedPackages, null, mgitOptions );
+
+			expect( consoleLog.callCount ).to.equal( 1 );
+			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
+
+			consoleLog.restore();
+		} );
 	} );
 
 	function getCommandLogs( msg, isError = false ) {
