@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [0.8.1](https://github.com/cksource/mgit2/compare/v0.8.0...v0.8.1) (2018-11-19)
+
+### Bug fixes
+
+* Mgit should end with proper exit code if some command failed. Closes [#86](https://github.com/cksource/mgit2/issues/86). ([b7b878b](https://github.com/cksource/mgit2/commit/b7b878b))
+
+
 ## [0.8.0](https://github.com/cksource/mgit2/compare/v0.7.5...v0.8.0) (2018-05-04)
 
 ### Features
