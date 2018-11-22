@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [0.9.0](https://github.com/cksource/mgit2/compare/v0.8.1...v0.9.0) (2018-11-22)
+
+### Features
+
+* The `mgit bootstrap` and `mgit update` commands will try pulling changes twice in case of a network hang-up. Closes [#87](https://github.com/cksource/mgit2/issues/87). ([47e6840](https://github.com/cksource/mgit2/commit/47e6840))
+
+
 ## [0.8.1](https://github.com/cksource/mgit2/compare/v0.8.0...v0.8.1) (2018-11-19)
 
 ### Bug fixes
