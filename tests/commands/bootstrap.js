@@ -159,7 +159,7 @@ describe( 'commands/bootstrap', () => {
 
 					const firstCommand = stubs.exec.firstCall.args[ 0 ].split( ' && ' );
 
-					// Clone the repository.
+					// Clone the repository for the first time. It failed.
 					expect( firstCommand[ 0 ] )
 						.to.equal( 'git clone --progress "git@github.com/organization/test-package.git" "packages/test-package"' );
 					// Change the directory to cloned package.
@@ -169,7 +169,7 @@ describe( 'commands/bootstrap', () => {
 
 					const secondCommand = stubs.exec.secondCall.args[ 0 ].split( ' && ' );
 
-					// Clone the repository.
+					// Clone the repository for the second time. It succeed.
 					expect( secondCommand[ 0 ] )
 						.to.equal( 'git clone --progress "git@github.com/organization/test-package.git" "packages/test-package"' );
 					// Change the directory to cloned package.
