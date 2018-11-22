@@ -134,6 +134,52 @@ describe( 'commands/bootstrap', () => {
 					expect( response.packages ).to.deep.equal( [ 'test-bar' ] );
 				} );
 		} );
+
+		it( 'tries to install missing packages once again if git ends with unexpected error', function() {
+			this.timeout( 5500 );
+
+			stubs.fs.existsSync.returns( false );
+
+			stubs.exec.onFirstCall().returns( Promise.reject( [
+				'exec: Cloning into \'/some/path\'...',
+				'remote: Enumerating objects: 6, done.',
+				'remote: Counting objects: 100% (6/6), done.',
+				'remote: Compressing objects: 100% (6/6), done.',
+				'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
+				'fatal: The remote end hung up unexpectedly',
+				'fatal: early EOF',
+				'fatal: index-pack failed'
+			].join( '\n' ) ) );
+
+			stubs.exec.onSecondCall().returns( Promise.resolve( 'Git clone log.' ) );
+
+			return bootstrapCommand.execute( data )
+				.then( response => {
+					expect( stubs.exec.calledTwice ).to.equal( true );
+
+					const firstCommand = stubs.exec.firstCall.args[ 0 ].split( ' && ' );
+
+					// Clone the repository for the first time. It failed.
+					expect( firstCommand[ 0 ] )
+						.to.equal( 'git clone --progress "git@github.com/organization/test-package.git" "packages/test-package"' );
+					// Change the directory to cloned package.
+					expect( firstCommand[ 1 ] ).to.equal( 'cd "packages/test-package"' );
+					// And check out to proper branch.
+					expect( firstCommand[ 2 ] ).to.equal( 'git checkout --quiet master' );
+
+					const secondCommand = stubs.exec.secondCall.args[ 0 ].split( ' && ' );
+
+					// Clone the repository for the second time. It succeed.
+					expect( secondCommand[ 0 ] )
+						.to.equal( 'git clone --progress "git@github.com/organization/test-package.git" "packages/test-package"' );
+					// Change the directory to cloned package.
+					expect( secondCommand[ 1 ] ).to.equal( 'cd "packages/test-package"' );
+					// And check out to proper branch.
+					expect( secondCommand[ 2 ] ).to.equal( 'git checkout --quiet master' );
+
+					expect( response.logs.info[ 0 ] ).to.equal( 'Git clone log.' );
+				} );
+		} );
 	} );
 
 	describe( 'afterExecute()', () => {
