@@ -43,8 +43,8 @@ describe( 'commands/sync', () => {
 		};
 
 		mgitOptions = {
-			cwd: __dirname,
-			packages: __dirname + '/packages',
+			cwd: '/tmp',
+			packages: '/tmp/packages',
 			resolverPath: 'PATH_TO_RESOLVER'
 		};
 
@@ -92,10 +92,10 @@ describe( 'commands/sync', () => {
 
 						// Clone the repository.
 						expect( cloneCommand[ 0 ] ).to.equal(
-							`git clone --progress "git@github.com/organization/test-package.git" "${ __dirname }/packages/test-package"`
+							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 						);
 						// Change the directory to cloned package.
-						expect( cloneCommand[ 1 ] ).to.equal( `cd "${ __dirname }/packages/test-package"` );
+						expect( cloneCommand[ 1 ] ).to.equal( 'cd "/tmp/packages/test-package"' );
 						// And check out to proper branch.
 						expect( cloneCommand[ 2 ] ).to.equal( 'git checkout --quiet master' );
 
@@ -133,6 +133,55 @@ describe( 'commands/sync', () => {
 					.then( response => {
 						expect( response.packages ).is.an( 'array' );
 						expect( response.packages ).to.deep.equal( [ 'test-bar' ] );
+					} );
+			} );
+
+			it( 'tries to install missing packages once again if git ends with unexpected error', function() {
+				this.timeout( 5500 );
+
+				stubs.fs.existsSync.returns( false );
+
+				stubs.shell.onFirstCall().returns( Promise.reject( [
+					'exec: Cloning into \'/some/path\'...',
+					'remote: Enumerating objects: 6, done.',
+					'remote: Counting objects: 100% (6/6), done.',
+					'remote: Compressing objects: 100% (6/6), done.',
+					'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
+					'fatal: The remote end hung up unexpectedly',
+					'fatal: early EOF',
+					'fatal: index-pack failed'
+				].join( '\n' ) ) );
+
+				stubs.shell.onSecondCall().returns( Promise.resolve( 'Git clone log.' ) );
+
+				return syncCommand.execute( commandData )
+					.then( response => {
+						expect( stubs.shell.calledTwice ).to.equal( true );
+
+						const firstCommand = stubs.shell.firstCall.args[ 0 ].split( ' && ' );
+
+						// Clone the repository for the first time. It failed.
+						expect( firstCommand[ 0 ] )
+							.to.equal( 'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"' );
+						// Change the directory to cloned package.
+						expect( firstCommand[ 1 ] ).to.equal( 'cd "/tmp/packages/test-package"' );
+						// And check out to proper branch.
+						expect( firstCommand[ 2 ] ).to.equal( 'git checkout --quiet master' );
+
+						const secondCommand = stubs.shell.secondCall.args[ 0 ].split( ' && ' );
+
+						// Clone the repository for the second time. It succeed.
+						expect( secondCommand[ 0 ] )
+							.to.equal( 'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"' );
+						// Change the directory to cloned package.
+						expect( secondCommand[ 1 ] ).to.equal( 'cd "/tmp/packages/test-package"' );
+						// And check out to proper branch.
+						expect( secondCommand[ 2 ] ).to.equal( 'git checkout --quiet master' );
+
+						expect( response.logs.info ).to.deep.equal( [
+							'Package "test-package" was not found. Cloning...',
+							'Git clone log.'
+						] );
 					} );
 			} );
 		} );
@@ -359,15 +408,14 @@ describe( 'commands/sync', () => {
 			} );
 
 			syncCommand.afterExecute( processedPackages, null, mgitOptions );
+			consoleLog.restore();
 
-			expect( consoleLog.callCount ).to.equal( 3 );
+			expect( consoleLog.callCount ).to.equal( 4 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
 				/Paths to directories listed below are skipped by mgit because they are not defined in "mgit\.json":/
 			);
 			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/package-3/ );
-
-			consoleLog.restore();
 		} );
 
 		it( 'informs about differences between packages in directory and defined in mgit.json for scopes packages', () => {
@@ -418,15 +466,14 @@ describe( 'commands/sync', () => {
 			} );
 
 			syncCommand.afterExecute( processedPackages, null, mgitOptions );
+			consoleLog.restore();
 
-			expect( consoleLog.callCount ).to.equal( 3 );
+			expect( consoleLog.callCount ).to.equal( 5 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
 				/Paths to directories listed below are skipped by mgit because they are not defined in "mgit\.json":/
 			);
-			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/@foo\/package-3/ );
-
-			consoleLog.restore();
+			expect( consoleLog.getCall( 3 ).args[ 0 ] ).to.match( / {2}- .*\/packages\/@foo\/package-3/ );
 		} );
 
 		it( 'does not inform about differences between packages in directory and defined in mgit.json if everything seems to be ok', () => {
