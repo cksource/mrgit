@@ -64,6 +64,8 @@ describe( 'commands/commit', () => {
 
 	describe( 'beforeExecute()', () => {
 		it( 'throws an error if merge message is missing', () => {
+			sinon.stub( commitCommand, '_parseArguments' ).returns( {} );
+
 			expect( () => {
 				commitCommand.beforeExecute( [ 'commit' ], {} );
 			} ).to.throw( Error, 'Missing --message (-m) option. Call "mgit commit -h" in order to read more.' );

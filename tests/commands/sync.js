@@ -234,6 +234,46 @@ describe( 'commands/sync', () => {
 							] );
 						} );
 				} );
+
+				it( 'returns an error if command failed twice', () => {
+					stubs.fs.existsSync.returns( false );
+
+					const errorMessage = [
+						'exec: Cloning into \'/some/path\'...',
+						'remote: Enumerating objects: 6, done.',
+						'remote: Counting objects: 100% (6/6), done.',
+						'remote: Compressing objects: 100% (6/6), done.',
+						'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
+						'fatal: the remote end hung up unexpectedly',
+						'fatal: early EOF',
+						'fatal: index-pack failed'
+					].join( '\n' );
+
+					stubs.shell.onFirstCall().returns( Promise.reject( new Error( errorMessage ) ) );
+
+					// Can't use `.returns()` because it generates `UnhandledPromiseRejectionWarning` in the console.
+					stubs.shell.onSecondCall().callsFake( () => {
+						return Promise.reject( errorMessage );
+					} );
+
+					return syncCommand.execute( commandData )
+						.then(
+							() => {
+								throw new Error( 'Expected that the Promise fails.' );
+							},
+							response => {
+								expect( stubs.shell.calledTwice ).to.equal( true );
+
+								expect( response.logs.info ).to.deep.equal( [
+									'Package "test-package" was not found. Cloning...',
+								] );
+
+								expect( response.logs.error ).to.deep.equal( [
+									errorMessage
+								] );
+							}
+						);
+				} );
 			} );
 		} );
 
@@ -452,7 +492,7 @@ describe( 'commands/sync', () => {
 				}
 			} );
 
-			stubs.fs.lstatSync.withArgs( __dirname + '/packages/.DS_Store' ).returns( {
+			stubs.fs.lstatSync.withArgs( '/tmp/packages/.DS_Store' ).returns( {
 				isDirectory() {
 					return false;
 				}
@@ -461,7 +501,7 @@ describe( 'commands/sync', () => {
 			syncCommand.afterExecute( processedPackages, null, mgitOptions );
 			consoleLog.restore();
 
-			expect( consoleLog.callCount ).to.equal( 4 );
+			expect( consoleLog.callCount ).to.equal( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
 				/Paths to directories listed below are skipped by mgit because they are not defined in "mgit\.json":/
@@ -504,13 +544,13 @@ describe( 'commands/sync', () => {
 				}
 			} );
 
-			stubs.fs.lstatSync.withArgs( __dirname + '/packages/@foo/.DS_Store' ).returns( {
+			stubs.fs.lstatSync.withArgs( '/tmp/packages/@foo/.DS_Store' ).returns( {
 				isDirectory() {
 					return false;
 				}
 			} );
 
-			stubs.fs.lstatSync.withArgs( __dirname + '/packages/.DS_Store' ).returns( {
+			stubs.fs.lstatSync.withArgs( '/tmp/packages/.DS_Store' ).returns( {
 				isDirectory() {
 					return false;
 				}
@@ -519,12 +559,12 @@ describe( 'commands/sync', () => {
 			syncCommand.afterExecute( processedPackages, null, mgitOptions );
 			consoleLog.restore();
 
-			expect( consoleLog.callCount ).to.equal( 5 );
+			expect( consoleLog.callCount ).to.equal( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
 				/Paths to directories listed below are skipped by mgit because they are not defined in "mgit\.json":/
 			);
-			expect( consoleLog.getCall( 3 ).args[ 0 ] ).to.match( / {2}- .*\/packages\/@foo\/package-3/ );
+			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/@foo\/package-3/ );
 		} );
 
 		it( 'does not inform about differences between packages in directory and defined in mgit.json if everything seems to be ok', () => {
