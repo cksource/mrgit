@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [0.9.1](https://github.com/cksource/mgit2/compare/v0.9.0...v0.9.1) (2018-12-05)
+
+### Bug fixes
+
+* Simplified a check for "remote end hung up" error during the `bootstrap` command. Closes [#92](https://github.com/cksource/mgit2/issues/92). ([ed2291c](https://github.com/cksource/mgit2/commit/ed2291c))
+
+
 ## [0.9.0](https://github.com/cksource/mgit2/compare/v0.8.1...v0.9.0) (2018-11-22)
 
 ### Features
