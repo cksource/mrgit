@@ -13,7 +13,7 @@ mgit2 is designed to work with [Lerna](https://github.com/lerna/lerna) (*"A tool
 ## Installation
 
 ```bash
-sudo npm install -g mgit2
+npm install -g mgit2
 ```
 
 Use:
@@ -53,59 +53,59 @@ CLI options:
 
 ```
 --branch                    For "save" command: whether to save branch names.
-							For "checkout" command: name of branch that would be created.
+                            For "checkout" command: name of branch that would be created.
 
 --hash                      Whether to save current commit hashes. Used only by "save" command.
 
 --ignore                    Ignores packages which names match the given glob pattern. E.g.:
-							> mgit exec --ignore="foo*" "git status"
+                            > mgit exec --ignore="foo*" "git status"
 
-							Will ignore all packages which names start from "foo".
-							Default: null
+                            Will ignore all packages which names start from "foo".
+                            Default: null
 
 --message                   Message that will be used as an option for git command. Required for "commit"
-							command but it is also used by "close" command (append the message to the default).
+                            command but it is also used by "close" command (append the message to the default).
 
 --packages                  Directory to which all repositories will be cloned or are already installed.
-							Default: '<cwd>/packages/'
+                            Default: '<cwd>/packages/'
 
 --recursive                 Whether to install dependencies recursively. Used only by "sync" command.
 
 --resolver-path             Path to a custom repository resolver function.
-							Default: '@mgit2/lib/default-resolver.js'
+                            Default: '@mgit2/lib/default-resolver.js'
 
 --resolver-url-template     Template used to generate repository URL out of a
-							simplified 'organization/repository' format of the dependencies option.
-							Default: 'git@github.com:${ path }.git'.
+                            simplified 'organization/repository' format of the dependencies option.
+                            Default: 'git@github.com:${ path }.git'.
 
 --resolver-directory-name   Defines how the target directory (where the repository will be cloned)
-							is resolved. Supported options are: 'git' (default), 'npm'.
+                            is resolved. Supported options are: 'git' (default), 'npm'.
 
-							* If 'git' was specified, then the directory name will be extracted from
-							the git URL (e.g. for 'git@github.com:a/b.git' it will be 'b').
-							* If 'npm' was specified, then the package name will be used as a directory name.
+                            * If 'git' was specified, then the directory name will be extracted from
+                            the git URL (e.g. for 'git@github.com:a/b.git' it will be 'b').
+                            * If 'npm' was specified, then the package name will be used as a directory name.
 
-							This option can be useful when scoped npm packages are used and one wants to decide
-							whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
-							Default: 'git'
+                            This option can be useful when scoped npm packages are used and one wants to decide
+                            whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
+                            Default: 'git'
 
 --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
-							Default: master
+                            Default: master
 
 --scope                     Restricts the command to packages which names match the given glob pattern.
-							Default: null
+                            Default: null
 ```
 
 All these options can also be specified in `mgit.json` (options passed through CLI takes precedence):
 
 ```json
 {
-	"packages": "/workspace/modules",
-	"resolverDirectoryName": "npm",
-	"resolverDefaultBranch": "dev",
-	"dependencies": {
-		"foo": "bar"
-	}
+    "packages": "/workspace/modules",
+    "resolverDirectoryName": "npm",
+    "resolverDefaultBranch": "dev",
+    "dependencies": {
+        "foo": "bar"
+    }
 }
 ```
 
@@ -120,21 +120,21 @@ Examples:
 ```js
 // Clone 'git@github.com:cksource/foo.git' and check out to 'master'.
 {
-	"foo": "git@github.com:cksource/foo.git"
+    "foo": "git@github.com:cksource/foo.git"
 }
 ```
 
 ```js
 // Short format. Clone 'git@github.com:cksource/foo.git' and check out to branch 'dev'.
 {
-	"@cksource/foo": "cksource/foo#dev"
+    "@cksource/foo": "cksource/foo#dev"
 }
 ```
 
 ```js
 // Clone 'https://github.com/cksource/foo.git' (via HTTPS) and check out to branch tag 'v1.2.3'.
 {
-	"foo": "https://github.com/cksource/foo.git#v1.2.3"
+    "foo": "https://github.com/cksource/foo.git#v1.2.3"
 }
 ```
 
@@ -161,15 +161,15 @@ const parseRepositoryUrl = require( 'mgit2/lib/utils/parserepositoryurl' );
  * @returns {Repository|null}
  */
 module.exports = function resolver( packageName, options ) {
-	// If package name starts with '@ckeditor/ckeditor5-*' clone it from 'ckeditor/ckeditor5-*'.
-	if ( packageName.startsWith( '@ckeditor/ckeditor5-' ) ) {
-		const repositoryUrl = packageName.slice( 1 );
+    // If package name starts with '@ckeditor/ckeditor5-*' clone it from 'ckeditor/ckeditor5-*'.
+    if ( packageName.startsWith( '@ckeditor/ckeditor5-' ) ) {
+        const repositoryUrl = packageName.slice( 1 );
 
-		return parseRepositoryUrl( repositoryUrl );
-	}
+        return parseRepositoryUrl( repositoryUrl );
+    }
 
-	// Don't clone any other dependencies.
-	return null;
+    // Don't clone any other dependencies.
+    return null;
 };
 ```
 
@@ -270,7 +270,7 @@ mgit exec 'echo `pwd`'
 
 ### commit (alias: `ci`)
 
-For every repository that contains changes which can be committed, makes a commit with these files. 
+For every repository that contains changes which can be committed, makes a commit with these files.
 You need to specify the message for the commit.
 
 Example:
@@ -372,9 +372,9 @@ mgit diff -- master...HEAD
 
 ### checkout (alias: `co`)
 
-Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit sync`. 
+Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit sync`.
 The command is useful for bisecting if your main repository contain a revision log like CKEditor 5's [`master-revision`](https://github.com/ckeditor/ckeditor5/commits/master-revisions) branch.
- 
+
 ```bash
 mgit checkout
 # or
