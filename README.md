@@ -32,7 +32,7 @@ First, create a configuration file `mgit.json`:
 {
   "dependencies": {
     "@ckeditor/ckeditor5-engine": "ckeditor/ckeditor5-engine",
-    "mgit": "cksource/mgit"
+    "mgit2": "cksource/mgit2"
   }
 }
 ```
@@ -44,7 +44,7 @@ And run `mgit sync` to clone all the repositories. By default, they will be clon
 ```bash
 packages/
   ckeditor5-engine/
-  mgit/
+  mgit2/
 ```
 
 ## Configuration
