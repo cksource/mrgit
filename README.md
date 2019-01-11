@@ -39,9 +39,9 @@ First, create a configuration file `mgit.json`:
 
 (Keys of the `dependencies` object are package names and values are repository URLs (GitHub identifiers in this case). Read more about the [`dependencies` option](#the-dependencies-option).)
 
-And run `mgit bootstrap` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
+And run `mgit sync` to clone all the repositories. By default, they will be cloned to `<cwd>/packages/` directory:
 
-```
+```bash
 packages/
   ckeditor5-engine/
   mgit/
@@ -52,59 +52,53 @@ packages/
 CLI options:
 
 ```
---recursive                 Whether to install dependencies recursively.
-                            Needs to be used together with --repository-include. Only packages
-                            matching these patterns will be cloned recursively.
+--branch                    For "save" command: whether to save branch names.
+							For "checkout" command: name of branch that would be created.
 
-                            Default: false.
+--hash                      Whether to save current commit hashes. Used only by "save" command.
 
---packages                  Directory to which all repositories will be cloned.
+--ignore                    Ignores packages which names match the given glob pattern. E.g.:
+							> mgit exec --ignore="foo*" "git status"
 
-                            Default: '<cwd>/packages/'
+							Will ignore all packages which names start from "foo".
+							Default: null
+
+--message                   Message that will be used as an option for git command. Required for "commit"
+							command but it is also used by "close" command (append the message to the default).
+
+--packages                  Directory to which all repositories will be cloned or are already installed.
+							Default: '<cwd>/packages/'
+
+--recursive                 Whether to install dependencies recursively. Used only by "sync" command.
 
 --resolver-path             Path to a custom repository resolver function.
-
-                            Default: '@mgit2/lib/default-resolver.js'.
+							Default: '@mgit2/lib/default-resolver.js'
 
 --resolver-url-template     Template used to generate repository URL out of a
-                            simplified 'organization/repository' format of the dependencies option.
-
-                            Default: 'git@github.com:${ path }.git'.
+							simplified 'organization/repository' format of the dependencies option.
+							Default: 'git@github.com:${ path }.git'.
 
 --resolver-directory-name   Defines how the target directory (where the repository will be cloned)
-                            is resolved. Supported options are: 'git' (default), 'npm'.
+							is resolved. Supported options are: 'git' (default), 'npm'.
 
-                            * If 'git' was specified, then the directory name will be extracted from
-                            the git URL (e.g. for 'git@github.com:a/b.git' it will be 'b').
-                            * If 'npm' was specified, then the package name will be used as a directory name.
+							* If 'git' was specified, then the directory name will be extracted from
+							the git URL (e.g. for 'git@github.com:a/b.git' it will be 'b').
+							* If 'npm' was specified, then the package name will be used as a directory name.
 
-                            This option can be useful when scoped npm packages are used and one wants to decide
-                            whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
-
-                            Default: 'git'
+							This option can be useful when scoped npm packages are used and one wants to decide
+							whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
+							Default: 'git'
 
 --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
-
-                            Default: 'master'
-
---ignore                    Ignores packages which names match the given glob pattern.
-
-                            For example:
-
-                                > mgit exec --ignore="foo*" "git st"
-
-                            Will ignore all packages which names start from "foo".
-
-                            Default: null
+							Default: master
 
 --scope                     Restricts the command to packages which names match the given glob pattern.
-
-                            Default: null
+							Default: null
 ```
 
 All these options can also be specified in `mgit.json` (options passed through CLI takes precedence):
 
-```js
+```json
 {
 	"packages": "/workspace/modules",
 	"resolverDirectoryName": "npm",
@@ -163,13 +157,13 @@ const parseRepositoryUrl = require( 'mgit2/lib/utils/parserepositoryurl' );
  * Resolves repository URL for a given package name.
  *
  * @param {String} packageName Package name.
- * @param {Options} data.options The options object.
+ * @param {Options} options The options object.
  * @returns {Repository|null}
  */
 module.exports = function resolver( packageName, options ) {
 	// If package name starts with '@ckeditor/ckeditor5-*' clone it from 'ckeditor/ckeditor5-*'.
 	if ( packageName.startsWith( '@ckeditor/ckeditor5-' ) ) {
-		repositoryUrl = packageName.slice( 1 );
+		const repositoryUrl = packageName.slice( 1 );
 
 		return parseRepositoryUrl( repositoryUrl );
 	}
@@ -185,49 +179,77 @@ You can also check the [default resolver](https://github.com/cksource/mgit2/blob
 
 CI servers, such as Travis, can't clone repositories using Git URLs (such as `git@github.com:cksource/mgit.git`). By default, mgit uses Git URLs because it assumes that you'll want to commit to these repositories (and don't want to be asked for a password every time).
 
-If you need to run mgit on a CI server, then configure it to use HTTP URLs:
+If you need to run mgit on a CI server, then configure it to use HTTPS URLs:
 
 ```bash
 mgit --resolver-url-template="https://github.com/\${ path }.git"
 ```
 
-You can also use full HTTPs URLs to configure `dependencies` in your `mgit.json`.
+You can also use full HTTPS URLs to configure `dependencies` in your `mgit.json`.
 
 ## Commands
 
+```bash
+$ mgit [command]
 ```
-mgit [command]
-```
 
-### bootstrap
-
-Installs missing packages (i.e. clone them) and check them out to correct branches.
-
-This command will not change existing repositories, so you can always safely use it. It's useful to bootstrap the project initially, but later you'll rather want to use `mgit update`.
-
-Example:
+For displaying help screen for specified command, type:
 
 ```bash
-mgit bootstrap --recursive --resolver=path ./dev/custom-repository-resolver.js
+$ mgit [command] --help
 ```
 
-### update
+### sync
 
 Updates dependencies. Switches repositories to correct branches (specified in `mgit.json`) and pulls changes.
 
-If any dependency is missing, the command will install it too.
+If any dependency is missing, the command will install this dependency as well.
 
 This command does not touch repositories in which there are uncommitted changes.
+
+If in the packages directory will be located some directories that are not specified in `mgit.json`, paths to these directories
+will be printed out on the screen.
 
 Examples:
 
 ```bash
-mgit update --recursive
+mgit sync --recursive
+```
+
+### pull
+
+Pulls changes in existing repositories. It does not change branches in the repositories and pull the changes even if
+the repository contains uncommitted changes.
+
+Examples:
+
+```bash
+mgit pull
+```
+
+### push
+
+Pushes changes in existing repositories.
+
+Examples:
+
+```bash
+mgit push
+```
+
+### fetch
+
+Fetches changes in existing repositories.
+
+Examples:
+
+```bash
+mgit fetch
 ```
 
 ### exec
 
-For every cloned repository executes the specified shell command.
+Executes specified shell command in existing repositories.
 
 Example:
 
@@ -246,14 +268,53 @@ mgit exec 'echo `pwd`'
 # /home/mgit/packages/organization/repository-2
 ```
 
-### save-hashes
+### commit (alias: `ci`)
+
+For every repository that contains changes which can be committed, makes a commit with these files. 
+You need to specify the message for the commit.
+
+Example:
+
+```bash
+mgit commit --message 'Introduce PULL_REQUEST_TEMPLATE.md.'
+
+# Executes `git commit --message 'Introduce PULL_REQUEST_TEMPLATE.md.'` command on each repository.
+# Commit will be made in repositories that "git status" returns a list if changed files (these files must be tracked by Git).
+```
+
+### close
+
+Requires a second argument which is a branch name that will be merged to current one. You can also specify the message
+which will be added to the default git-merge message.
+
+Repositories which do not have specified branch will be ignored.
+
+After merging, the merged branch will be removed from the remote and the local registry.
+
+Example:
+
+```bash
+# Assumptions: we are on "master" branch and "develop" branch exists.
+mgit merge develop --message 'These changes are required for the future release.'
+
+# Branch "develop" will be merged into "master".
+# Branch "develop" will be removed from the origin.
+```
+
+### save
 
 Saves hashes of packages in `mgit.json`. It allows to easily fix project to a specific state.
 
 Example:
 
 ```bash
-mgit save-hashes
+mgit save
+```
+
+If you would like to save name of branches instead of current commit, you can use an option `--branch`:
+
+```bash
+mgit save --branch
 ```
 
 ### status (alias: `st`)
@@ -311,12 +372,28 @@ mgit diff -- master...HEAD
 
 ### checkout (alias: `co`)
 
-Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit update`. The command is useful for bisecting if your main repository contain a revision log like CKEditor 5's [`master-revision`](https://github.com/ckeditor/ckeditor5/commits/master-revisions) branch.
-
+Changes branches in repositories according to the configuration file. It does not pull the changes and hance is much faster than `mgit sync`. 
+The command is useful for bisecting if your main repository contain a revision log like CKEditor 5's [`master-revision`](https://github.com/ckeditor/ckeditor5/commits/master-revisions) branch.
+ 
 ```bash
 mgit checkout
 # or
 mgit co
+```
+
+If specified an argument, specified branch will be used instead of default or saved in `mgit.json` file.
+
+```bash
+# Checkout all repositories to "stable" branch.
+mgit checkout stable
+```
+
+Also you can specify the `--branch` option which means that mgit creates a new branches in repositories that contains changes (that could be committed).
+It works on the same terms like `mgit commit`.
+
+```bash
+# Create the branch "t/foo" in repositories where "git status" returns a list if changed files (these files must be tracked by Git).
+mgit checkout --branch t/foo
 ```
 
 ## Projects using mgit2

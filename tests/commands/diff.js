@@ -12,7 +12,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/diff', () => {
-	let diffCommand, stubs, data;
+	let diffCommand, stubs, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -27,7 +27,7 @@ describe( 'commands/diff', () => {
 			}
 		};
 
-		data = {
+		commandData = {
 			arguments: []
 		};
 
@@ -38,7 +38,27 @@ describe( 'commands/diff', () => {
 
 	afterEach( () => {
 		sinon.restore();
+		mockery.deregisterAll();
 		mockery.disable();
+	} );
+
+	describe( '#helpMessage', () => {
+		it( 'defines help screen', () => {
+			expect( diffCommand.helpMessage ).is.a( 'string' );
+		} );
+	} );
+
+	describe( 'beforeExecute()', () => {
+		it( 'informs about starting the process', () => {
+			const consoleLog = sinon.stub( console, 'log' );
+
+			diffCommand.beforeExecute();
+
+			expect( consoleLog.calledOnce ).to.equal( true );
+			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /Collecting changes\.\.\./ );
+
+			consoleLog.restore();
+		} );
 	} );
 
 	describe( 'execute()', () => {
@@ -51,7 +71,7 @@ describe( 'commands/diff', () => {
 				}
 			} );
 
-			return diffCommand.execute( data )
+			return diffCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
@@ -79,7 +99,7 @@ describe( 'commands/diff', () => {
 				}
 			} );
 
-			return diffCommand.execute( data )
+			return diffCommand.execute( commandData )
 				.then( diffResponse => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
@@ -93,7 +113,7 @@ describe( 'commands/diff', () => {
 		it( 'does not return the logs when repository has not changed', () => {
 			stubs.execCommand.execute.resolves( { logs: { info: [] } } );
 
-			return diffCommand.execute( data )
+			return diffCommand.execute( commandData )
 				.then( diffResponse => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
 
@@ -104,12 +124,12 @@ describe( 'commands/diff', () => {
 		it( 'allows modifying the "git diff" command', () => {
 			stubs.execCommand.execute.resolves( { logs: { info: [] } } );
 
-			data.arguments = [
+			commandData.arguments = [
 				'--stat',
 				'--staged'
 			];
 
-			return diffCommand.execute( data )
+			return diffCommand.execute( commandData )
 				.then( diffResponse => {
 					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {

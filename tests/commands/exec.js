@@ -14,7 +14,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/exec', () => {
-	let execCommand, stubs, data;
+	let execCommand, stubs, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -24,7 +24,7 @@ describe( 'commands/exec', () => {
 		} );
 
 		stubs = {
-			exec: sinon.stub(),
+			shell: sinon.stub(),
 			fs: {
 				existsSync: sinon.stub( fs, 'existsSync' )
 			},
@@ -36,11 +36,12 @@ describe( 'commands/exec', () => {
 			}
 		};
 
-		data = {
-			// `execute` is called without the "exec" command (`mgit exec first-cmd other-cmd` => [ 'first-cmd', 'other-cmd' ]).
+		commandData = {
+			// Command `#execute` function is called without the "exec" command.
+			// `mgit exec pwd` => [ 'pwd' ]
 			arguments: [ 'pwd' ],
 			packageName: 'test-package',
-			options: {
+			mgitOptions: {
 				cwd: __dirname,
 				packages: 'packages'
 			},
@@ -49,14 +50,21 @@ describe( 'commands/exec', () => {
 			}
 		};
 
-		mockery.registerMock( '../utils/exec', stubs.exec );
+		mockery.registerMock( '../utils/shell', stubs.shell );
 
 		execCommand = require( '../../lib/commands/exec' );
 	} );
 
 	afterEach( () => {
 		sinon.restore();
+		mockery.deregisterAll();
 		mockery.disable();
+	} );
+
+	describe( '#helpMessage', () => {
+		it( 'defines help screen', () => {
+			expect( execCommand.helpMessage ).is.a( 'string' );
+		} );
 	} );
 
 	describe( 'beforeExecute()', () => {
@@ -78,13 +86,13 @@ describe( 'commands/exec', () => {
 		it( 'does not execute the command if package is not available', () => {
 			stubs.fs.existsSync.returns( false );
 
-			return execCommand.execute( data )
+			return execCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						const err = 'Package "test-package" is not available. Run "mgit bootstrap" in order to download the package.';
+						const err = 'Package "test-package" is not available. Run "mgit sync" in order to download the package.';
 						expect( response.logs.error[ 0 ] ).to.equal( err );
 					}
 				);
@@ -94,9 +102,9 @@ describe( 'commands/exec', () => {
 			const error = new Error( 'Unexpected error.' );
 
 			stubs.fs.existsSync.returns( true );
-			stubs.exec.returns( Promise.reject( error ) );
+			stubs.shell.returns( Promise.reject( error ) );
 
-			return execCommand.execute( data )
+			return execCommand.execute( commandData )
 				.then(
 					() => {
 						throw new Error( 'Supposed to be rejected.' );
@@ -113,9 +121,9 @@ describe( 'commands/exec', () => {
 		it( 'resolves promise if command has been executed', () => {
 			const pwd = '/packages/test-package';
 			stubs.fs.existsSync.returns( true );
-			stubs.exec.returns( Promise.resolve( pwd ) );
+			stubs.shell.returns( Promise.resolve( pwd ) );
 
-			return execCommand.execute( data )
+			return execCommand.execute( commandData )
 				.then( response => {
 					expect( stubs.process.chdir.calledTwice ).to.equal( true );
 					expect( stubs.process.chdir.firstCall.args[ 0 ] ).to.equal( 'packages/test-package' );

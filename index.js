@@ -7,18 +7,33 @@
 
 'use strict';
 
+const chalk = require( 'chalk' );
 const meow = require( 'meow' );
 const mgit = require( './lib/index' );
+const getCommandInstance = require( './lib/utils/getcommandinstance' );
 
-const meowOptions = {
-	flags: {
-		version: {
-			alias: 'v'
+handleCli();
+
+function handleCli() {
+	const meowOptions = {
+		autoHelp: false,
+		flags: {
+			version: {
+				alias: 'v'
+			},
+			help: {
+				alias: 'h'
+			},
+			branch: {
+				alias: 'b'
+			},
+			message: {
+				alias: 'm'
+			}
 		}
-	}
-};
+	};
 
-const cli = meow( `
+	const mgitLogo = `
                      _ _
                     (_) |
      _ __ ___   __ _ _| |_
@@ -27,40 +42,62 @@ const cli = meow( `
     |_| |_| |_|\\__, |_|\\__|
                 __/ |
                |___/
+`;
 
-    Usage:
-        $ mgit [command]
+	const {
+		cyan: c,
+		gray: g,
+		magenta: m,
+		underline: u,
+		yellow: y,
+	} = chalk;
 
-    Commands:
-        bootstrap                   Installs packages (i.e. clone dependent repositories).
-        exec                        Executes shell command in each package.
-        update                      Updates packages to the latest versions (i.e. pull changes).
-        save-hashes                 Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
-        status                      Prints a table which contains useful information about the status of repositories.
-        diff                        Prints changes from packages where something has changed. 
-        checkout                    Changes branches in repositories according to the configuration file.
+	const cli = meow( `${ mgitLogo }
+    ${ u( 'Usage:' ) }
+        $ mgit ${ c( 'command' ) } ${ y( '[--options]' ) } -- ${ m( '[--git-options]' ) }
 
-    Options:
-        --recursive                 Whether to install dependencies recursively.
-                                    Needs to be used together with --repository-include. Only packages
-                                    matching these patterns will be cloned recursively.
+    ${ u( 'Commands:' ) }
+        ${ c( 'checkout' ) }                    Changes branches in repositories according to the configuration file.
+        ${ c( 'close' ) }                       Merges specified branch with the current one and remove merged branch from the remote.
+        ${ c( 'commit' ) }                      Commits all changes. A shorthand for "mgit exec 'git commit -a'".
+        ${ c( 'diff' ) }                        Prints changes from packages where something has changed. 
+        ${ c( 'exec' ) }                        Executes shell command in each package.
+        ${ c( 'fetch' ) }                       Fetches existing repositories.
+        ${ c( 'pull' ) }                        Pulls changes in existing repositories.
+        ${ c( 'push' ) }                        Pushes changes in existing repositories to remotes.
+        ${ c( 'save' ) }                        Saves hashes of packages in mgit.json. It allows to easily fix project to a specific state.
+        ${ c( 'status' ) }                      Prints a table which contains useful information about the status of repositories.
+        ${ c( 'sync' ) }                        Updates packages to the latest versions or install missing ones.
+                                                
 
-                                    Default: false.
+    ${ u( 'Options:' ) }
+        ${ y( '--branch' ) }                    For "${ u( 'save' ) }" command: whether to save branch names.
+                                    For "${ u( 'checkout' ) }" command: name of branch that would be created.
 
-        --packages                  Directory to which all repositories will be cloned.
+        ${ y( '--hash' ) }                      Whether to save current commit hashes. Used only by "${ u( 'save' ) }" command.
 
-                                    Default: '<cwd>/packages/'
+        ${ y( '--ignore' ) }                    Ignores packages which names match the given glob pattern. E.g.:
+                                    ${ g( '> mgit exec --ignore="foo*" "git status"' ) }
 
-        --resolver-path             Path to a custom repository resolver function.
+                                    Will ignore all packages which names start from "foo".
+                                    ${ g( 'Default: null' ) }
+                                    
+        ${ y( '--message' ) }                   Message that will be used as an option for git command. Required for "${ u( 'commit' ) }"
+                                    command but it is also used by "${ u( 'close' ) }" command (append the message to the default).
 
-                                    Default: '@mgit2/lib/default-resolver.js'.
+        ${ y( '--packages' ) }                  Directory to which all repositories will be cloned or are already installed.
+                                    ${ g( 'Default: \'<cwd>/packages/\'' ) }
 
-        --resolver-url-template     Template used to generate repository URL out of a
+        ${ y( '--recursive' ) }                 Whether to install dependencies recursively. Used only by "${ u( 'sync' ) }" command.
+
+        ${ y( '--resolver-path' ) }             Path to a custom repository resolver function.
+                                    ${ g( 'Default: \'@mgit2/lib/default-resolver.js\'' ) }
+
+        ${ y( '--resolver-url-template' ) }     Template used to generate repository URL out of a
                                     simplified 'organization/repository' format of the dependencies option.
+                                    ${ g( 'Default: \'git@github.com:${ path }.git\'.' ) }
 
-                                    Default: 'git@github.com:\${ path }.git'.
-
-        --resolver-directory-name   Defines how the target directory (where the repository will be cloned)
+        ${ y( '--resolver-directory-name' ) }   Defines how the target directory (where the repository will be cloned)
                                     is resolved. Supported options are: 'git' (default), 'npm'.
 
                                     * If 'git' was specified, then the directory name will be extracted from
@@ -69,30 +106,42 @@ const cli = meow( `
 
                                     This option can be useful when scoped npm packages are used and one wants to decide
                                     whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
+                                    ${ g( 'Default: \'git\'' ) }
 
-                                    Default: 'git'
+        ${ y( '--resolver-default-branch' ) }   The branch name to use if not specified in mgit.json dependencies.
+                                    ${ g( 'Default: master' ) }
 
-        --resolver-default-branch   The branch name to use if not specified in mgit.json dependencies.
+        ${ y( '--scope' ) }                     Restricts the command to packages which names match the given glob pattern.
+                                    ${ g( 'Default: null' ) }
 
-                                    Default: 'master'
-
-        --ignore                    Ignores packages which names match the given glob pattern.
-
-                                    For example:
-
-                                        > mgit exec --ignore="foo*" "git st"
-
-                                    Will ignore all packages which names start from "foo".
-
-                                    Default: null
-
-        --scope                     Restricts the command to packages which names match the given glob pattern.
-
-                                    Default: null
+    ${ u( 'Git Options:' ) }
+        Git options are supported by the following commands: commit, diff, fetch, push.
+        Type "mgit [command] -h" in order to see which options are supported.
 `, meowOptions );
 
-if ( cli.input.length === 0 ) {
-	cli.showHelp();
-} else {
-	mgit( cli.input, cli.flags );
+	const commandName = cli.input[ 0 ];
+
+	// If user specified a command and `--help` flag wasn't active.
+	if ( commandName && !cli.flags.help ) {
+		return mgit( cli.input, cli.flags );
+	}
+
+	// A user wants to see "help" screen.
+	// Missing command. Displays help screen for the entire Mgit.
+	if ( !commandName ) {
+		return cli.showHelp( 0 );
+	}
+
+	const commandInstance = getCommandInstance( commandName );
+
+	if ( !commandInstance ) {
+		process.errorCode = 1;
+
+		return;
+	}
+
+	// Specified command is is available, displays the command's help.
+	console.log( mgitLogo );
+	console.log( `    ${ u( 'Command:' ) } ${ c( commandInstance.name || commandName ) } ` );
+	console.log( commandInstance.helpMessage );
 }
