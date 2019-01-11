@@ -1,6 +1,41 @@
 Changelog
 =========
 
+## [0.10.0](https://github.com/cksource/mgit2/compare/v0.9.1...v0.10.0) (2019-01-11)
+
+### Features
+
+* Introduced a set of new commands which should help developers in daily tasks. Closes [#73](https://github.com/cksource/mgit2/issues/73). ([2097c16](https://github.com/cksource/mgit2/commit/2097c16))
+
+  *  New commands:
+
+      * `commit` - allows committing all changes files that are tracked by Git (a shorthand for `mgit exec 'git commit -a'`)
+      * `fetch` - allows fetching changes in all cloned repositories (a shorthand for `mgit exec 'git fetch'`)
+      * `pull`  - allows pulling changes in all cloned repositories and cloning missing ones (it does not check out to specified branch in `mgit.json` file)
+      * `push` - allows pushing changes in all cloned repositories (a shorthand for `mgit exec 'git push'`)
+      * `close` - allows mering specified branch into current one and removes the merged branch from the local and remote
+
+  * The `update` command was renamed to `sync`.
+
+  * The `save-hashes` command was renamed to `save`. It accepts two options: `--branch` or `--hash` (which is default one). If specified `--branch`, name of current branches will be saved in `mgit.json`.
+
+  * Removed command `bootstrap`. Use the `sync` command instead. Sync command will scan the package directories and compare results with packages saved in configuration file. If there is something that is not defined in `mgit.json`, it will be printed out.
+
+  * `checkout` command now allows checking out the project to specified branch: `mgit checkout stable` will check out all repositories to `#stable` branch. It can also create a new branch for repositories that contains changes in files tracked by git. Calling `mgit checkout -- --branch develop` will create the `#develop` branch in these repositories.
+
+  * Improved the help screen of mgit and introduced a help screen for specified command, e.g.: `mgit sync --help`.
+
+### BREAKING CHANGES
+
+* Removed the `bootstrap` command. The `sync` command should be used instead for initializing the repositories.
+* Renamed `update` command to `sync`.
+* Renamed `save-hashes` command to `save`. It supports two parameters: `--branch` and `--hash` which the second one is set as default.
+
+### NOTE
+
+* `mgit checkout branch` will check out the repository on `#branch`. `[branch]` argument is optional. If it isn't specified, branch name will be taken from `mgit.json`.
+
+
 ## [0.9.1](https://github.com/cksource/mgit2/compare/v0.9.0...v0.9.1) (2018-12-05)
 
 ### Bug fixes
