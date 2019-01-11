@@ -8,7 +8,10 @@
     "submodule",
     "package",
     "multi-repository",
-    "multi-repo"
+    "multi-repo",
+    "lerna",
+    "yarn",
+    "workspaces"
   ],
   "main": "index.js",
   "dependencies": {
