@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [0.10.1](https://github.com/cksource/mgit2/compare/v0.10.0...v0.10.1) (2019-01-14)
+
+### Bug fixes
+
+* The master repository package should not be loaded to packages dir. Closes [#96](https://github.com/cksource/mgit2/issues/96). ([7814c33](https://github.com/cksource/mgit2/commit/7814c33))
+
+
 ## [0.10.0](https://github.com/cksource/mgit2/compare/v0.9.1...v0.10.0) (2019-01-11)
 
 ### Features
