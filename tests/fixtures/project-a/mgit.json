@@ -5,6 +5,10 @@
     "@scoped/package": "c/d",
     "full-url-git": "git@github.com:cksource/mgit2.git",
     "full-url-git-with-branch": "git@github.com:cksource/mgit2.git#xyz",
-    "full-url-https": "https://github.com/cksource/mgit2.git"
+    "full-url-https": "https://github.com/cksource/mgit2.git",
+    "override-directory": "foo/bar"
+  },
+  "overrideDirectoryNames": {
+    "override-directory": "custom-directory"
   }
 }
