@@ -69,17 +69,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'extracts all parameters basing on specified "file" (Unix) URL (ends with ".git")', () => {
-			const repository = parseRepositoryUrl( 'file:///Users/Workspace/Projects/foo/bar.git' );
-
-			expect( repository ).to.deep.equal( {
-				url: 'file:///Users/Workspace/Projects/foo/bar.git',
-				branch: 'master',
-				directory: 'bar'
-			} );
-		} );
-
-		it( 'extracts all parameters basing on specified "file" (Unix) URL (ends does not with ".git")', () => {
+		it( 'extracts all parameters basing on specified "file" (Unix path)', () => {
 			const repository = parseRepositoryUrl( 'file:///Users/Workspace/Projects/foo/bar' );
 
 			expect( repository ).to.deep.equal( {
@@ -89,17 +79,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'extracts all parameters basing on specified "file" (Windows) URL (ends with ".git")', () => {
-			const repository = parseRepositoryUrl( 'file://C:/Users/Workspace/Projects/foo/bar.git' );
-
-			expect( repository ).to.deep.equal( {
-				url: 'file://c/Users/Workspace/Projects/foo/bar.git',
-				branch: 'master',
-				directory: 'bar'
-			} );
-		} );
-
-		it( 'extracts all parameters basing on specified "file" (Windows) URL (ends does not with ".git")', () => {
+		it( 'extracts all parameters basing on specified "file" (Windows path)', () => {
 			const repository = parseRepositoryUrl( 'file://C:/Users/Workspace/Projects/foo/bar' );
 
 			expect( repository ).to.deep.equal( {
