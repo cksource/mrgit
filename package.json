@@ -55,7 +55,8 @@
     "coverage": "istanbul cover _mocha tests -- --recursive",
     "lint": "eslint --quiet '**/*.js'",
     "precommit": "lint-staged",
-    "changelog": "node ./scripts/changelog.js"
+    "changelog": "node ./scripts/changelog.js",
+    "release": "node ./scripts/release.js"
   },
   "bin": {
     "mgit": "./index.js",
