@@ -176,8 +176,56 @@ describe( 'commands/status', () => {
 			}
 		} );
 
+		it( 'modifies the package name if "packagesPrefix" is an array', () => {
+			commandData.mgitOptions.packagesPrefix = [
+				'@ckeditor/ckeditor-',
+				'@ckeditor/ckeditor5-',
+			];
+
+			stubs.execCommand.execute.onFirstCall().resolves( {
+				logs: {
+					info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ]
+				}
+			} );
+			stubs.execCommand.execute.onSecondCall().resolves( {
+				logs: {
+					info: [ 'Response returned by "git status" command.' ]
+				}
+			} );
+
+			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
+
+			return statusCommand.execute( commandData )
+				.then( statusResponse => {
+					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git rev-parse HEAD' )
+					);
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git status --branch --porcelain' )
+					);
+
+					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
+
+					expect( statusResponse.response ).to.deep.equal( {
+						packageName: 'test-package',
+						commit: '6bfd379',
+						status: { response: 'Parsed response.' },
+						mgitBranch: 'master'
+					} );
+				} );
+
+			function getCommandArguments( command ) {
+				return Object.assign( {}, commandData, {
+					arguments: [ command ]
+				} );
+			}
+		} );
+
 		it( 'does not modify the package name if "packagesPrefix" option is not specified', () => {
-			delete commandData.mgitOptions.packagesPrefix;
+			// Mgit resolves this option to be an empty array if it isn't specified.
+			commandData.mgitOptions.packagesPrefix = [];
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {

@@ -134,4 +134,28 @@ describe( 'default resolver()', () => {
 			} );
 		} );
 	} );
+
+	describe( 'with options.overrideDirectoryNames', () => {
+		it( 'returns package with modified directory', () => {
+			const options = getOptions( {}, cwd );
+
+			expect( resolver( 'override-directory', options ) ).to.deep.equal( {
+				url: 'git@github.com:foo/bar.git',
+				branch: 'master',
+				directory: 'custom-directory'
+			} );
+		} );
+
+		it( 'ignores modified directory if "resolverTargetDirectory" is set to "npm"', () => {
+			const options = getOptions( {
+				resolverTargetDirectory: 'npm'
+			}, cwd );
+
+			expect( resolver( 'override-directory', options ) ).to.deep.equal( {
+				url: 'git@github.com:foo/bar.git',
+				branch: 'master',
+				directory: 'override-directory'
+			} );
+		} );
+	} );
 } );

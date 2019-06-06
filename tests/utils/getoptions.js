@@ -29,7 +29,11 @@ describe( 'utils', () => {
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
 				scope: null,
-				ignore: null
+				ignore: null,
+				packagesPrefix: [],
+				overrideDirectoryNames: {
+					'override-directory': 'custom-directory'
+				}
 			} );
 		} );
 
@@ -52,7 +56,9 @@ describe( 'utils', () => {
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
 				scope: null,
-				ignore: null
+				ignore: null,
+				packagesPrefix: [],
+				overrideDirectoryNames: {}
 			} );
 		} );
 
@@ -71,7 +77,9 @@ describe( 'utils', () => {
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
 				scope: null,
-				ignore: null
+				ignore: null,
+				packagesPrefix: [],
+				overrideDirectoryNames: {}
 			} );
 		} );
 
@@ -93,7 +101,9 @@ describe( 'utils', () => {
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
 				scope: null,
-				ignore: null
+				ignore: null,
+				packagesPrefix: [],
+				overrideDirectoryNames: {}
 			} );
 		} );
 	} );
