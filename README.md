@@ -10,6 +10,29 @@ Multi-repo manager for git. A tool for managing projects build using multiple re
 
 mgit2 is designed to work with [yarn workspaces](https://yarnpkg.com/lang/en/docs/workspaces/) and [Lerna](https://github.com/lerna/lerna) out of the box, hence, it mixes the "package" and "repository" concepts. In other words, every repository is meant to be a single [npm](https://npmjs.com) package. It doesn't mean that you must use it with Lerna and npm, but don't be surprised that mgit2 talks about "packages" and works best with npm packages.
 
+# Table of content
+
+1. [Installation](#installation)
+1. [Usage](#usage)
+1. [Configuration](#configuration)
+    1. [The `dependencies` option](#the-dependencies-option)
+    1. [Recursive cloning](#recursive-cloning)
+    1. [Cloning repositories on CI servers](#cloning-repositories-on-ci-servers)
+    1. [Standard/core branches](#standardcore-branches)
+1. [Commands](#commands)
+    1. [`sync`](#sync)
+    1. [`pull`](#pull)
+    1. [`push`](#push)
+    1. [`fetch`](#fetch)
+    1. [`exec`](#exec)
+    1. [`commit` or `ci`](#commit-alias-ci)
+    1. [`close`](#close)
+    1. [`save`](#save)
+    1. [`status` or `st`](#status-alias-st)
+    1. [`diff`](#diff)
+    1. [`checkout` or `co`](#checkout-alias-co)
+1. [Projects using mgit2](#projects-using-mgit2)
+
 ## Installation
 
 ```bash
