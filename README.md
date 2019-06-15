@@ -185,6 +185,24 @@ If you need to run mgit on a CI server, then configure it to use HTTPS URLs:
 mgit --resolver-url-template="https://github.com/\${ path }.git"
 ```
 
+### Standard/core branches
+
+When you call `mgit sync` or `mgit co` it uses the `master` branch in every repository, unless the repository's branch is defined in `mgit.json`.
+
+If you support only the one main/core branch in your projects, it isn't a problem. But if you have more than one, on every single branch you need modify branches for dependencies in `mgit.json`.
+
+In order to simplify the flow, we introduced the standard/core branches option. It uses the current branch of the main repository in all cases where the branch is not defined in `mgit.json`.
+
+```json
+{
+  ...
+  "standardBranches": [ "master", "stable" ],
+  ...
+}
+```
+
+[Read more about the feature.](https://github.com/cksource/mgit2/issues/103)
+
 You can also use full HTTPS URLs to configure `dependencies` in your `mgit.json`.
 
 ## Commands

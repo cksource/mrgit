@@ -108,5 +108,122 @@ describe( 'utils', () => {
 				directory: 'bar'
 			} );
 		} );
+
+		describe( 'standardBranches support (ticket: #103)', () => {
+			it( 'returns default branch name if standard branches is not specified', () => {
+				const repository = parseRepositoryUrl( 'foo/bar', {
+					urlTemplate: 'https://github.com/${ path }.git',
+					defaultBranch: 'develop',
+					cwdPackageBranch: 'master'
+				} );
+
+				expect( repository ).to.deep.equal( {
+					url: 'https://github.com/foo/bar.git',
+					branch: 'develop',
+					directory: 'bar'
+				} );
+			} );
+
+			it( 'returns default branch name if main package is not a git repository', () => {
+				const repository = parseRepositoryUrl( 'foo/bar', {
+					urlTemplate: 'https://github.com/${ path }.git',
+					defaultBranch: 'develop'
+				} );
+
+				expect( repository ).to.deep.equal( {
+					url: 'https://github.com/foo/bar.git',
+					branch: 'develop',
+					directory: 'bar'
+				} );
+			} );
+
+			it( 'returns "master" as default branch if standard branches and default branch are not specified', () => {
+				const repository = parseRepositoryUrl( 'foo/bar', {
+					urlTemplate: 'https://github.com/${ path }.git',
+					cwdPackageBranch: 'master'
+				} );
+
+				expect( repository ).to.deep.equal( {
+					url: 'https://github.com/foo/bar.git',
+					branch: 'master',
+					directory: 'bar'
+				} );
+			} );
+
+			it( 'returns default branch name if standard branches is an empty array', () => {
+				const repository = parseRepositoryUrl( 'foo/bar', {
+					urlTemplate: 'https://github.com/${ path }.git',
+					defaultBranch: 'develop',
+					standardBranches: [],
+					cwdPackageBranch: 'master'
+				} );
+
+				expect( repository ).to.deep.equal( {
+					url: 'https://github.com/foo/bar.git',
+					branch: 'develop',
+					directory: 'bar'
+				} );
+			} );
+
+			it( 'returns default branch name if the main repo is not whitelisted in "standardBranches" array', () => {
+				const repository = parseRepositoryUrl( 'foo/bar', {
+					urlTemplate: 'https://github.com/${ path }.git',
+					defaultBranch: 'develop',
+					standardBranches: [ 'stable' ],
+					cwdPackageBranch: 'master'
+				} );
+
+				expect( repository ).to.deep.equal( {
+					url: 'https://github.com/foo/bar.git',
+					branch: 'develop',
+					directory: 'bar'
+				} );
+			} );
+
+			it( 'returns the "cwdPackageBranch" value if a branch is not specified and the value is whitelisted', () => {
+				const repository = parseRepositoryUrl( 'foo/bar', {
+					urlTemplate: 'https://github.com/${ path }.git',
+					defaultBranch: 'develop',
+					standardBranches: [ 'stable', 'master' ],
+					cwdPackageBranch: 'stable'
+				} );
+
+				expect( repository ).to.deep.equal( {
+					url: 'https://github.com/foo/bar.git',
+					branch: 'stable',
+					directory: 'bar'
+				} );
+			} );
+
+			it( 'ignores options if a branch is specified in the repository URL', () => {
+				const repository = parseRepositoryUrl( 'foo/bar#mgit', {
+					urlTemplate: 'https://github.com/${ path }.git',
+					defaultBranch: 'develop',
+					standardBranches: [ 'stable' ],
+					cwdPackageBranch: 'master'
+				} );
+
+				expect( repository ).to.deep.equal( {
+					url: 'https://github.com/foo/bar.git',
+					branch: 'mgit',
+					directory: 'bar'
+				} );
+			} );
+
+			it( 'ignores options if a branch is specified in the repository URL ("standardBranches" contains "cwdPackageBranch")', () => {
+				const repository = parseRepositoryUrl( 'foo/bar#mgit', {
+					urlTemplate: 'https://github.com/${ path }.git',
+					defaultBranch: 'develop',
+					standardBranches: [ 'master' ],
+					cwdPackageBranch: 'master'
+				} );
+
+				expect( repository ).to.deep.equal( {
+					url: 'https://github.com/foo/bar.git',
+					branch: 'mgit',
+					directory: 'bar'
+				} );
+			} );
+		} );
 	} );
 } );
