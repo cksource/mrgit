@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -14,7 +14,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/sync', () => {
-	let syncCommand, stubs, mgitOptions, commandData;
+	let syncCommand, stubs, toolOptions, commandData;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -42,7 +42,7 @@ describe( 'commands/sync', () => {
 			repositoryResolver: sinon.stub()
 		};
 
-		mgitOptions = {
+		toolOptions = {
 			cwd: '/tmp',
 			packages: '/tmp/packages',
 			resolverPath: 'PATH_TO_RESOLVER'
@@ -51,7 +51,7 @@ describe( 'commands/sync', () => {
 		commandData = {
 			arguments: [],
 			packageName: 'test-package',
-			mgitOptions,
+			toolOptions,
 			repository: {
 				directory: 'test-package',
 				url: 'git@github.com/organization/test-package.git',
@@ -107,8 +107,8 @@ describe( 'commands/sync', () => {
 			} );
 
 			it( 'clones dependencies of installed package', () => {
-				mgitOptions.recursive = true;
-				commandData.mgitOptions.packages = __dirname + '/../fixtures';
+				toolOptions.recursive = true;
+				commandData.toolOptions.packages = __dirname + '/../fixtures';
 				commandData.repository.directory = 'project-a';
 
 				stubs.fs.existsSync.returns( false );
@@ -122,9 +122,9 @@ describe( 'commands/sync', () => {
 			} );
 
 			it( 'clones dev-dependencies of installed package', () => {
-				mgitOptions.recursive = true;
-				commandData.mgitOptions.packages = __dirname + '/../fixtures';
-				commandData.repository.directory = 'project-with-options-in-mgitjson';
+				toolOptions.recursive = true;
+				commandData.toolOptions.packages = __dirname + '/../fixtures';
+				commandData.repository.directory = 'project-with-options-in-mrgitjson';
 
 				stubs.fs.existsSync.returns( false );
 				stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
@@ -136,7 +136,7 @@ describe( 'commands/sync', () => {
 					} );
 			} );
 
-			describe( 'repeat installation process', function() {
+			describe( 'repeats installation process', function() {
 				this.timeout( 5500 );
 
 				const cloneCommand = 'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"';
@@ -462,7 +462,7 @@ describe( 'commands/sync', () => {
 	} );
 
 	describe( 'afterExecute()', () => {
-		it( 'informs about number of processed packages and differences between packages in directory and defined in mgit.json', () => {
+		it( 'informs about number of processed packages and differences between packages in directory and defined in mrgit.json', () => {
 			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
 
 			const consoleLog = sinon.stub( console, 'log' );
@@ -471,7 +471,7 @@ describe( 'commands/sync', () => {
 			processedPackages.add( 'package-1' );
 			processedPackages.add( 'package-2' );
 
-			mgitOptions.dependencies = {
+			toolOptions.dependencies = {
 				'package-1': 'foo/package-1',
 				'package-2': 'foo/package-2',
 			};
@@ -498,18 +498,18 @@ describe( 'commands/sync', () => {
 				}
 			} );
 
-			syncCommand.afterExecute( processedPackages, null, mgitOptions );
+			syncCommand.afterExecute( processedPackages, null, toolOptions );
 			consoleLog.restore();
 
 			expect( consoleLog.callCount ).to.equal( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
-				/Paths to directories listed below are skipped by mgit because they are not defined in "mgit\.json":/
+				/Paths to directories listed below are skipped by mrgit because they are not defined in "mrgit\.json":/
 			);
 			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/package-3/ );
 		} );
 
-		it( 'informs about differences between packages in directory and defined in mgit.json for scopes packages', () => {
+		it( 'informs about differences between packages in directory and defined in mrgit.json for scopes packages', () => {
 			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
 
 			const consoleLog = sinon.stub( console, 'log' );
@@ -518,7 +518,7 @@ describe( 'commands/sync', () => {
 			processedPackages.add( 'package-1' );
 			processedPackages.add( 'package-2' );
 
-			mgitOptions.dependencies = {
+			toolOptions.dependencies = {
 				'package-1': 'foo/package-1',
 				'package-2': 'foo/package-2',
 			};
@@ -556,18 +556,18 @@ describe( 'commands/sync', () => {
 				}
 			} );
 
-			syncCommand.afterExecute( processedPackages, null, mgitOptions );
+			syncCommand.afterExecute( processedPackages, null, toolOptions );
 			consoleLog.restore();
 
 			expect( consoleLog.callCount ).to.equal( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
-				/Paths to directories listed below are skipped by mgit because they are not defined in "mgit\.json":/
+				/Paths to directories listed below are skipped by mrgit because they are not defined in "mrgit\.json":/
 			);
 			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/@foo\/package-3/ );
 		} );
 
-		it( 'does not inform about differences between packages in directory and defined in mgit.json if everything seems to be ok', () => {
+		it( 'does not inform about differences between packages in directory and defined in mrgit.json if everything is ok', () => {
 			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
 
 			const consoleLog = sinon.stub( console, 'log' );
@@ -576,7 +576,7 @@ describe( 'commands/sync', () => {
 			processedPackages.add( 'package-1' );
 			processedPackages.add( 'package-2' );
 
-			mgitOptions.dependencies = {
+			toolOptions.dependencies = {
 				'package-1': 'foo/package-1',
 				'package-2': 'foo/package-2',
 			};
@@ -595,7 +595,7 @@ describe( 'commands/sync', () => {
 				}
 			} );
 
-			syncCommand.afterExecute( processedPackages, null, mgitOptions );
+			syncCommand.afterExecute( processedPackages, null, toolOptions );
 
 			expect( consoleLog.callCount ).to.equal( 1 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );

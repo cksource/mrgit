@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -12,7 +12,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/checkout', () => {
-	let checkoutCommand, stubs, commandData, mgitOptions;
+	let checkoutCommand, stubs, commandData, toolOptions;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -28,14 +28,14 @@ describe( 'commands/checkout', () => {
 			gitStatusParser: sinon.stub()
 		};
 
-		mgitOptions = {};
+		toolOptions = {};
 
 		commandData = {
 			arguments: [],
 			repository: {
 				branch: 'master'
 			},
-			mgitOptions
+			toolOptions
 		};
 
 		mockery.registerMock( './exec', stubs.execCommand );
@@ -101,7 +101,7 @@ describe( 'commands/checkout', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git checkout master' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -131,7 +131,7 @@ describe( 'commands/checkout', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git checkout develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -142,7 +142,7 @@ describe( 'commands/checkout', () => {
 		} );
 
 		it( 'creates a new branch if a repository has changes that could be committed and specified --branch option', () => {
-			mgitOptions.branch = 'develop';
+			toolOptions.branch = 'develop';
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
@@ -171,7 +171,7 @@ describe( 'commands/checkout', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
@@ -179,7 +179,7 @@ describe( 'commands/checkout', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git checkout -b develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -189,7 +189,7 @@ describe( 'commands/checkout', () => {
 		} );
 
 		it( 'does not create a branch if a repository has no-changes that could be committed when specified --branch option', () => {
-			mgitOptions.branch = 'develop';
+			toolOptions.branch = 'develop';
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
@@ -210,7 +210,7 @@ describe( 'commands/checkout', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [

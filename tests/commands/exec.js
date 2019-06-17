@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -38,10 +38,10 @@ describe( 'commands/exec', () => {
 
 		commandData = {
 			// Command `#execute` function is called without the "exec" command.
-			// `mgit exec pwd` => [ 'pwd' ]
+			// `mrgit exec pwd` => [ 'pwd' ]
 			arguments: [ 'pwd' ],
 			packageName: 'test-package',
-			mgitOptions: {
+			toolOptions: {
 				cwd: __dirname,
 				packages: 'packages'
 			},
@@ -70,9 +70,9 @@ describe( 'commands/exec', () => {
 	describe( 'beforeExecute()', () => {
 		it( 'throws an error if command to execute is not specified', () => {
 			expect( () => {
-				// `beforeExecute` is called with full user's input (mgit exec [command-to-execute]).
+				// `beforeExecute` is called with full user's input (mrgit exec [command-to-execute]).
 				execCommand.beforeExecute( [ 'exec' ] );
-			} ).to.throw( Error, 'Missing command to execute. Use: mgit exec [command-to-execute].' );
+			} ).to.throw( Error, 'Missing command to execute. Use: mrgit exec [command-to-execute].' );
 		} );
 
 		it( 'does nothing if command is specified', () => {
@@ -92,7 +92,7 @@ describe( 'commands/exec', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						const err = 'Package "test-package" is not available. Run "mgit sync" in order to download the package.';
+						const err = 'Package "test-package" is not available. Run "mrgit sync" in order to download the package.';
 						expect( response.logs.error[ 0 ] ).to.equal( err );
 					}
 				);

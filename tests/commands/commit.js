@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -12,7 +12,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/commit', () => {
-	let commitCommand, stubs, commandData, mgitOptions;
+	let commitCommand, stubs, commandData, toolOptions;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -28,14 +28,14 @@ describe( 'commands/commit', () => {
 			gitStatusParser: sinon.stub()
 		};
 
-		mgitOptions = {};
+		toolOptions = {};
 
 		commandData = {
 			arguments: [],
 			repository: {
 				branch: 'master'
 			},
-			mgitOptions
+			toolOptions
 		};
 
 		mockery.registerMock( './exec', stubs.execCommand );
@@ -68,7 +68,7 @@ describe( 'commands/commit', () => {
 
 			expect( () => {
 				commitCommand.beforeExecute( [ 'commit' ], {} );
-			} ).to.throw( Error, 'Missing --message (-m) option. Call "mgit commit -h" in order to read more.' );
+			} ).to.throw( Error, 'Missing --message (-m) option. Call "mrgit commit -h" in order to read more.' );
 		} );
 
 		it( 'does nothing if specified message for commit (as git option)', () => {
@@ -77,7 +77,7 @@ describe( 'commands/commit', () => {
 			} ).to.not.throw( Error );
 		} );
 
-		it( 'does nothing if specified message for commit (as mgit option)', () => {
+		it( 'does nothing if specified message for commit (as mrgit option)', () => {
 			expect( () => {
 				commitCommand.beforeExecute( [ 'commit' ], { message: 'Test.' } );
 			} ).to.not.throw( Error );
@@ -106,7 +106,7 @@ describe( 'commands/commit', () => {
 		} );
 
 		it( 'commits all changes', () => {
-			mgitOptions.message = 'Test.';
+			toolOptions.message = 'Test.';
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
@@ -135,7 +135,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
@@ -143,7 +143,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git commit -a -m "Test."' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -183,7 +183,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
@@ -191,7 +191,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git commit -a -m "Test."' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -232,7 +232,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
@@ -240,7 +240,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git commit -a -m "Test" -n' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -250,7 +250,7 @@ describe( 'commands/commit', () => {
 		} );
 
 		it( 'accepts duplicated `--message` option', () => {
-			mgitOptions.message = [
+			toolOptions.message = [
 				'Test.',
 				'Foo.'
 			];
@@ -282,7 +282,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
@@ -290,7 +290,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git commit -a -m "Test." -m "Foo."' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -332,7 +332,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
@@ -340,7 +340,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git commit -a -m "Test." -m "Foo."' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -372,7 +372,7 @@ describe( 'commands/commit', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [

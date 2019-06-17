@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -46,25 +46,25 @@ describe( 'default resolver()', () => {
 
 		it( 'returns original URL if git URL is specified', () => {
 			expect( resolver( 'full-url-git', options ) ).to.deep.equal( {
-				url: 'git@github.com:cksource/mgit2.git',
+				url: 'git@github.com:cksource/mrgit.git',
 				branch: 'master',
-				directory: 'mgit2'
+				directory: 'mrgit'
 			} );
 		} );
 
 		it( 'returns original URL and branch if git URL is specified', () => {
 			expect( resolver( 'full-url-git-with-branch', options ) ).to.deep.equal( {
-				url: 'git@github.com:cksource/mgit2.git',
+				url: 'git@github.com:cksource/mrgit.git',
 				branch: 'xyz',
-				directory: 'mgit2'
+				directory: 'mrgit'
 			} );
 		} );
 
 		it( 'returns original URL if HTTPS URL is specified', () => {
 			expect( resolver( 'full-url-https', options ) ).to.deep.equal( {
-				url: 'https://github.com/cksource/mgit2.git',
+				url: 'https://github.com/cksource/mrgit.git',
 				branch: 'master',
-				directory: 'mgit2'
+				directory: 'mrgit'
 			} );
 		} );
 	} );
@@ -84,9 +84,9 @@ describe( 'default resolver()', () => {
 
 		it( 'returns original URL if git URL is specified', () => {
 			expect( resolver( 'full-url-git', options ) ).to.deep.equal( {
-				url: 'git@github.com:cksource/mgit2.git',
+				url: 'git@github.com:cksource/mrgit.git',
 				branch: 'master',
-				directory: 'mgit2'
+				directory: 'mrgit'
 			} );
 		} );
 	} );

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -33,15 +33,15 @@ function handleCli() {
 		}
 	};
 
-	const mgitLogo = `
-                     _ _
-                    (_) |
-     _ __ ___   __ _ _| |_
-    | '_ \` _ \\ / _\` | | __|
-    | | | | | | (_| | | |_
-    |_| |_| |_|\\__, |_|\\__|
-                __/ |
-               |___/
+	const logo = `
+                            _ _   
+                           (_) |  
+     _ __ ___  _ __    __ _ _| |_ 
+    | '_ \` _ \\| '__|  / _\` | | __|
+    | | | | | | | _  | (_| | | |_ 
+    |_| |_| |_|_|(_)  \\__, |_|\\__|
+                       __/ |      
+                      |___/       
 `;
 
 	const {
@@ -52,7 +52,7 @@ function handleCli() {
 		yellow: y,
 	} = chalk;
 
-	const cli = meow( `${ mgitLogo }
+	const cli = meow( `${ logo }
     ${ u( 'Usage:' ) }
         $ mgit ${ c( 'command' ) } ${ y( '[--options]' ) } -- ${ m( '[--git-options]' ) }
 
@@ -91,7 +91,7 @@ function handleCli() {
         ${ y( '--recursive' ) }                 Whether to install dependencies recursively. Used only by "${ u( 'sync' ) }" command.
 
         ${ y( '--resolver-path' ) }             Path to a custom repository resolver function.
-                                    ${ g( 'Default: \'@mgit2/lib/default-resolver.js\'' ) }
+                                    ${ g( 'Default: \'@mrgit/lib/default-resolver.js\'' ) }
 
         ${ y( '--resolver-url-template' ) }     Template used to generate repository URL out of a
                                     simplified 'organization/repository' format of the dependencies option.
@@ -141,7 +141,7 @@ function handleCli() {
 	}
 
 	// Specified command is is available, displays the command's help.
-	console.log( mgitLogo );
+	console.log( logo );
 	console.log( `    ${ u( 'Command:' ) } ${ c( commandInstance.name || commandName ) } ` );
 	console.log( commandInstance.helpMessage );
 }

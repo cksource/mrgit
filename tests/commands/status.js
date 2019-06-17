@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -43,7 +43,7 @@ describe( 'commands/status', () => {
 		};
 
 		commandData = {
-			mgitOptions: {
+			toolOptions: {
 				packagesPrefix: '@ckeditor/ckeditor5-'
 			},
 			repository: {
@@ -165,7 +165,7 @@ describe( 'commands/status', () => {
 						packageName: 'test-package',
 						commit: '6bfd379',
 						status: { response: 'Parsed response.' },
-						mgitBranch: 'master'
+						mrgitBranch: 'master'
 					} );
 				} );
 
@@ -177,7 +177,7 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'modifies the package name if "packagesPrefix" is an array', () => {
-			commandData.mgitOptions.packagesPrefix = [
+			commandData.toolOptions.packagesPrefix = [
 				'@ckeditor/ckeditor-',
 				'@ckeditor/ckeditor5-',
 			];
@@ -212,7 +212,7 @@ describe( 'commands/status', () => {
 						packageName: 'test-package',
 						commit: '6bfd379',
 						status: { response: 'Parsed response.' },
-						mgitBranch: 'master'
+						mrgitBranch: 'master'
 					} );
 				} );
 
@@ -224,8 +224,8 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'does not modify the package name if "packagesPrefix" option is not specified', () => {
-			// Mgit resolves this option to be an empty array if it isn't specified.
-			commandData.mgitOptions.packagesPrefix = [];
+			// mrgit resolves this option to be an empty array if it isn't specified.
+			commandData.toolOptions.packagesPrefix = [];
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
@@ -246,7 +246,7 @@ describe( 'commands/status', () => {
 						packageName: '@ckeditor/ckeditor5-test-package',
 						commit: '6bfd379',
 						status: { response: 'Parsed response.' },
-						mgitBranch: 'master'
+						mrgitBranch: 'master'
 					} );
 				} );
 		} );
@@ -300,7 +300,7 @@ describe( 'commands/status', () => {
 					modified: [ 'README.md' ],
 					untracked: [],
 				},
-				mgitBranch: 'master',
+				mrgitBranch: 'master',
 				commit: 'abcd123'
 			} );
 
@@ -314,7 +314,7 @@ describe( 'commands/status', () => {
 					modified: [],
 					untracked: [ 'CHANGELOG.md' ],
 				},
-				mgitBranch: 't/1',
+				mrgitBranch: 't/1',
 				commit: 'ef45678'
 			} );
 
@@ -364,7 +364,7 @@ describe( 'commands/status', () => {
 					modified: [],
 					untracked: [],
 				},
-				mgitBranch: 'master',
+				mrgitBranch: 'master',
 				commit: 'abcd123'
 			} );
 
@@ -392,7 +392,7 @@ describe( 'commands/status', () => {
 					modified: [],
 					untracked: [],
 				},
-				mgitBranch: 'master',
+				mrgitBranch: 'master',
 				commit: 'abcd123'
 			} );
 
@@ -402,7 +402,7 @@ describe( 'commands/status', () => {
 			logStub.restore();
 		} );
 
-		it( 'adds "!" before the branch name if current branch is other than defined in "mgit.json"', () => {
+		it( 'adds "!" before the branch name if current branch is other than defined in "mrgit.json"', () => {
 			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
@@ -420,7 +420,7 @@ describe( 'commands/status', () => {
 					modified: [],
 					untracked: [],
 				},
-				mgitBranch: 'master',
+				mrgitBranch: 'master',
 				commit: 'ef45678'
 			} );
 
@@ -472,7 +472,7 @@ describe( 'commands/status', () => {
 						modified: [],
 						untracked: [],
 					},
-					mgitBranch: 'master',
+					mrgitBranch: 'master',
 					commit
 				};
 			}
