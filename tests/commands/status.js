@@ -299,6 +299,7 @@ describe( 'commands/status', () => {
 					staged: [],
 					modified: [ 'README.md' ],
 					untracked: [],
+					unmerged: []
 				},
 				mgitBranch: 'master',
 				commit: 'abcd123'
@@ -313,6 +314,7 @@ describe( 'commands/status', () => {
 					staged: [ 'gulpfile.js' ],
 					modified: [],
 					untracked: [ 'CHANGELOG.md' ],
+					unmerged: []
 				},
 				mgitBranch: 't/1',
 				commit: 'ef45678'
@@ -363,6 +365,7 @@ describe( 'commands/status', () => {
 					staged: [],
 					modified: [],
 					untracked: [],
+					unmerged: []
 				},
 				mgitBranch: 'master',
 				commit: 'abcd123'
@@ -391,6 +394,7 @@ describe( 'commands/status', () => {
 					staged: [],
 					modified: [],
 					untracked: [],
+					unmerged: []
 				},
 				mgitBranch: 'master',
 				commit: 'abcd123'
@@ -419,6 +423,7 @@ describe( 'commands/status', () => {
 					staged: [],
 					modified: [],
 					untracked: [],
+					unmerged: []
 				},
 				mgitBranch: 'master',
 				commit: 'ef45678'
@@ -471,11 +476,60 @@ describe( 'commands/status', () => {
 						staged: [],
 						modified: [],
 						untracked: [],
+						unmerged: []
 					},
 					mgitBranch: 'master',
 					commit
 				};
 			}
+		} );
+
+		it( 'counts unmerged files as modified', () => {
+			const logStub = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-foo' );
+
+			commandResponses.add( {
+				packageName: 'foo',
+				status: {
+					branch: 'master',
+					ahead: 0,
+					behind: 2,
+					staged: [],
+					modified: [ 'README.md' ],
+					untracked: [],
+					unmerged: [ '.travis.yml' ]
+				},
+				mgitBranch: 'master',
+				commit: 'abcd123'
+			} );
+
+			stubs.table.toString.returns( '┻━┻' );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
+				head: [ 'Package', 'Branch', 'Commit', 'Status' ],
+				style: {
+					compact: true
+				}
+			} );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'foo', 'master ↓2', 'abcd123', 'M2' ]
+			);
+
+			expect( stubs.table.toString.calledOnce ).to.equal( true );
+
+			expect( logStub.calledTwice ).to.equal( true );
+			expect( logStub.firstCall.args[ 0 ] ).to.equal( '┻━┻' );
+			expect( logStub.secondCall.args[ 0 ] ).to.match( /^Legend:/ );
+			expect( stubs.chalk.cyan.calledOnce ).to.equal( true );
+
+			logStub.restore();
 		} );
 	} );
 } );
