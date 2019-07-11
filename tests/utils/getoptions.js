@@ -115,6 +115,34 @@ describe( 'utils', () => {
 			} );
 		} );
 
+		it( 'returns "packagesPrefix" as array', () => {
+			const options = getOptions( {
+				packagesPrefix: 'ckeditor5-'
+			}, cwd );
+
+			expect( options ).to.have.property( 'dependencies' );
+
+			delete options.dependencies;
+
+			expect( options ).to.deep.equal( {
+				cwd,
+				packages: path.resolve( cwd, 'packages' ),
+				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				resolverUrlTemplate: 'git@github.com:${ path }.git',
+				resolverTargetDirectory: 'git',
+				resolverDefaultBranch: 'master',
+				scope: null,
+				ignore: null,
+				packagesPrefix: [
+					'ckeditor5-'
+				],
+				overrideDirectoryNames: {
+					'override-directory': 'custom-directory'
+				},
+				standardBranches: []
+			} );
+		} );
+
 		it( 'attaches to options branch name from the cwd directory (if in git repository)', () => {
 			const fsExistsStub = sinon.stub( fs, 'existsSync' );
 			const shelljsStub = sinon.stub( shell, 'exec' );
