@@ -26,7 +26,7 @@
     "upath": "^1.1.2"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-env": "^14.1.2",
+    "@ckeditor/ckeditor5-dev-env": "^15.0.0",
     "chai": "^4.2.0",
     "eslint": "^6.0.1",
     "eslint-config-ckeditor5": "^2.0.0",

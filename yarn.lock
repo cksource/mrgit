@@ -18,10 +18,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@ckeditor/ckeditor5-dev-env@^14.1.2":
-  version "14.1.2"
-  resolved "https://registry.yarnpkg.com/@ckeditor/ckeditor5-dev-env/-/ckeditor5-dev-env-14.1.2.tgz#5021cfb2ea729f18d9a32f3924939e1ff7b398de"
-  integrity sha512-jsveYSRlPyYMv7tB0T0z4ESyE39kmyBmotN67UpJ+jIRGzdrIDS0ntR/JeqPu6UYrad11JvpYoZOXJuDqIn7YQ==
+"@ckeditor/ckeditor5-dev-env@^15.0.0":
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/@ckeditor/ckeditor5-dev-env/-/ckeditor5-dev-env-15.0.0.tgz#618066724af8dd8b0faa4d8215262b763da151a0"
+  integrity sha512-bygTzcd7lPjiRuVHZkbKnRv/M4yLgNxSAFznggVVTNRktL3yJ7wUmIFsH+RFkyBTX6YyZYLU5Af57jtuh/WMoQ==
   dependencies:
     "@ckeditor/ckeditor5-dev-utils" "^12.0.2"
     "@octokit/rest" "^16.28.2"
