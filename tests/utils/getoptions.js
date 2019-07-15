@@ -9,7 +9,11 @@
 
 const getOptions = require( '../../lib/utils/getoptions' );
 const path = require( 'upath' );
+const fs = require( 'fs' );
+const shell = require( 'shelljs' );
 const expect = require( 'chai' ).expect;
+const sinon = require( 'sinon' );
+
 const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-a' );
 
 describe( 'utils', () => {
@@ -33,7 +37,8 @@ describe( 'utils', () => {
 				packagesPrefix: [],
 				overrideDirectoryNames: {
 					'override-directory': 'custom-directory'
-				}
+				},
+				baseBranches: []
 			} );
 		} );
 
@@ -58,7 +63,8 @@ describe( 'utils', () => {
 				scope: null,
 				ignore: null,
 				packagesPrefix: [],
-				overrideDirectoryNames: {}
+				overrideDirectoryNames: {},
+				baseBranches: []
 			} );
 		} );
 
@@ -79,7 +85,8 @@ describe( 'utils', () => {
 				scope: null,
 				ignore: null,
 				packagesPrefix: [],
-				overrideDirectoryNames: {}
+				overrideDirectoryNames: {},
+				baseBranches: []
 			} );
 		} );
 
@@ -103,8 +110,73 @@ describe( 'utils', () => {
 				scope: null,
 				ignore: null,
 				packagesPrefix: [],
-				overrideDirectoryNames: {}
+				overrideDirectoryNames: {},
+				baseBranches: []
 			} );
+		} );
+
+		it( 'returns "packagesPrefix" as array', () => {
+			const options = getOptions( {
+				packagesPrefix: 'ckeditor5-'
+			}, cwd );
+
+			expect( options ).to.have.property( 'dependencies' );
+
+			delete options.dependencies;
+
+			expect( options ).to.deep.equal( {
+				cwd,
+				packages: path.resolve( cwd, 'packages' ),
+				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				resolverUrlTemplate: 'git@github.com:${ path }.git',
+				resolverTargetDirectory: 'git',
+				resolverDefaultBranch: 'master',
+				scope: null,
+				ignore: null,
+				packagesPrefix: [
+					'ckeditor5-'
+				],
+				overrideDirectoryNames: {
+					'override-directory': 'custom-directory'
+				},
+				baseBranches: []
+			} );
+		} );
+
+		it( 'attaches to options branch name from the cwd directory (if in git repository)', () => {
+			const fsExistsStub = sinon.stub( fs, 'existsSync' );
+			const shelljsStub = sinon.stub( shell, 'exec' );
+
+			fsExistsStub.returns( true );
+			shelljsStub.returns( {
+				stdout: 'master\n'
+			} );
+
+			const options = getOptions( {}, cwd );
+
+			expect( options ).to.have.property( 'dependencies' );
+
+			delete options.dependencies;
+
+			expect( options ).to.deep.equal( {
+				cwd,
+				packages: path.resolve( cwd, 'packages' ),
+				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				resolverUrlTemplate: 'git@github.com:${ path }.git',
+				resolverTargetDirectory: 'git',
+				resolverDefaultBranch: 'master',
+				scope: null,
+				ignore: null,
+				packagesPrefix: [],
+				overrideDirectoryNames: {
+					'override-directory': 'custom-directory'
+				},
+				baseBranches: [],
+				cwdPackageBranch: 'master'
+			} );
+
+			fsExistsStub.restore();
+			shelljsStub.restore();
 		} );
 	} );
 } );
