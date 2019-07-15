@@ -109,8 +109,8 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		describe( 'standardBranches support (ticket: #103)', () => {
-			it( 'returns default branch name if standard branches is not specified', () => {
+		describe( 'baseBranches support (ticket: #103)', () => {
+			it( 'returns default branch name if base branches is not specified', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
@@ -137,7 +137,7 @@ describe( 'utils', () => {
 				} );
 			} );
 
-			it( 'returns "master" as default branch if standard branches and default branch are not specified', () => {
+			it( 'returns "master" as default branch if base branches and default branch are not specified', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					cwdPackageBranch: 'master'
@@ -150,11 +150,11 @@ describe( 'utils', () => {
 				} );
 			} );
 
-			it( 'returns default branch name if standard branches is an empty array', () => {
+			it( 'returns default branch name if base branches is an empty array', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
-					standardBranches: [],
+					baseBranches: [],
 					cwdPackageBranch: 'master'
 				} );
 
@@ -165,11 +165,11 @@ describe( 'utils', () => {
 				} );
 			} );
 
-			it( 'returns default branch name if the main repo is not whitelisted in "standardBranches" array', () => {
+			it( 'returns default branch name if the main repo is not whitelisted in "baseBranches" array', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
-					standardBranches: [ 'stable' ],
+					baseBranches: [ 'stable' ],
 					cwdPackageBranch: 'master'
 				} );
 
@@ -184,7 +184,7 @@ describe( 'utils', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
-					standardBranches: [ 'stable', 'master' ],
+					baseBranches: [ 'stable', 'master' ],
 					cwdPackageBranch: 'stable'
 				} );
 
@@ -199,7 +199,7 @@ describe( 'utils', () => {
 				const repository = parseRepositoryUrl( 'foo/bar#mgit', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
-					standardBranches: [ 'stable' ],
+					baseBranches: [ 'stable' ],
 					cwdPackageBranch: 'master'
 				} );
 
@@ -210,11 +210,11 @@ describe( 'utils', () => {
 				} );
 			} );
 
-			it( 'ignores options if a branch is specified in the repository URL ("standardBranches" contains "cwdPackageBranch")', () => {
+			it( 'ignores options if a branch is specified in the repository URL ("baseBranches" contains "cwdPackageBranch")', () => {
 				const repository = parseRepositoryUrl( 'foo/bar#mgit', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
-					standardBranches: [ 'master' ],
+					baseBranches: [ 'master' ],
 					cwdPackageBranch: 'master'
 				} );
 

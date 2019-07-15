@@ -18,7 +18,7 @@ mgit2 is designed to work with [yarn workspaces](https://yarnpkg.com/lang/en/doc
     1. [The `dependencies` option](#the-dependencies-option)
     1. [Recursive cloning](#recursive-cloning)
     1. [Cloning repositories on CI servers](#cloning-repositories-on-ci-servers)
-    1. [Standard/core branches](#standardcore-branches)
+    1. [Base branches](#base-branches)
 1. [Commands](#commands)
     1. [`sync`](#sync)
     1. [`pull`](#pull)
@@ -210,23 +210,25 @@ mgit --resolver-url-template="https://github.com/\${ path }.git"
 
 You can also use full HTTPS URLs to configure `dependencies` in your `mgit.json`.
 
-### Standard/core branches
+### Base branches
 
-When you call `mgit sync` or `mgit co` it uses the `master` branch in every repository, unless the repository's branch is defined in `mgit.json`.
+When you call `mgit sync` or `mgit co`, mgit will use the following algorithm to determine the branch to which each repository should be checked out:
 
-If you support only the one main/core branch in your projects, it isn't a problem. But if you have more than one, on every single branch you need modify branches for dependencies in `mgit.json`.
+1. If a branch is defined in `mgit.json`, use it. A branch can be defined after `#` in a repository URL. For example: `"@cksource/foo": "cksource/foo#dev"`.
+2. If the root repository (assuming, it is a repository) is on one of the "base branches", use that branch name.
+3. Otherwise, use `master`.
 
-In order to simplify the flow, we introduced the standard/core branches option. It uses the current branch of the main repository in all cases where the branch is not defined in `mgit.json`.
+You can define the base branches as follows:
 
 ```json
 {
   ...
-  "standardBranches": [ "master", "stable" ],
+  "baseBranches": [ "master", "stable" ],
   ...
 }
 ```
 
-[Read more about the feature.](https://github.com/cksource/mgit2/issues/103)
+With this configuration, if the root repository is on `stable`, calling `mgit co` will check out all repositories to `stable`. If you change the branch of the root repository to `master` and call `mgit co`, all sub repositories will be checked out to `master`.
 
 ## Commands
 

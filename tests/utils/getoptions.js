@@ -38,7 +38,7 @@ describe( 'utils', () => {
 				overrideDirectoryNames: {
 					'override-directory': 'custom-directory'
 				},
-				standardBranches: []
+				baseBranches: []
 			} );
 		} );
 
@@ -64,7 +64,7 @@ describe( 'utils', () => {
 				ignore: null,
 				packagesPrefix: [],
 				overrideDirectoryNames: {},
-				standardBranches: []
+				baseBranches: []
 			} );
 		} );
 
@@ -86,7 +86,7 @@ describe( 'utils', () => {
 				ignore: null,
 				packagesPrefix: [],
 				overrideDirectoryNames: {},
-				standardBranches: []
+				baseBranches: []
 			} );
 		} );
 
@@ -111,7 +111,7 @@ describe( 'utils', () => {
 				ignore: null,
 				packagesPrefix: [],
 				overrideDirectoryNames: {},
-				standardBranches: []
+				baseBranches: []
 			} );
 		} );
 
@@ -139,7 +139,7 @@ describe( 'utils', () => {
 				overrideDirectoryNames: {
 					'override-directory': 'custom-directory'
 				},
-				standardBranches: []
+				baseBranches: []
 			} );
 		} );
 
@@ -171,7 +171,7 @@ describe( 'utils', () => {
 				overrideDirectoryNames: {
 					'override-directory': 'custom-directory'
 				},
-				standardBranches: [],
+				baseBranches: [],
 				cwdPackageBranch: 'master'
 			} );
 
