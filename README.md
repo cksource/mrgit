@@ -10,6 +10,29 @@ Multi-repo manager for git. A tool for managing projects build using multiple re
 
 `mrgit` is designed to work with [yarn workspaces](https://yarnpkg.com/lang/en/docs/workspaces/) and [Lerna](https://github.com/lerna/lerna) out of the box, hence, it mixes the "package" and "repository" concepts. In other words, every repository is meant to be a single [npm](https://npmjs.com) package. It doesn't mean that you must use it with Lerna and npm, but don't be surprised that mrgit talks about "packages" and works best with npm packages.
 
+# Table of content
+
+1. [Installation](#installation)
+1. [Usage](#usage)
+1. [Configuration](#configuration)
+    1. [The `dependencies` option](#the-dependencies-option)
+    1. [Recursive cloning](#recursive-cloning)
+    1. [Cloning repositories on CI servers](#cloning-repositories-on-ci-servers)
+    1. [Base branches](#base-branches)
+1. [Commands](#commands)
+    1. [`sync`](#sync)
+    1. [`pull`](#pull)
+    1. [`push`](#push)
+    1. [`fetch`](#fetch)
+    1. [`exec`](#exec)
+    1. [`commit` or `ci`](#commit-alias-ci)
+    1. [`close`](#close)
+    1. [`save`](#save)
+    1. [`status` or `st`](#status-alias-st)
+    1. [`diff`](#diff)
+    1. [`checkout` or `co`](#checkout-alias-co)
+1. [Projects using mgit2](#projects-using-mgit2)
+
 ## Installation
 
 ```bash
@@ -184,6 +207,26 @@ mrgit --resolver-url-template="https://github.com/\${ path }.git"
 ```
 
 You can also use full HTTPS URLs to configure `dependencies` in your `mrgit.json`.
+
+### Base branches
+
+When you call `mgit sync` or `mgit co`, mgit will use the following algorithm to determine the branch to which each repository should be checked out:
+
+1. If a branch is defined in `mgit.json`, use it. A branch can be defined after `#` in a repository URL. For example: `"@cksource/foo": "cksource/foo#dev"`.
+2. If the root repository (assuming, it is a repository) is on one of the "base branches", use that branch name.
+3. Otherwise, use `master`.
+
+You can define the base branches as follows:
+
+```json
+{
+  ...
+  "baseBranches": [ "master", "stable" ],
+  ...
+}
+```
+
+With this configuration, if the root repository is on `stable`, calling `mgit co` will check out all repositories to `stable`. If you change the branch of the root repository to `master` and call `mgit co`, all sub repositories will be checked out to `master`.
 
 ## Commands
 
