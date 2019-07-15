@@ -8,7 +8,8 @@ Changelog
 * Allows cloning packages using the `file://` protocol. Closes [#101](https://github.com/cksource/mgit2/issues/101). ([d0aa893](https://github.com/cksource/mgit2/commit/d0aa893))
 
   Thanks to [@neumann-d](https://github.com/neumann-d)!
-* Support for base branches. Closes [#103](https://github.com/cksource/mgit2/issues/103). ([51eded0](https://github.com/cksource/mgit2/commit/51eded0))
+* Added support for base branches. Closes [#103](https://github.com/cksource/mgit2/issues/103). ([51eded0](https://github.com/cksource/mgit2/commit/51eded0))
+* Introduced the `overrideDirectoryNames` option in `mgit.json`. Closes [#98](https://github.com/cksource/mgit2/issues/98).
 
 ### Bug fixes
 
