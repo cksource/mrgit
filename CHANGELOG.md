@@ -1,6 +1,20 @@
 Changelog
 =========
 
+## [0.11.0](https://github.com/cksource/mgit2/compare/v0.10.1...v0.11.0) (2019-07-15)
+
+### Features
+
+* Allows cloning packages using the `file://` protocol. Closes [#101](https://github.com/cksource/mgit2/issues/101). ([d0aa893](https://github.com/cksource/mgit2/commit/d0aa893))
+
+  Thanks to [@neumann-d](https://github.com/neumann-d)!
+* Support for base branches. Closes [#103](https://github.com/cksource/mgit2/issues/103). ([51eded0](https://github.com/cksource/mgit2/commit/51eded0))
+
+### Bug fixes
+
+* Number of unmerged files will be shown as "modified" in the table while execution the status command. Closes [#107](https://github.com/cksource/mgit2/issues/107). ([5481260](https://github.com/cksource/mgit2/commit/5481260))
+
+
 ## [0.10.1](https://github.com/cksource/mgit2/compare/v0.10.0...v0.10.1) (2019-01-14)
 
 ### Bug fixes
