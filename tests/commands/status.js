@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -176,8 +176,56 @@ describe( 'commands/status', () => {
 			}
 		} );
 
+		it( 'modifies the package name if "packagesPrefix" is an array', () => {
+			commandData.mgitOptions.packagesPrefix = [
+				'@ckeditor/ckeditor-',
+				'@ckeditor/ckeditor5-',
+			];
+
+			stubs.execCommand.execute.onFirstCall().resolves( {
+				logs: {
+					info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ]
+				}
+			} );
+			stubs.execCommand.execute.onSecondCall().resolves( {
+				logs: {
+					info: [ 'Response returned by "git status" command.' ]
+				}
+			} );
+
+			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
+
+			return statusCommand.execute( commandData )
+				.then( statusResponse => {
+					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git rev-parse HEAD' )
+					);
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git status --branch --porcelain' )
+					);
+
+					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
+
+					expect( statusResponse.response ).to.deep.equal( {
+						packageName: 'test-package',
+						commit: '6bfd379',
+						status: { response: 'Parsed response.' },
+						mgitBranch: 'master'
+					} );
+				} );
+
+			function getCommandArguments( command ) {
+				return Object.assign( {}, commandData, {
+					arguments: [ command ]
+				} );
+			}
+		} );
+
 		it( 'does not modify the package name if "packagesPrefix" option is not specified', () => {
-			delete commandData.mgitOptions.packagesPrefix;
+			// Mgit resolves this option to be an empty array if it isn't specified.
+			commandData.mgitOptions.packagesPrefix = [];
 
 			stubs.execCommand.execute.onFirstCall().resolves( {
 				logs: {
@@ -251,6 +299,7 @@ describe( 'commands/status', () => {
 					staged: [],
 					modified: [ 'README.md' ],
 					untracked: [],
+					unmerged: []
 				},
 				mgitBranch: 'master',
 				commit: 'abcd123'
@@ -265,6 +314,7 @@ describe( 'commands/status', () => {
 					staged: [ 'gulpfile.js' ],
 					modified: [],
 					untracked: [ 'CHANGELOG.md' ],
+					unmerged: []
 				},
 				mgitBranch: 't/1',
 				commit: 'ef45678'
@@ -315,6 +365,7 @@ describe( 'commands/status', () => {
 					staged: [],
 					modified: [],
 					untracked: [],
+					unmerged: []
 				},
 				mgitBranch: 'master',
 				commit: 'abcd123'
@@ -343,6 +394,7 @@ describe( 'commands/status', () => {
 					staged: [],
 					modified: [],
 					untracked: [],
+					unmerged: []
 				},
 				mgitBranch: 'master',
 				commit: 'abcd123'
@@ -371,6 +423,7 @@ describe( 'commands/status', () => {
 					staged: [],
 					modified: [],
 					untracked: [],
+					unmerged: []
 				},
 				mgitBranch: 'master',
 				commit: 'ef45678'
@@ -423,11 +476,108 @@ describe( 'commands/status', () => {
 						staged: [],
 						modified: [],
 						untracked: [],
+						unmerged: []
 					},
 					mgitBranch: 'master',
 					commit
 				};
 			}
+		} );
+
+		it( 'counts unmerged files as modified', () => {
+			const logStub = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-foo' );
+
+			commandResponses.add( {
+				packageName: 'foo',
+				status: {
+					branch: 'master',
+					ahead: 0,
+					behind: 2,
+					staged: [],
+					modified: [ 'README.md' ],
+					untracked: [],
+					unmerged: [ '.travis.yml' ]
+				},
+				mgitBranch: 'master',
+				commit: 'abcd123'
+			} );
+
+			stubs.table.toString.returns( '┻━┻' );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
+				head: [ 'Package', 'Branch', 'Commit', 'Status' ],
+				style: {
+					compact: true
+				}
+			} );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'foo', 'master ↓2', 'abcd123', 'M2' ]
+			);
+
+			expect( stubs.table.toString.calledOnce ).to.equal( true );
+
+			expect( logStub.calledTwice ).to.equal( true );
+			expect( logStub.firstCall.args[ 0 ] ).to.equal( '┻━┻' );
+			expect( logStub.secondCall.args[ 0 ] ).to.match( /^Legend:/ );
+			expect( stubs.chalk.cyan.calledOnce ).to.equal( true );
+
+			logStub.restore();
+		} );
+
+		it( 'counts unmerged files as modified even if number of modified files is equal 0', () => {
+			const logStub = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-foo' );
+
+			commandResponses.add( {
+				packageName: 'foo',
+				status: {
+					branch: 'master',
+					ahead: 0,
+					behind: 2,
+					staged: [],
+					modified: [],
+					untracked: [],
+					unmerged: [ '.travis.yml' ]
+				},
+				mgitBranch: 'master',
+				commit: 'abcd123'
+			} );
+
+			stubs.table.toString.returns( '┻━┻' );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
+				head: [ 'Package', 'Branch', 'Commit', 'Status' ],
+				style: {
+					compact: true
+				}
+			} );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'foo', 'master ↓2', 'abcd123', 'M1' ]
+			);
+
+			expect( stubs.table.toString.calledOnce ).to.equal( true );
+
+			expect( logStub.calledTwice ).to.equal( true );
+			expect( logStub.firstCall.args[ 0 ] ).to.equal( '┻━┻' );
+			expect( logStub.secondCall.args[ 0 ] ).to.match( /^Legend:/ );
+			expect( stubs.chalk.cyan.calledOnce ).to.equal( true );
+
+			logStub.restore();
 		} );
 	} );
 } );

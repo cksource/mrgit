@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -131,6 +131,30 @@ describe( 'default resolver()', () => {
 				url: 'git@github.com:c/d.git',
 				branch: 'master',
 				directory: '@scoped/package'
+			} );
+		} );
+	} );
+
+	describe( 'with options.overrideDirectoryNames', () => {
+		it( 'returns package with modified directory', () => {
+			const options = getOptions( {}, cwd );
+
+			expect( resolver( 'override-directory', options ) ).to.deep.equal( {
+				url: 'git@github.com:foo/bar.git',
+				branch: 'master',
+				directory: 'custom-directory'
+			} );
+		} );
+
+		it( 'ignores modified directory if "resolverTargetDirectory" is set to "npm"', () => {
+			const options = getOptions( {
+				resolverTargetDirectory: 'npm'
+			}, cwd );
+
+			expect( resolver( 'override-directory', options ) ).to.deep.equal( {
+				url: 'git@github.com:foo/bar.git',
+				branch: 'master',
+				directory: 'override-directory'
 			} );
 		} );
 	} );
