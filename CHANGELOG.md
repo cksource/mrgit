@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## [0.11.1](https://github.com/cksource/mgit2/compare/v0.11.0...v0.11.1) (2019-07-16)
+
+Internal changes only (updated dependencies, documentation, etc.).
+
+
 ## [0.11.0](https://github.com/cksource/mgit2/compare/v0.10.1...v0.11.0) (2019-07-15)
 
 ### Features
