@@ -26,14 +26,14 @@
     "upath": "^1.1.2"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-env": "^15.0.0",
+    "@ckeditor/ckeditor5-dev-env": "^15.0.2",
     "chai": "^4.2.0",
-    "eslint": "^6.0.1",
+    "eslint": "^6.1.0",
     "eslint-config-ckeditor5": "^2.0.0",
-    "husky": "^3.0.0",
+    "husky": "^3.0.1",
     "istanbul": "^0.4.5",
     "lint-staged": "^9.2.0",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.0",
     "mockery": "^2.1.0",
     "sinon": "^7.3.2"
   },
