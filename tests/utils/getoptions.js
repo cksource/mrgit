@@ -42,15 +42,15 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'returns depepndencies read from mgit.json', () => {
+		it( 'returns depepndencies read from mrgit.json', () => {
 			const options = getOptions( {}, cwd );
-			const mgitJson = require( path.join( cwd, 'mgit.json' ) );
+			const mrgitJson = require( path.join( cwd, 'mrgit.json' ) );
 
-			expect( options.dependencies ).to.deep.equal( mgitJson.dependencies );
+			expect( options.dependencies ).to.deep.equal( mrgitJson.dependencies );
 		} );
 
-		it( 'does not fail if mgit.json is not defined ', () => {
-			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-no-mgitjson' );
+		it( 'does not fail if mrgit.json is not defined ', () => {
+			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-no-mrgitjson' );
 			const options = getOptions( {}, cwd );
 
 			expect( options ).to.deep.equal( {
@@ -68,8 +68,8 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'reads options from mgit.json', () => {
-			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mgitjson' );
+		it( 'reads options from mrgit.json', () => {
+			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mrgitjson' );
 			const options = getOptions( {}, cwd );
 
 			expect( options ).to.deep.equal( {
@@ -91,7 +91,7 @@ describe( 'utils', () => {
 		} );
 
 		it( 'priorities passed options', () => {
-			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mgitjson' );
+			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mrgitjson' );
 			const options = getOptions( {
 				resolverUrlTemplate: 'a/b/c',
 				packages: 'bar'

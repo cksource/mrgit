@@ -42,7 +42,7 @@ describe( 'commands/pull', () => {
 		commandData = {
 			arguments: [],
 			packageName: 'test-package',
-			mgitOptions: {
+			toolOptions: {
 				cwd: __dirname,
 				packages: 'packages'
 			},

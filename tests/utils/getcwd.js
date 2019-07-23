@@ -18,14 +18,14 @@ describe( 'utils', () => {
 	} );
 
 	describe( 'getCwd()', () => {
-		it( 'returns "process.cwd()" value if the "mgit.json" has been found', () => {
+		it( 'returns "process.cwd()" value if the "mrgit.json" has been found', () => {
 			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor/ckeditor5' );
 			sinon.stub( fs, 'existsSync' ).returns( true );
 
 			expect( getCwd() ).to.equal( '/workspace/ckeditor/ckeditor5' );
 		} );
 
-		it( 'scans dir tree up in order to find "mgit.json" file', () => {
+		it( 'scans dir tree up in order to find "mrgit.json" file', () => {
 			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor' );
 
 			const existsSync = sinon.stub( fs, 'existsSync' );
@@ -44,21 +44,21 @@ describe( 'utils', () => {
 			expect( getCwd() ).to.equal( '/workspace/ckeditor/ckeditor5' );
 
 			expect( existsSync.getCall( 0 ).args[ 0 ] ).to.equal(
-				'/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor/mgit.json'
+				'/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor/mrgit.json'
 			);
 			expect( existsSync.getCall( 1 ).args[ 0 ] ).to.equal(
-				'/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/mgit.json'
+				'/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/mrgit.json'
 			);
-			expect( existsSync.getCall( 2 ).args[ 0 ] ).to.equal( '/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/mgit.json' );
-			expect( existsSync.getCall( 3 ).args[ 0 ] ).to.equal( '/workspace/ckeditor/ckeditor5/packages/mgit.json' );
-			expect( existsSync.getCall( 4 ).args[ 0 ] ).to.equal( '/workspace/ckeditor/ckeditor5/mgit.json' );
+			expect( existsSync.getCall( 2 ).args[ 0 ] ).to.equal( '/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/mrgit.json' );
+			expect( existsSync.getCall( 3 ).args[ 0 ] ).to.equal( '/workspace/ckeditor/ckeditor5/packages/mrgit.json' );
+			expect( existsSync.getCall( 4 ).args[ 0 ] ).to.equal( '/workspace/ckeditor/ckeditor5/mrgit.json' );
 		} );
 
-		it( 'throws an error if the "mgit.json" cannot be found', () => {
+		it( 'throws an error if the "mrgit.json" cannot be found', () => {
 			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor' );
 			sinon.stub( fs, 'existsSync' ).returns( false );
 
-			expect( () => getCwd() ).to.throw( Error, 'Cannot find the "mgit.json" file.' );
+			expect( () => getCwd() ).to.throw( Error, 'Cannot find the "mrgit.json" file.' );
 		} );
 	} );
 } );

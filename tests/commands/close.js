@@ -12,7 +12,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/close', () => {
-	let closeCommand, stubs, commandData, mgitOptions;
+	let closeCommand, stubs, commandData, toolOptions;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -27,14 +27,14 @@ describe( 'commands/close', () => {
 			}
 		};
 
-		mgitOptions = {};
+		toolOptions = {};
 
 		commandData = {
 			arguments: [],
 			repository: {
 				branch: 'master'
 			},
-			mgitOptions
+			toolOptions
 		};
 
 		mockery.registerMock( './exec', stubs.execCommand );
@@ -58,7 +58,7 @@ describe( 'commands/close', () => {
 		it( 'throws an error if command to execute is not specified', () => {
 			expect( () => {
 				closeCommand.beforeExecute( [ 'merge' ] );
-			} ).to.throw( Error, 'Missing branch to merge. Use: mgit close [branch].' );
+			} ).to.throw( Error, 'Missing branch to merge. Use: mrgit close [branch].' );
 		} );
 
 		it( 'does nothing if branch to merge is specified', () => {
@@ -138,7 +138,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git branch --list develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
@@ -146,7 +146,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'"' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
@@ -154,7 +154,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git branch -d develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
@@ -162,7 +162,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git push origin :develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -180,7 +180,7 @@ describe( 'commands/close', () => {
 				} );
 		} );
 
-		// mgit close develop -- --message "Test."
+		// mrgit close develop -- --message "Test."
 		it( 'merges specified branch using specified message', () => {
 			commandData.arguments.push( 'develop' );
 			commandData.arguments.push( '--message' );
@@ -232,7 +232,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git branch --list develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
@@ -240,7 +240,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
@@ -248,7 +248,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git branch -d develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
@@ -256,7 +256,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git push origin :develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -274,11 +274,11 @@ describe( 'commands/close', () => {
 				} );
 		} );
 
-		// mgit close develop --message "Test."
-		it( 'merges specified branch using specified message when specified as a param of mgit', () => {
+		// mrgit close develop --message "Test."
+		it( 'merges specified branch using specified message when specified as a param of mrgit', () => {
 			commandData.arguments.push( 'develop' );
 
-			mgitOptions.message = 'Test.';
+			toolOptions.message = 'Test.';
 
 			stubs.execCommand.execute.onCall( 0 ).resolves( {
 				logs: {
@@ -326,7 +326,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git branch --list develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
@@ -334,7 +334,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
@@ -342,7 +342,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git branch -d develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
@@ -350,7 +350,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git push origin :develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
@@ -391,7 +391,7 @@ describe( 'commands/close', () => {
 							branch: 'master'
 						},
 						arguments: [ 'git branch --list develop' ],
-						mgitOptions
+						toolOptions
 					} );
 
 					expect( commandResponse.logs.info ).to.deep.equal( [

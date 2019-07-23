@@ -39,7 +39,7 @@ describe( 'commands/fetch', () => {
 		commandData = {
 			arguments: [],
 			packageName: 'test-package',
-			mgitOptions: {
+			toolOptions: {
 				cwd: __dirname,
 				packages: 'packages'
 			},

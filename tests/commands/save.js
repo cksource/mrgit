@@ -13,7 +13,7 @@ const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/save', () => {
-	let saveCommand, stubs, commandData, mgitOptions, mgitJsonPath, updateFunction;
+	let saveCommand, stubs, commandData, toolOptions, mrgitJsonPath, updateFunction;
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -32,17 +32,17 @@ describe( 'commands/save', () => {
 			gitStatusParser: sinon.stub()
 		};
 
-		mgitOptions = {};
+		toolOptions = {};
 
 		commandData = {
 			packageName: 'test-package',
 			arguments: [],
-			mgitOptions
+			toolOptions
 		};
 
 		mockery.registerMock( './exec', stubs.execCommand );
 		mockery.registerMock( '../utils/updatejsonfile', ( pathToFile, callback ) => {
-			mgitJsonPath = pathToFile;
+			mrgitJsonPath = pathToFile;
 			updateFunction = callback;
 		} );
 		mockery.registerMock( '../utils/getcwd', () => {
@@ -67,25 +67,25 @@ describe( 'commands/save', () => {
 
 	describe( 'beforeExecute()', () => {
 		it( 'defined which type of data should be saved', () => {
-			saveCommand.beforeExecute( [], mgitOptions );
-			expect( mgitOptions.hash ).to.equal( true );
+			saveCommand.beforeExecute( [], toolOptions );
+			expect( toolOptions.hash ).to.equal( true );
 		} );
 
 		it( 'throws an error if used both options', () => {
 			const errorMessage = 'Cannot use "hash" and "branch" options at the same time.';
 
-			mgitOptions.branch = true;
-			mgitOptions.hash = true;
+			toolOptions.branch = true;
+			toolOptions.hash = true;
 
 			expect( () => {
-				saveCommand.beforeExecute( [], mgitOptions );
+				saveCommand.beforeExecute( [], toolOptions );
 			} ).to.throw( Error, errorMessage );
 		} );
 	} );
 
 	describe( 'execute()', () => {
 		it( 'rejects promise if called command returned an error', () => {
-			mgitOptions.hash = true;
+			toolOptions.hash = true;
 
 			const error = new Error( 'Unexpected error.' );
 
@@ -107,7 +107,7 @@ describe( 'commands/save', () => {
 		} );
 
 		it( 'resolves promise with last commit id', () => {
-			mgitOptions.hash = true;
+			toolOptions.hash = true;
 
 			const execCommandResponse = {
 				logs: {
@@ -123,7 +123,7 @@ describe( 'commands/save', () => {
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
 						packageName: commandData.packageName,
 						arguments: [ 'git rev-parse HEAD' ],
-						mgitOptions: {
+						toolOptions: {
 							hash: true,
 						}
 					} );
@@ -146,7 +146,7 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			mgitOptions.branch = true;
+			toolOptions.branch = true;
 
 			stubs.gitStatusParser.returns( { branch: 'master' } );
 			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
@@ -157,7 +157,7 @@ describe( 'commands/save', () => {
 					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
 						packageName: commandData.packageName,
 						arguments: [ 'git status --branch --porcelain' ],
-						mgitOptions: {
+						toolOptions: {
 							branch: true,
 						}
 					} );
@@ -175,7 +175,7 @@ describe( 'commands/save', () => {
 	} );
 
 	describe( 'afterExecute()', () => {
-		it( 'updates collected hashes in "mgit.json" (--hash option)', () => {
+		it( 'updates collected hashes in "mrgit.json" (--hash option)', () => {
 			const processedPackages = new Set();
 			const commandResponses = new Set();
 
@@ -205,7 +205,7 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mgitJsonPath ).to.equal( __dirname + '/mgit.json' );
+			expect( mrgitJsonPath ).to.equal( __dirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
@@ -217,7 +217,7 @@ describe( 'commands/save', () => {
 			} );
 		} );
 
-		it( 'updates collected branches in "mgit.json" (--branch option)', () => {
+		it( 'updates collected branches in "mrgit.json" (--branch option)', () => {
 			const processedPackages = new Set();
 			const commandResponses = new Set();
 
@@ -247,7 +247,7 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mgitJsonPath ).to.equal( __dirname + '/mgit.json' );
+			expect( mrgitJsonPath ).to.equal( __dirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
@@ -280,7 +280,7 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mgitJsonPath ).to.equal( __dirname + '/mgit.json' );
+			expect( mrgitJsonPath ).to.equal( __dirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );

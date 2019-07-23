@@ -1,5 +1,5 @@
 {
-  "name": "mgit2",
+  "name": "mrgit",
   "version": "0.11.1",
   "description": "A tool for managing projects build using multiple repositories.",
   "keywords": [
@@ -39,7 +39,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cksource/mgit2.git"
+    "url": "git+https://github.com/cksource/mrgit.git"
   },
   "engines": {
     "node": ">=6.0.0",
@@ -47,8 +47,8 @@
   },
   "author": "CKSource (http://cksource.com/)",
   "license": "MIT",
-  "bugs": "https://github.com/cksource/mgit2/issues",
-  "homepage": "https://github.com/cksource/mgit2#readme",
+  "bugs": "https://github.com/cksource/mrgit/issues",
+  "homepage": "https://github.com/cksource/mrgit#readme",
   "scripts": {
     "test": "mocha tests --recursive",
     "coverage": "istanbul cover _mocha tests -- --recursive",
@@ -59,8 +59,7 @@
     "release:publish": "node ./scripts/publish.js"
   },
   "bin": {
-    "mgit": "./index.js",
-    "mgit2": "./index.js"
+    "mrgit": "./index.js"
   },
   "files": [
     "index.js",
