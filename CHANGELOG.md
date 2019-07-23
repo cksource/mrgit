@@ -1,6 +1,21 @@
 Changelog
 =========
 
+## [1.0.0](https://github.com/cksource/mrgit/compare/v0.11.1...v1.0.0) (2019-07-23)
+
+### Features
+
+* Repositories, where an executed command failed, will be printed out at the end of the mgit log. Closes [#104](https://github.com/cksource/mrgit/issues/104). ([2d1450c](https://github.com/cksource/mrgit/commit/2d1450c))
+
+### Other changes
+
+* RIP mgit2 💀 Long live mrgit 🎉 Closes [#85](https://github.com/cksource/mrgit/issues/85). ([4a2a33f](https://github.com/cksource/mrgit/commit/4a2a33f))
+
+### BREAKING CHANGES
+
+* mgit2 was renamed to mrgit.
+
+
 ## [0.11.1](https://github.com/cksource/mgit2/compare/v0.11.0...v0.11.1) (2019-07-16)
 
 Internal changes only (updated dependencies, documentation, etc.).
