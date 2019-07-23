@@ -31,7 +31,7 @@ Multi-repo manager for git. A tool for managing projects build using multiple re
     1. [`status` or `st`](#status-alias-st)
     1. [`diff`](#diff)
     1. [`checkout` or `co`](#checkout-alias-co)
-1. [Projects using mgit2](#projects-using-mgit2)
+1. [Projects using mrgit](#projects-using-mrgit)
 
 ## Installation
 
@@ -210,9 +210,9 @@ You can also use full HTTPS URLs to configure `dependencies` in your `mrgit.json
 
 ### Base branches
 
-When you call `mgit sync` or `mgit co`, mgit will use the following algorithm to determine the branch to which each repository should be checked out:
+When you call `mrgit sync` or `mrgit co`, mrgit will use the following algorithm to determine the branch to which each repository should be checked out:
 
-1. If a branch is defined in `mgit.json`, use it. A branch can be defined after `#` in a repository URL. For example: `"@cksource/foo": "cksource/foo#dev"`.
+1. If a branch is defined in `mrgit.json`, use it. A branch can be defined after `#` in a repository URL. For example: `"@cksource/foo": "cksource/foo#dev"`.
 2. If the root repository (assuming, it is a repository) is on one of the "base branches", use that branch name.
 3. Otherwise, use `master`.
 
@@ -226,7 +226,7 @@ You can define the base branches as follows:
 }
 ```
 
-With this configuration, if the root repository is on `stable`, calling `mgit co` will check out all repositories to `stable`. If you change the branch of the root repository to `master` and call `mgit co`, all sub repositories will be checked out to `master`.
+With this configuration, if the root repository is on `stable`, calling `mrgit co` will check out all repositories to `stable`. If you change the branch of the root repository to `master` and call `mrgit co`, all sub repositories will be checked out to `master`.
 
 ## Commands
 

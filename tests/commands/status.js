@@ -503,7 +503,7 @@ describe( 'commands/status', () => {
 					untracked: [],
 					unmerged: [ '.travis.yml' ]
 				},
-				mgitBranch: 'master',
+				mrgitBranch: 'master',
 				commit: 'abcd123'
 			} );
 
@@ -551,7 +551,7 @@ describe( 'commands/status', () => {
 					untracked: [],
 					unmerged: [ '.travis.yml' ]
 				},
-				mgitBranch: 'master',
+				mrgitBranch: 'master',
 				commit: 'abcd123'
 			} );
 

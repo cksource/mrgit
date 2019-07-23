@@ -196,7 +196,7 @@ describe( 'utils', () => {
 			} );
 
 			it( 'ignores options if a branch is specified in the repository URL', () => {
-				const repository = parseRepositoryUrl( 'foo/bar#mgit', {
+				const repository = parseRepositoryUrl( 'foo/bar#mrgit', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
 					baseBranches: [ 'stable' ],
@@ -205,13 +205,13 @@ describe( 'utils', () => {
 
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
-					branch: 'mgit',
+					branch: 'mrgit',
 					directory: 'bar'
 				} );
 			} );
 
 			it( 'ignores options if a branch is specified in the repository URL ("baseBranches" contains "cwdPackageBranch")', () => {
-				const repository = parseRepositoryUrl( 'foo/bar#mgit', {
+				const repository = parseRepositoryUrl( 'foo/bar#mrgit', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
 					baseBranches: [ 'master' ],
@@ -220,7 +220,7 @@ describe( 'utils', () => {
 
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
-					branch: 'mgit',
+					branch: 'mrgit',
 					directory: 'bar'
 				} );
 			} );
