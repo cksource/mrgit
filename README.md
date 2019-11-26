@@ -194,7 +194,7 @@ module.exports = function resolver( packageName, options ) {
 };
 ```
 
-You can also check the [default resolver](https://github.com/cksource/mrgit/blob/master/lib/default-resolver.js) used by `mrgit` and [the config object definition](https://github.com/cksource/mrgit/blob/master/lib/utils/getconfig.js).
+You can also check the [default resolver](https://github.com/cksource/mrgit/blob/master/lib/default-resolver.js) used by `mrgit` and [the config object definition](https://github.com/cksource/mrgit/blob/master/lib/utils/getoptions.js).
 
 ### Cloning repositories on CI servers
 
