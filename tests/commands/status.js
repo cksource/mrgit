@@ -38,7 +38,7 @@ describe( 'commands/status', () => {
 				green: sinon.stub(),
 				red: sinon.stub(),
 				blue: sinon.stub(),
-				magenta: sinon.stub(),
+				magenta: sinon.stub()
 			}
 		};
 
@@ -179,7 +179,7 @@ describe( 'commands/status', () => {
 		it( 'modifies the package name if "packagesPrefix" is an array', () => {
 			commandData.toolOptions.packagesPrefix = [
 				'@ckeditor/ckeditor-',
-				'@ckeditor/ckeditor5-',
+				'@ckeditor/ckeditor5-'
 			];
 
 			stubs.execCommand.execute.onFirstCall().resolves( {

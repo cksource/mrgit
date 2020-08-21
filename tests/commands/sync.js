@@ -265,7 +265,7 @@ describe( 'commands/sync', () => {
 								expect( stubs.shell.calledTwice ).to.equal( true );
 
 								expect( response.logs.info ).to.deep.equal( [
-									'Package "test-package" was not found. Cloning...',
+									'Package "test-package" was not found. Cloning...'
 								] );
 
 								expect( response.logs.error ).to.deep.equal( [
@@ -442,7 +442,7 @@ describe( 'commands/sync', () => {
 				} ) );
 
 				exec.onCall( 2 ).returns( Promise.reject( {
-					logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true ),
+					logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true )
 				} ) );
 
 				return syncCommand.execute( commandData )
@@ -473,7 +473,7 @@ describe( 'commands/sync', () => {
 
 			toolOptions.dependencies = {
 				'package-1': 'foo/package-1',
-				'package-2': 'foo/package-2',
+				'package-2': 'foo/package-2'
 			};
 
 			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
@@ -520,7 +520,7 @@ describe( 'commands/sync', () => {
 
 			toolOptions.dependencies = {
 				'package-1': 'foo/package-1',
-				'package-2': 'foo/package-2',
+				'package-2': 'foo/package-2'
 			};
 
 			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
@@ -578,7 +578,7 @@ describe( 'commands/sync', () => {
 
 			toolOptions.dependencies = {
 				'package-1': 'foo/package-1',
-				'package-2': 'foo/package-2',
+				'package-2': 'foo/package-2'
 			};
 
 			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
@@ -586,7 +586,7 @@ describe( 'commands/sync', () => {
 
 			stubs.fs.readdirSync.returns( [
 				'package-1',
-				'package-2',
+				'package-2'
 			] );
 
 			stubs.fs.lstatSync.returns( {

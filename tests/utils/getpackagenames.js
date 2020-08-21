@@ -79,7 +79,7 @@ describe( 'utils', () => {
 			} );
 
 			expect( packages ).to.deep.equal( [
-				'@ckeditor/ckeditor5-editor-classic',
+				'@ckeditor/ckeditor5-editor-classic'
 			] );
 		} );
 	} );

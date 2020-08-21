@@ -63,7 +63,7 @@ describe( 'utils', () => {
 				const gitStatusResponse = [
 					'## master...origin/master',
 					' M lib/index.js',
-					'?? README.md',
+					'?? README.md'
 				].join( '\n' );
 
 				const status = gitStatusParser( gitStatusResponse );
@@ -113,7 +113,7 @@ describe( 'utils', () => {
 			expect( status.deleted ).to.deep.equal( [
 				'README.txt',
 				'lib/tasks/.gitkeep',
-				'tests/tasks/.gitkeep',
+				'tests/tasks/.gitkeep'
 			] );
 		} );
 
@@ -121,7 +121,7 @@ describe( 'utils', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
 			expect( status.renamed ).to.deep.equal( [
-				'CHANGELOG.txt -> CHANGELOG.md',
+				'CHANGELOG.txt -> CHANGELOG.md'
 			] );
 		} );
 
@@ -143,7 +143,7 @@ describe( 'utils', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
 			expect( status.added ).to.deep.equal( [
-				'.eslintrc.js',
+				'.eslintrc.js'
 			] );
 		} );
 
@@ -153,7 +153,7 @@ describe( 'utils', () => {
 			expect( status.untracked ).to.deep.equal( [
 				'README.md',
 				'lib/utils/helper.js',
-				'tests/utils/helper.js',
+				'tests/utils/helper.js'
 			] );
 		} );
 
@@ -162,7 +162,7 @@ describe( 'utils', () => {
 				'## master...origin/master',
 				' M lib/index.js', // modified, not staged
 				'MM lib/tasks/logger.js', // modified, a part of the changes is staged
-				'M  tests/index.js', // modified, the whole file is staged
+				'M  tests/index.js' // modified, the whole file is staged
 			].join( '\n' );
 
 			const status = gitStatusParser( gitStatusResponse );

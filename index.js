@@ -49,7 +49,7 @@ function handleCli() {
 		gray: g,
 		magenta: m,
 		underline: u,
-		yellow: y,
+		yellow: y
 	} = chalk;
 
 	const cli = meow( `${ logo }
