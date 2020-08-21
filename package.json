@@ -15,35 +15,35 @@
   ],
   "main": "index.js",
   "dependencies": {
-    "chalk": "^2.4.2",
+    "chalk": "^4.1.0",
     "cli-table": "^0.3.1",
     "generic-pool": "^3.7.1",
-    "meow": "^5.0.0",
+    "meow": "^7.1.0",
     "minimatch": "^3.0.4",
-    "minimist": "^1.2.0",
-    "minimist-options": "^4.0.1",
-    "shelljs": "^0.8.3",
-    "upath": "^1.1.2"
+    "minimist": "^1.2.5",
+    "minimist-options": "^4.1.0",
+    "shelljs": "^0.8.4",
+    "upath": "^1.2.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-env": "^16.0.0",
+    "@ckeditor/ckeditor5-dev-env": "^23.2.0",
     "chai": "^4.2.0",
-    "eslint": "^6.1.0",
-    "eslint-config-ckeditor5": "^2.0.0",
-    "husky": "^3.0.1",
+    "eslint": "^7.7.0",
+    "eslint-config-ckeditor5": "^3.0.0",
+    "husky": "^4.2.5",
     "istanbul": "^0.4.5",
-    "lint-staged": "^9.2.0",
-    "mocha": "^6.2.0",
+    "lint-staged": "^10.2.11",
+    "mocha": "^8.1.1",
     "mockery": "^2.1.0",
-    "sinon": "^7.3.2"
+    "sinon": "^9.0.3"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/cksource/mrgit.git"
   },
   "engines": {
-    "node": ">=6.0.0",
-    "npm": ">=3.0.0"
+    "node": ">=10.0.0",
+    "npm": ">=5.7.1"
   },
   "author": "CKSource (http://cksource.com/)",
   "license": "MIT",
