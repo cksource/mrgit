@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2020, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2021, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md.
  */
 
@@ -124,7 +124,7 @@ describe( 'commands/save', () => {
 						packageName: commandData.packageName,
 						arguments: [ 'git rev-parse HEAD' ],
 						toolOptions: {
-							hash: true,
+							hash: true
 						}
 					} );
 
@@ -158,7 +158,7 @@ describe( 'commands/save', () => {
 						packageName: commandData.packageName,
 						arguments: [ 'git status --branch --porcelain' ],
 						toolOptions: {
-							branch: true,
+							branch: true
 						}
 					} );
 
@@ -276,7 +276,7 @@ describe( 'commands/save', () => {
 
 			let json = {
 				dependencies: {
-					'test-package': 'organization/test-package#some-branch',
+					'test-package': 'organization/test-package#some-branch'
 				}
 			};
 
@@ -286,7 +286,7 @@ describe( 'commands/save', () => {
 			json = updateFunction( json );
 
 			expect( json.dependencies ).to.deep.equal( {
-				'test-package': 'organization/test-package',
+				'test-package': 'organization/test-package'
 			} );
 		} );
 	} );
