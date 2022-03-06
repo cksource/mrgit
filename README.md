@@ -1,11 +1,9 @@
 # Mr. Git
 
-<a href="https://www.npmjs.com/package/mrgit"><img src="https://img.shields.io/npm/v/mrgit.svg" alt="mrgit npm package badge"></a>
-<a href="https://travis-ci.org/cksource/mrgit"><img src="https://img.shields.io/travis/cksource/mrgit/master.svg" alt="build status badge"></a>
-<a href="https://coveralls.io/github/cksource/mrgit?branch=master"><img src="https://coveralls.io/repos/github/cksource/mrgit/badge.svg?branch=master" alt="Coverage Status"></a>
-<a href="https://david-dm.org/cksource/mrgit"><img src="https://img.shields.io/david/cksource/mrgit.svg" alt="mrgit dependencies status badge"></a>
-<a href="https://david-dm.org/cksource/mrgit?type=dev"><img src="https://img.shields.io/david/dev/cksource/mrgit.svg" alt="mrgit devDependencies status badge"></a>
-
+![Mrgit npm package badge](https://img.shields.io/npm/v/mrgit.svg)
+[![Build Status](https://travis-ci.org/cksource/mrgit.svg?branch=master)](https://travis-ci.org/ckeditor/ckeditor5-vue2)
+[![Coverage Status](https://coveralls.io/repos/github/cksource/mrgit/badge.svg?branch=master)](https://coveralls.io/github/ckeditor/ckeditor5-vue2?branch=master)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/mrgit)
 Multi-repo manager for git. A tool for managing projects build using multiple repositories.
 
 `mrgit` is designed to work with [yarn workspaces](https://yarnpkg.com/lang/en/docs/workspaces/) and [Lerna](https://github.com/lerna/lerna) out of the box, hence, it mixes the "package" and "repository" concepts. In other words, every repository is meant to be a single [npm](https://npmjs.com) package. It doesn't mean that you must use it with Lerna and npm, but don't be surprised that mrgit talks about "packages" and works best with npm packages.
