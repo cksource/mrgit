@@ -1,77 +1,77 @@
 {
-  "name": "mrgit",
-  "version": "1.0.0",
-  "description": "A tool for managing projects build using multiple repositories.",
-  "keywords": [
-    "git",
-    "repository",
-    "submodule",
-    "package",
-    "multi-repository",
-    "multi-repo",
-    "lerna",
-    "yarn",
-    "workspaces"
-  ],
-  "main": "index.js",
-  "dependencies": {
-    "chalk": "^4.1.0",
-    "cli-table": "^0.3.1",
-    "generic-pool": "^3.7.1",
-    "meow": "^7.1.0",
-    "minimatch": "^3.0.4",
-    "minimist": "^1.2.5",
-    "minimist-options": "^4.1.0",
-    "shelljs": "^0.8.4",
-    "upath": "^1.2.0"
-  },
-  "devDependencies": {
-    "@ckeditor/ckeditor5-dev-env": "^28.1.1",
-    "chai": "^4.2.0",
-    "eslint": "^7.7.0",
-    "eslint-config-ckeditor5": "^3.0.0",
-    "husky": "^4.2.5",
-    "istanbul": "^0.4.5",
-    "lint-staged": "^10.2.11",
-    "mocha": "^8.1.1",
-    "mockery": "^2.1.0",
-    "sinon": "^9.0.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/cksource/mrgit.git"
-  },
-  "engines": {
-    "node": ">=12.0.0",
-    "npm": ">=5.7.1"
-  },
-  "author": "CKSource (http://cksource.com/)",
-  "license": "MIT",
-  "bugs": "https://github.com/cksource/mrgit/issues",
-  "homepage": "https://github.com/cksource/mrgit#readme",
-  "scripts": {
-    "test": "mocha tests --recursive",
-    "coverage": "istanbul cover _mocha tests -- --recursive",
-    "lint": "eslint --quiet '**/*.js'",
-    "changelog": "node ./scripts/changelog.js",
-    "release:bump-version": "node ./scripts/bump-version.js",
-    "release:publish": "node ./scripts/publish.js"
-  },
-  "bin": {
-    "mrgit": "./index.js"
-  },
-  "files": [
-    "index.js",
-    "lib"
-  ],
-  "lint-staged": {
-    "**/*.js": [
-      "eslint --quiet"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  }
+	"name": "mrgit",
+	"version": "1.0.0",
+	"description": "A tool for managing projects build using multiple repositories.",
+	"keywords": [
+		"git",
+		"repository",
+		"submodule",
+		"package",
+		"multi-repository",
+		"multi-repo",
+		"lerna",
+		"yarn",
+		"workspaces"
+	],
+	"main": "index.js",
+	"dependencies": {
+		"chalk": "^4.1.0",
+		"cli-table": "^0.3.1",
+		"generic-pool": "^3.7.1",
+		"meow": "^7.1.0",
+		"minimatch": "^3.0.4",
+		"minimist": "^1.2.5",
+		"minimist-options": "^4.1.0",
+		"shelljs": "^0.8.4",
+		"upath": "^1.2.0"
+	},
+	"devDependencies": {
+		"@ckeditor/ckeditor5-dev-env": "^28.1.1",
+		"chai": "^4.2.0",
+		"eslint": "^7.7.0",
+		"eslint-config-ckeditor5": "^4.0.0",
+		"husky": "^4.2.5",
+		"istanbul": "^0.4.5",
+		"lint-staged": "^10.2.11",
+		"mocha": "^8.1.1",
+		"mockery": "^2.1.0",
+		"sinon": "^9.0.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cksource/mrgit.git"
+	},
+	"engines": {
+		"node": ">=12.0.0",
+		"npm": ">=5.7.1"
+	},
+	"author": "CKSource (http://cksource.com/)",
+	"license": "MIT",
+	"bugs": "https://github.com/cksource/mrgit/issues",
+	"homepage": "https://github.com/cksource/mrgit#readme",
+	"scripts": {
+		"test": "mocha tests --recursive",
+		"coverage": "istanbul cover _mocha tests -- --recursive",
+		"lint": "eslint --quiet \"**/*.js\"",
+		"changelog": "node ./scripts/changelog.js",
+		"release:bump-version": "node ./scripts/bump-version.js",
+		"release:publish": "node ./scripts/publish.js"
+	},
+	"bin": {
+		"mrgit": "./index.js"
+	},
+	"files": [
+		"index.js",
+		"lib"
+	],
+	"lint-staged": {
+		"**/*.js": [
+			"eslint --quiet"
+		]
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	}
 }
