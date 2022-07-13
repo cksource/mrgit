@@ -18,15 +18,15 @@
     "chalk": "^4.1.0",
     "cli-table": "^0.3.1",
     "generic-pool": "^3.7.1",
-    "meow": "^7.1.0",
-    "minimatch": "^3.0.4",
+    "meow": "^9.0.0",
+    "minimatch": "^4.0.0",
     "minimist": "^1.2.5",
     "minimist-options": "^4.1.0",
     "shelljs": "^0.8.4",
-    "upath": "^1.2.0"
+    "upath": "^2.0.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-env": "^28.1.1",
+    "@ckeditor/ckeditor5-dev-env": "^30.3.2",
     "chai": "^4.2.0",
     "eslint": "^7.7.0",
     "eslint-config-ckeditor5": "^4.0.0",
