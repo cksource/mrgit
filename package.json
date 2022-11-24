@@ -52,7 +52,7 @@
   "scripts": {
     "test": "mocha tests --recursive",
     "coverage": "istanbul cover _mocha tests -- --recursive",
-    "lint": "eslint --quiet '**/*.js'",
+    "lint": "eslint --quiet \"**/*.js\"",
     "changelog": "node ./scripts/changelog.js",
     "release:bump-version": "node ./scripts/bump-version.js",
     "release:publish": "node ./scripts/publish.js"

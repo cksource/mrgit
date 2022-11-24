@@ -34,14 +34,14 @@ function handleCli() {
 	};
 
 	const logo = `
-                            _ _   
-                           (_) |  
-     _ __ ___  _ __    __ _ _| |_ 
+                            _ _
+                           (_) |
+     _ __ ___  _ __    __ _ _| |_
     | '_ \` _ \\| '__|  / _\` | | __|
-    | | | | | | | _  | (_| | | |_ 
+    | | | | | | | _  | (_| | | |_
     |_| |_| |_|_|(_)  \\__, |_|\\__|
-                       __/ |      
-                      |___/       
+                       __/ |
+                      |___/
 `;
 
 	const {
@@ -60,7 +60,7 @@ function handleCli() {
         ${ c( 'checkout' ) }                    Changes branches in repositories according to the configuration file.
         ${ c( 'close' ) }                       Merges specified branch with the current one and remove merged branch from the remote.
         ${ c( 'commit' ) }                      Commits all changes. A shorthand for "mrgit exec 'git commit -a'".
-        ${ c( 'diff' ) }                        Prints changes from packages where something has changed. 
+        ${ c( 'diff' ) }                        Prints changes from packages where something has changed.
         ${ c( 'exec' ) }                        Executes shell command in each package.
         ${ c( 'fetch' ) }                       Fetches existing repositories.
         ${ c( 'pull' ) }                        Pulls changes in existing repositories.
@@ -68,7 +68,7 @@ function handleCli() {
         ${ c( 'save' ) }                        Saves hashes of packages in mrgit.json. It allows to easily fix project to a specific state.
         ${ c( 'status' ) }                      Prints a table which contains useful information about the status of repositories.
         ${ c( 'sync' ) }                        Updates packages to the latest versions or install missing ones.
-                                                
+
 
     ${ u( 'Options:' ) }
         ${ y( '--branch' ) }                    For "${ u( 'save' ) }" command: whether to save branch names.
@@ -81,7 +81,7 @@ function handleCli() {
 
                                     Will ignore all packages which names start from "foo".
                                     ${ g( 'Default: null' ) }
-                                    
+
         ${ y( '--message' ) }                   Message that will be used as an option for git command. Required for "${ u( 'commit' ) }"
                                     command but it is also used by "${ u( 'close' ) }" command (append the message to the default).
 
@@ -140,7 +140,7 @@ function handleCli() {
 		return;
 	}
 
-	// Specified command is is available, displays the command's help.
+	// Specified command is available, displays the command's help.
 	console.log( logo );
 	console.log( `    ${ u( 'Command:' ) } ${ c( commandInstance.name || commandName ) } ` );
 	console.log( commandInstance.helpMessage );
