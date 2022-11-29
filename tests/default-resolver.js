@@ -24,6 +24,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'simple-package', options ) ).to.deep.equal( {
 				url: 'git@github.com:a/b.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'b'
 			} );
 		} );
@@ -32,6 +33,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'package-with-branch', options ) ).to.deep.equal( {
 				url: 'git@github.com:a/b.git',
 				branch: 'dev',
+				tag: undefined,
 				directory: 'b'
 			} );
 		} );
@@ -40,6 +42,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( '@scoped/package', options ) ).to.deep.equal( {
 				url: 'git@github.com:c/d.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'd'
 			} );
 		} );
@@ -48,6 +51,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'full-url-git', options ) ).to.deep.equal( {
 				url: 'git@github.com:cksource/mrgit.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'mrgit'
 			} );
 		} );
@@ -56,6 +60,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'full-url-git-with-branch', options ) ).to.deep.equal( {
 				url: 'git@github.com:cksource/mrgit.git',
 				branch: 'xyz',
+				tag: undefined,
 				directory: 'mrgit'
 			} );
 		} );
@@ -64,7 +69,26 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'full-url-https', options ) ).to.deep.equal( {
 				url: 'https://github.com/cksource/mrgit.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'mrgit'
+			} );
+		} );
+
+		it( 'returns specific tag', () => {
+			expect( resolver( 'package-with-specific-tag', options ) ).to.deep.equal( {
+				url: 'git@github.com:a/b.git',
+				branch: 'master',
+				tag: 'v30.0.0',
+				directory: 'b'
+			} );
+		} );
+
+		it( 'returns the "latest" tag', () => {
+			expect( resolver( 'package-with-latest-tag', options ) ).to.deep.equal( {
+				url: 'git@github.com:a/b.git',
+				branch: 'master',
+				tag: 'latest',
+				directory: 'b'
 			} );
 		} );
 	} );
@@ -78,6 +102,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'simple-package', options ) ).to.deep.equal( {
 				url: 'custom@path:a/b.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'b'
 			} );
 		} );
@@ -86,6 +111,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'full-url-git', options ) ).to.deep.equal( {
 				url: 'git@github.com:cksource/mrgit.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'mrgit'
 			} );
 		} );
@@ -96,18 +122,20 @@ describe( 'default resolver()', () => {
 			resolverDefaultBranch: 'major'
 		}, cwd );
 
-		it( 'returns the default branch if dependency URL does not specify it', () => {
+		it( 'returns the default branch if dependency URL does not specify it (simple package)', () => {
 			expect( resolver( 'simple-package', options ) ).to.deep.equal( {
 				url: 'git@github.com:a/b.git',
 				branch: 'major',
+				tag: undefined,
 				directory: 'b'
 			} );
 		} );
 
-		it( 'returns the default branch if dependency URL does not specify it', () => {
+		it( 'returns the default branch if dependency URL does not specify it (package with branch)', () => {
 			expect( resolver( 'package-with-branch', options ) ).to.deep.equal( {
 				url: 'git@github.com:a/b.git',
 				branch: 'dev',
+				tag: undefined,
 				directory: 'b'
 			} );
 		} );
@@ -122,6 +150,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'simple-package', options ) ).to.deep.equal( {
 				url: 'git@github.com:a/b.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'simple-package'
 			} );
 		} );
@@ -130,6 +159,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( '@scoped/package', options ) ).to.deep.equal( {
 				url: 'git@github.com:c/d.git',
 				branch: 'master',
+				tag: undefined,
 				directory: '@scoped/package'
 			} );
 		} );
@@ -142,6 +172,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'override-directory', options ) ).to.deep.equal( {
 				url: 'git@github.com:foo/bar.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'custom-directory'
 			} );
 		} );
@@ -154,6 +185,7 @@ describe( 'default resolver()', () => {
 			expect( resolver( 'override-directory', options ) ).to.deep.equal( {
 				url: 'git@github.com:foo/bar.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'override-directory'
 			} );
 		} );
