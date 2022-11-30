@@ -118,7 +118,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'returns specific tag if it was defined', () => {
+		it( 'returns specific tag that contains semantic version number', () => {
 			const repository = parseRepositoryUrl( 'foo/bar@v30.0.0', {
 				urlTemplate: 'https://github.com/${ path }.git'
 			} );
@@ -131,7 +131,20 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'returns the "latest" tag if it was defined', () => {
+		it( 'returns specific tag that does not contain semantic version number', () => {
+			const repository = parseRepositoryUrl( 'foo/bar@customTagName', {
+				urlTemplate: 'https://github.com/${ path }.git'
+			} );
+
+			expect( repository ).to.deep.equal( {
+				url: 'https://github.com/foo/bar.git',
+				branch: 'master',
+				tag: 'customTagName',
+				directory: 'bar'
+			} );
+		} );
+
+		it( 'returns the "latest" tag', () => {
 			const repository = parseRepositoryUrl( 'foo/bar@latest', {
 				urlTemplate: 'https://github.com/${ path }.git'
 			} );

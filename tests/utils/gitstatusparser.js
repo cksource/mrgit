@@ -75,19 +75,19 @@ describe( 'utils', () => {
 		it( 'returns branch name for freshly created', () => {
 			const status = gitStatusParser( '## master' );
 
-			expect( status.branchOrTag ).to.equal( 'master' );
+			expect( status.branch ).to.equal( 'master' );
 		} );
 
 		it( 'returns branch name even if the upstream is set', () => {
 			const status = gitStatusParser( '## master...origin/master' );
 
-			expect( status.branchOrTag ).to.equal( 'master' );
+			expect( status.branch ).to.equal( 'master' );
 		} );
 
 		it( 'returns tag name if its available and the repository is in detached head mode', () => {
 			const status = gitStatusParser( '## HEAD (no branch)', 'v30.0.0' );
 
-			expect( status.branchOrTag ).to.equal( 'v30.0.0' );
+			expect( status.tag ).to.equal( 'v30.0.0' );
 		} );
 
 		it( 'returns number of commits being behind the remote branch', () => {

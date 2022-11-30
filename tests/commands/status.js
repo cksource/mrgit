@@ -176,7 +176,6 @@ describe( 'commands/status', () => {
 						commit: '6bfd379',
 						mrgitBranch: 'master',
 						mrgitTag: undefined,
-						currentTag: 'Response returned by "git describe" command.',
 						latestTag: 'v35.3.2'
 					} );
 				} );
@@ -229,7 +228,6 @@ describe( 'commands/status', () => {
 						commit: '6bfd379',
 						mrgitBranch: 'master',
 						mrgitTag: undefined,
-						currentTag: 'Response returned by "git describe" command.',
 						latestTag: 'v35.3.2'
 					} );
 				} );
@@ -280,7 +278,6 @@ describe( 'commands/status', () => {
 						commit: '6bfd379',
 						mrgitBranch: 'master',
 						mrgitTag: undefined,
-						currentTag: 'Response returned by "git describe" command.',
 						latestTag: 'v35.3.2'
 					} );
 				} );
@@ -334,7 +331,9 @@ describe( 'commands/status', () => {
 			commandResponses.add( {
 				packageName: 'foo',
 				status: {
-					branchOrTag: 'master',
+					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 2,
 					staged: [],
@@ -352,7 +351,9 @@ describe( 'commands/status', () => {
 			commandResponses.add( {
 				packageName: 'bar',
 				status: {
-					branchOrTag: 't/1',
+					branch: 't/1',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 3,
 					behind: 0,
 					staged: [ 'gulpfile.js' ],
@@ -395,71 +396,7 @@ describe( 'commands/status', () => {
 			logStub.restore();
 		} );
 
-		it( 'highlights a row if current branch is other than master', () => {
-			const logStub = sinon.stub( console, 'log' );
-
-			const processedPackages = new Set();
-			const commandResponses = new Set();
-
-			processedPackages.add( '@ckeditor/ckeditor5-foo' );
-
-			commandResponses.add( {
-				packageName: 'foo',
-				status: {
-					branchOrTag: 't/ckeditor5-bar/1',
-					ahead: 0,
-					behind: 0,
-					staged: [],
-					modified: [],
-					untracked: [],
-					unmerged: []
-				},
-				commit: 'abcd123',
-				mrgitBranch: 'master',
-				mrgitTag: undefined,
-				currentTag: 'v35.3.2',
-				latestTag: 'v35.3.2'
-			} );
-
-			statusCommand.afterExecute( processedPackages, commandResponses );
-			expect( stubs.chalk.magenta.called ).to.equal( true );
-
-			logStub.restore();
-		} );
-
-		it( 'does not highlight a row if current branch is equal to master', () => {
-			const logStub = sinon.stub( console, 'log' );
-
-			const processedPackages = new Set();
-			const commandResponses = new Set();
-
-			processedPackages.add( '@ckeditor/ckeditor5-foo' );
-
-			commandResponses.add( {
-				packageName: 'foo',
-				status: {
-					branchOrTag: 'master',
-					ahead: 0,
-					behind: 0,
-					staged: [],
-					modified: [],
-					untracked: [],
-					unmerged: []
-				},
-				commit: 'abcd123',
-				mrgitBranch: 'master',
-				mrgitTag: undefined,
-				currentTag: 'v35.3.2',
-				latestTag: 'v35.3.2'
-			} );
-
-			statusCommand.afterExecute( processedPackages, commandResponses );
-			expect( stubs.chalk.magenta.called ).to.equal( false );
-
-			logStub.restore();
-		} );
-
-		it( 'adds "!" before the branch name if current branch is other than defined in "mrgit.json"', () => {
+		it( 'adds green "L" before the tag name to indicate latest tag being up to date', () => {
 			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
@@ -470,45 +407,9 @@ describe( 'commands/status', () => {
 			commandResponses.add( {
 				packageName: 'bar',
 				status: {
-					branchOrTag: 't/1',
-					ahead: 0,
-					behind: 0,
-					staged: [],
-					modified: [],
-					untracked: [],
-					unmerged: []
-				},
-				commit: 'ef45678',
-				mrgitBranch: 'master',
-				mrgitTag: undefined,
-				currentTag: 'v35.3.2',
-				latestTag: 'v35.3.2'
-			} );
-
-			statusCommand.afterExecute( processedPackages, commandResponses );
-
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
-				[ 'bar', '! t/1', 'ef45678', '' ]
-			);
-
-			// First - in the table, second - in the legend.
-			expect( stubs.chalk.cyan.calledTwice ).to.equal( true );
-
-			logStub.restore();
-		} );
-
-		it( 'adds green "L" before the branch name to indicate latest tag being up to date', () => {
-			const logStub = sinon.stub( console, 'log' );
-
-			const processedPackages = new Set();
-			const commandResponses = new Set();
-
-			processedPackages.add( '@ckeditor/ckeditor5-bar' );
-
-			commandResponses.add( {
-				packageName: 'bar',
-				status: {
-					branchOrTag: 'v35.3.2',
+					branch: 'HEAD (no branch)',
+					tag: 'v35.3.2',
+					detachedHead: true,
 					ahead: 0,
 					behind: 0,
 					staged: [],
@@ -529,18 +430,20 @@ describe( 'commands/status', () => {
 				[ 'bar', 'L v35.3.2', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.green.callCount ).to.equal( 3 );
+			expect( stubs.chalk.green.callCount ).to.equal( 4 );
 
 			// Table
 			expect( stubs.chalk.green.getCall( 0 ).args[ 0 ] ).to.equal( 'L' );
 			// Legend
 			expect( stubs.chalk.green.getCall( 1 ).args[ 0 ] ).to.equal( '+' );
 			expect( stubs.chalk.green.getCall( 2 ).args[ 0 ] ).to.equal( 'L' );
+			// Hints
+			expect( stubs.chalk.green.getCall( 3 ).args[ 0 ] ).to.equal( 'L' );
 
 			logStub.restore();
 		} );
 
-		it( 'adds yellow "L" before the branch name to indicate latest tag not being up to date', () => {
+		it( 'adds "!" before the branch name if current branch is other than defined in "mrgit.json"', () => {
 			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
@@ -551,7 +454,55 @@ describe( 'commands/status', () => {
 			commandResponses.add( {
 				packageName: 'bar',
 				status: {
-					branchOrTag: 'v30.0.0',
+					branch: 't/1',
+					tag: undefined,
+					detachedHead: false,
+					ahead: 0,
+					behind: 0,
+					staged: [],
+					modified: [],
+					untracked: [],
+					unmerged: []
+				},
+				commit: 'ef45678',
+				mrgitBranch: 'master',
+				mrgitTag: undefined,
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
+			} );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'bar', '! t/1', 'ef45678', '' ]
+			);
+
+			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+
+			// Table
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			// Legend
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			// Hints
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
+
+			logStub.restore();
+		} );
+
+		it( 'adds "!" before the tag name to indicate latest tag not being up to date', () => {
+			const logStub = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-bar' );
+
+			commandResponses.add( {
+				packageName: 'bar',
+				status: {
+					branch: 'HEAD (no branch)',
+					tag: 'v30.0.0',
+					detachedHead: true,
 					ahead: 0,
 					behind: 0,
 					staged: [],
@@ -569,17 +520,17 @@ describe( 'commands/status', () => {
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
 			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
-				[ 'bar', 'L v30.0.0', 'ef45678', '' ]
+				[ 'bar', '! v30.0.0', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.yellow.callCount ).to.equal( 4 );
+			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
 
 			// Table
-			expect( stubs.chalk.yellow.getCall( 0 ).args[ 0 ] ).to.equal( 'L' );
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
 			// Legend
-			expect( stubs.chalk.yellow.getCall( 1 ).args[ 0 ] ).to.equal( '↑' );
-			expect( stubs.chalk.yellow.getCall( 2 ).args[ 0 ] ).to.equal( '↓' );
-			expect( stubs.chalk.yellow.getCall( 3 ).args[ 0 ] ).to.equal( 'L' );
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			// Hints
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
 
 			logStub.restore();
 		} );
@@ -595,7 +546,9 @@ describe( 'commands/status', () => {
 			commandResponses.add( {
 				packageName: 'bar',
 				status: {
-					branchOrTag: 'master',
+					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 0,
 					staged: [],
@@ -616,12 +569,14 @@ describe( 'commands/status', () => {
 				[ 'bar', '! master', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.cyan.callCount ).to.equal( 2 );
+			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
 
 			// Table
 			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
 			// Legend
 			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			// Hints
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
 
 			logStub.restore();
 		} );
@@ -637,7 +592,9 @@ describe( 'commands/status', () => {
 			commandResponses.add( {
 				packageName: 'bar',
 				status: {
-					branchOrTag: 'master',
+					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 0,
 					staged: [],
@@ -658,12 +615,14 @@ describe( 'commands/status', () => {
 				[ 'bar', '! master', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.cyan.callCount ).to.equal( 2 );
+			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
 
 			// Table
 			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
 			// Legend
 			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			// Hints
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
 
 			logStub.restore();
 		} );
@@ -697,7 +656,9 @@ describe( 'commands/status', () => {
 				return {
 					packageName,
 					status: {
-						branchOrTag: 'master',
+						branch: 'master',
+						tag: undefined,
+						detachedHead: false,
 						ahead: 0,
 						behind: 0,
 						staged: [],
@@ -725,7 +686,9 @@ describe( 'commands/status', () => {
 			commandResponses.add( {
 				packageName: 'foo',
 				status: {
-					branchOrTag: 'master',
+					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 2,
 					staged: [],
@@ -776,7 +739,9 @@ describe( 'commands/status', () => {
 			commandResponses.add( {
 				packageName: 'foo',
 				status: {
-					branchOrTag: 'master',
+					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 2,
 					staged: [],

@@ -9,6 +9,8 @@ Multi-repo manager for git. A tool for managing projects build using multiple re
 
 `mrgit` is designed to work with [yarn workspaces](https://yarnpkg.com/lang/en/docs/workspaces/) and [Lerna](https://github.com/lerna/lerna) out of the box, hence, it mixes the "package" and "repository" concepts. In other words, every repository is meant to be a single [npm](https://npmjs.com) package. It doesn't mean that you must use it with Lerna and npm, but don't be surprised that mrgit talks about "packages" and works best with npm packages.
 
+TODO: UPDATE WITH TAGS SUPPORT INFO
+
 # Table of content
 
 1. [Installation](#installation)

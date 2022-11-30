@@ -77,19 +77,43 @@ describe( 'commands/push', () => {
 				} );
 		} );
 
-		it( 'resolves promise after pushing the changes', () => {
+		it( 'skips a package if its in detached head mode', () => {
 			stubs.fs.existsSync.returns( true );
 
 			const exec = stubs.execCommand.execute;
 
-			exec.returns( Promise.resolve( {
-				logs: getCommandLogs( 'Everything up-to-date' )
+			exec.onCall( 0 ).returns( Promise.resolve( {
+				logs: getCommandLogs( '' )
 			} ) );
 
 			return pushCommand.execute( commandData )
 				.then( response => {
 					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git push' );
+					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch --show-current' );
+
+					expect( response.logs.info ).to.deep.equal( [
+						'This repository is currently in detached head mode - skipping.'
+					] );
+				} );
+		} );
+
+		it( 'resolves promise after pushing the changes', () => {
+			stubs.fs.existsSync.returns( true );
+
+			const exec = stubs.execCommand.execute;
+
+			exec.onCall( 0 ).returns( Promise.resolve( {
+				logs: getCommandLogs( 'master' )
+			} ) );
+			exec.onCall( 1 ).returns( Promise.resolve( {
+				logs: getCommandLogs( 'Everything up-to-date' )
+			} ) );
+
+			return pushCommand.execute( commandData )
+				.then( response => {
+					expect( exec.callCount ).to.equal( 2 );
+					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch --show-current' );
+					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git push' );
 
 					expect( response.logs.info ).to.deep.equal( [
 						'Everything up-to-date'
@@ -110,8 +134,9 @@ describe( 'commands/push', () => {
 
 			return pushCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git push --verbose --all' );
+					expect( exec.callCount ).to.equal( 2 );
+					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch --show-current' );
+					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git push --verbose --all' );
 
 					expect( response.logs.info ).to.deep.equal( [
 						'Everything up-to-date'

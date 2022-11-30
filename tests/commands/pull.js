@@ -81,19 +81,43 @@ describe( 'commands/pull', () => {
 				} );
 		} );
 
-		it( 'resolves promise after pulling the changes', () => {
+		it( 'skips a package if its in detached head mode', () => {
 			stubs.fs.existsSync.returns( true );
 
 			const exec = stubs.execCommand.execute;
 
-			exec.returns( Promise.resolve( {
-				logs: getCommandLogs( 'Already up-to-date.' )
+			exec.onCall( 0 ).returns( Promise.resolve( {
+				logs: getCommandLogs( '' )
 			} ) );
 
 			return pullCommand.execute( commandData )
 				.then( response => {
 					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git pull' );
+					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch --show-current' );
+
+					expect( response.logs.info ).to.deep.equal( [
+						'This repository is currently in detached head mode - skipping.'
+					] );
+				} );
+		} );
+
+		it( 'resolves promise after pulling the changes', () => {
+			stubs.fs.existsSync.returns( true );
+
+			const exec = stubs.execCommand.execute;
+
+			exec.onCall( 0 ).returns( Promise.resolve( {
+				logs: getCommandLogs( 'master' )
+			} ) );
+			exec.onCall( 1 ).returns( Promise.resolve( {
+				logs: getCommandLogs( 'Already up-to-date.' )
+			} ) );
+
+			return pullCommand.execute( commandData )
+				.then( response => {
+					expect( exec.callCount ).to.equal( 2 );
+					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch --show-current' );
+					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git pull' );
 
 					expect( response.logs.info ).to.deep.equal( [
 						'Already up-to-date.'
