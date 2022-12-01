@@ -290,5 +290,45 @@ describe( 'commands/save', () => {
 				'test-package': 'organization/test-package'
 			} );
 		} );
+
+		it( 'overwrites tags defined in "mrgit.json"', () => {
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( 'test-package' );
+			processedPackages.add( 'package-test' );
+
+			commandResponses.add( {
+				packageName: 'test-package',
+				data: 'develop',
+				hash: false,
+				branch: true
+			} );
+			commandResponses.add( {
+				packageName: 'package-test',
+				data: 'develop',
+				hash: false,
+				branch: true
+			} );
+
+			saveCommand.afterExecute( processedPackages, commandResponses );
+
+			let json = {
+				dependencies: {
+					'test-package': 'organization/test-package@v30.0.0',
+					'package-test': 'organization/package-test@latest'
+				}
+			};
+
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( updateFunction ).to.be.a( 'function' );
+
+			json = updateFunction( json );
+
+			expect( json.dependencies ).to.deep.equal( {
+				'test-package': 'organization/test-package#develop',
+				'package-test': 'organization/package-test#develop'
+			} );
+		} );
 	} );
 } );
