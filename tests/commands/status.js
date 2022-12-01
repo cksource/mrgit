@@ -145,7 +145,7 @@ describe( 'commands/status', () => {
 				logs: { info: [ 'Response returned by "git describe" command.' ] }
 			} );
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: { info: [ 'v35.2.0\nv35.2.1\nv35.3.0\nv35.3.1\nv35.3.2' ] }
+				logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
@@ -163,7 +163,7 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git describe --abbrev=0 --tags' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git tag --sort=committerdate' )
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
@@ -197,7 +197,7 @@ describe( 'commands/status', () => {
 				logs: { info: [ 'Response returned by "git describe" command.' ] }
 			} );
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: { info: [ 'v35.2.0\nv35.2.1\nv35.3.0\nv35.3.1\nv35.3.2' ] }
+				logs: { info: [ 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0\n' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
@@ -215,7 +215,7 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git describe --abbrev=0 --tags' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git tag --sort=committerdate' )
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
@@ -247,7 +247,7 @@ describe( 'commands/status', () => {
 				logs: { info: [ 'Response returned by "git describe" command.' ] }
 			} );
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: { info: [ 'v35.2.0\nv35.2.1\nv35.3.0\nv35.3.1\nv35.3.2' ] }
+				logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
@@ -265,7 +265,7 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git describe --abbrev=0 --tags' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git tag --sort=committerdate' )
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );

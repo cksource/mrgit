@@ -133,11 +133,11 @@ describe( 'commands/sync', () => {
 			it( 'clones the repository and checks the latest tag', () => {
 				commandData.repository.tag = 'latest';
 
-				const command = 'cd "/tmp/packages/test-package" && git tag --sort=committerdate';
+				const command = 'cd "/tmp/packages/test-package" && git log --tags --simplify-by-decoration --pretty="%S"';
 
 				stubs.fs.existsSync.returns( false );
 				stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
-				stubs.shell.withArgs( command ).returns( Promise.resolve( 'v35.2.0\nv35.2.1\nv35.3.0\nv35.3.1\nv35.3.2' ) );
+				stubs.shell.withArgs( command ).returns( Promise.resolve( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -428,7 +428,7 @@ describe( 'commands/sync', () => {
 				} ) );
 
 				exec.onCall( 2 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'v35.2.0\nv35.2.1\nv35.3.0\nv35.3.1\nv35.3.2' )
+					logs: getCommandLogs( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.3.0' )
 				} ) );
 
 				exec.onCall( 3 ).returns( Promise.resolve( {
@@ -451,7 +451,9 @@ describe( 'commands/sync', () => {
 					.then( response => {
 						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
 						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git tag --sort=committerdate' );
+						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal(
+							'git log --tags --simplify-by-decoration --pretty="%S"'
+						);
 						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git checkout "tags/v35.3.2"' );
 						expect( exec.getCall( 4 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch' );
 
