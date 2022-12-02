@@ -2,6 +2,8 @@
   "dependencies": {
     "simple-package": "a/b",
     "package-with-branch": "a/b#dev",
+    "package-with-specific-tag": "a/b@v30.0.0",
+    "package-with-latest-tag": "a/b@latest",
     "@scoped/package": "c/d",
     "full-url-git": "git@github.com:cksource/mrgit.git",
     "full-url-git-with-branch": "git@github.com:cksource/mrgit.git#xyz",

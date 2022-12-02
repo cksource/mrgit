@@ -104,7 +104,7 @@ describe( 'commands/close', () => {
 			stubs.execCommand.execute.onCall( 1 ).resolves( {
 				logs: {
 					info: [
-						'Merge made by the \'recursive\' strategy.'
+						'develop'
 					],
 					error: []
 				}
@@ -113,13 +113,22 @@ describe( 'commands/close', () => {
 			stubs.execCommand.execute.onCall( 2 ).resolves( {
 				logs: {
 					info: [
-						'Deleted branch develop (was e6bda2e9).'
+						'Merge made by the \'recursive\' strategy.'
 					],
 					error: []
 				}
 			} );
 
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
+				logs: {
+					info: [
+						'Deleted branch develop (was e6bda2e9).'
+					],
+					error: []
+				}
+			} );
+
+			stubs.execCommand.execute.onCall( 4 ).resolves( {
 				logs: {
 					info: [
 						'To github.com:foo/bar.git\n' +
@@ -131,7 +140,7 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
+					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
 
 					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
@@ -145,7 +154,7 @@ describe( 'commands/close', () => {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'"' ],
+						arguments: [ 'git branch --show-current' ],
 						toolOptions
 					} );
 
@@ -153,11 +162,19 @@ describe( 'commands/close', () => {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git branch -d develop' ],
+						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'"' ],
 						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git branch -d develop' ],
+						toolOptions
+					} );
+
+					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
@@ -198,7 +215,7 @@ describe( 'commands/close', () => {
 			stubs.execCommand.execute.onCall( 1 ).resolves( {
 				logs: {
 					info: [
-						'Merge made by the \'recursive\' strategy.'
+						'develop'
 					],
 					error: []
 				}
@@ -207,13 +224,22 @@ describe( 'commands/close', () => {
 			stubs.execCommand.execute.onCall( 2 ).resolves( {
 				logs: {
 					info: [
-						'Deleted branch develop (was e6bda2e9).'
+						'Merge made by the \'recursive\' strategy.'
 					],
 					error: []
 				}
 			} );
 
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
+				logs: {
+					info: [
+						'Deleted branch develop (was e6bda2e9).'
+					],
+					error: []
+				}
+			} );
+
+			stubs.execCommand.execute.onCall( 4 ).resolves( {
 				logs: {
 					info: [
 						'To github.com:foo/bar.git\n' +
@@ -225,7 +251,7 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
+					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
 
 					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
@@ -239,7 +265,7 @@ describe( 'commands/close', () => {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ],
+						arguments: [ 'git branch --show-current' ],
 						toolOptions
 					} );
 
@@ -247,11 +273,19 @@ describe( 'commands/close', () => {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git branch -d develop' ],
+						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ],
 						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git branch -d develop' ],
+						toolOptions
+					} );
+
+					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
@@ -292,7 +326,7 @@ describe( 'commands/close', () => {
 			stubs.execCommand.execute.onCall( 1 ).resolves( {
 				logs: {
 					info: [
-						'Merge made by the \'recursive\' strategy.'
+						'develop'
 					],
 					error: []
 				}
@@ -301,13 +335,22 @@ describe( 'commands/close', () => {
 			stubs.execCommand.execute.onCall( 2 ).resolves( {
 				logs: {
 					info: [
-						'Deleted branch develop (was e6bda2e9).'
+						'Merge made by the \'recursive\' strategy.'
 					],
 					error: []
 				}
 			} );
 
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
+				logs: {
+					info: [
+						'Deleted branch develop (was e6bda2e9).'
+					],
+					error: []
+				}
+			} );
+
+			stubs.execCommand.execute.onCall( 4 ).resolves( {
 				logs: {
 					info: [
 						'To github.com:foo/bar.git\n' +
@@ -319,7 +362,7 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
+					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
 
 					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
@@ -333,7 +376,7 @@ describe( 'commands/close', () => {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ],
+						arguments: [ 'git branch --show-current' ],
 						toolOptions
 					} );
 
@@ -341,11 +384,19 @@ describe( 'commands/close', () => {
 						repository: {
 							branch: 'master'
 						},
-						arguments: [ 'git branch -d develop' ],
+						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ],
 						toolOptions
 					} );
 
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git branch -d develop' ],
+						toolOptions
+					} );
+
+					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
 						repository: {
 							branch: 'master'
 						},
@@ -396,6 +447,53 @@ describe( 'commands/close', () => {
 
 					expect( commandResponse.logs.info ).to.deep.equal( [
 						'Branch does not exist.'
+					] );
+				} );
+		} );
+
+		it( 'does not merge branch if in detached head mode', () => {
+			commandData.arguments.push( 'develop' );
+
+			stubs.execCommand.execute.onCall( 0 ).resolves( {
+				logs: {
+					info: [
+						'* develop'
+					],
+					error: []
+				}
+			} );
+
+			stubs.execCommand.execute.onCall( 1 ).resolves( {
+				logs: {
+					info: [
+						''
+					],
+					error: []
+				}
+			} );
+
+			return closeCommand.execute( commandData )
+				.then( commandResponse => {
+					expect( stubs.execCommand.execute.callCount ).to.equal( 2 );
+
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git branch --list develop' ],
+						toolOptions
+					} );
+
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git branch --show-current' ],
+						toolOptions
+					} );
+
+					expect( commandResponse.logs.info ).to.deep.equal( [
+						'This repository is currently in detached head mode - skipping.'
 					] );
 				} );
 		} );

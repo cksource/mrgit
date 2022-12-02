@@ -84,6 +84,12 @@ describe( 'utils', () => {
 			expect( status.branch ).to.equal( 'master' );
 		} );
 
+		it( 'returns tag name if its available and the repository is in detached head mode', () => {
+			const status = gitStatusParser( '## HEAD (no branch)', 'v30.0.0' );
+
+			expect( status.tag ).to.equal( 'v30.0.0' );
+		} );
+
 		it( 'returns number of commits being behind the remote branch', () => {
 			const status = gitStatusParser( '## master [behind 3 ahead 6]' );
 

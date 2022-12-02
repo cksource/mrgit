@@ -20,6 +20,7 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'bar'
 			} );
 		} );
@@ -32,6 +33,7 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'stable',
+				tag: undefined,
 				directory: 'bar'
 			} );
 		} );
@@ -45,6 +47,7 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'stable',
+				tag: undefined,
 				directory: 'bar'
 			} );
 		} );
@@ -55,6 +58,7 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'http://github.com/foo/bar.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'bar'
 			} );
 		} );
@@ -65,6 +69,7 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'bar'
 			} );
 		} );
@@ -75,6 +80,7 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'file:///Users/Workspace/Projects/foo/bar',
 				branch: 'master',
+				tag: undefined,
 				directory: 'bar'
 			} );
 		} );
@@ -85,6 +91,7 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'file://c/Users/Workspace/Projects/foo/bar',
 				branch: 'master',
+				tag: undefined,
 				directory: 'bar'
 			} );
 		} );
@@ -95,6 +102,7 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'git@github.com:foo/bar.git',
 				branch: 'master',
+				tag: undefined,
 				directory: 'bar'
 			} );
 		} );
@@ -105,6 +113,46 @@ describe( 'utils', () => {
 			expect( repository ).to.deep.equal( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'stable',
+				tag: undefined,
+				directory: 'bar'
+			} );
+		} );
+
+		it( 'returns specific tag that contains semantic version number', () => {
+			const repository = parseRepositoryUrl( 'foo/bar@v30.0.0', {
+				urlTemplate: 'https://github.com/${ path }.git'
+			} );
+
+			expect( repository ).to.deep.equal( {
+				url: 'https://github.com/foo/bar.git',
+				branch: 'master',
+				tag: 'v30.0.0',
+				directory: 'bar'
+			} );
+		} );
+
+		it( 'returns specific tag that does not contain semantic version number', () => {
+			const repository = parseRepositoryUrl( 'foo/bar@customTagName', {
+				urlTemplate: 'https://github.com/${ path }.git'
+			} );
+
+			expect( repository ).to.deep.equal( {
+				url: 'https://github.com/foo/bar.git',
+				branch: 'master',
+				tag: 'customTagName',
+				directory: 'bar'
+			} );
+		} );
+
+		it( 'returns the "latest" tag', () => {
+			const repository = parseRepositoryUrl( 'foo/bar@latest', {
+				urlTemplate: 'https://github.com/${ path }.git'
+			} );
+
+			expect( repository ).to.deep.equal( {
+				url: 'https://github.com/foo/bar.git',
+				branch: 'master',
+				tag: 'latest',
 				directory: 'bar'
 			} );
 		} );
@@ -114,12 +162,14 @@ describe( 'utils', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
+					tag: undefined,
 					cwdPackageBranch: 'master'
 				} );
 
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'develop',
+					tag: undefined,
 					directory: 'bar'
 				} );
 			} );
@@ -133,6 +183,7 @@ describe( 'utils', () => {
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'develop',
+					tag: undefined,
 					directory: 'bar'
 				} );
 			} );
@@ -146,6 +197,7 @@ describe( 'utils', () => {
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'master',
+					tag: undefined,
 					directory: 'bar'
 				} );
 			} );
@@ -154,6 +206,7 @@ describe( 'utils', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
+					tag: undefined,
 					baseBranches: [],
 					cwdPackageBranch: 'master'
 				} );
@@ -161,6 +214,7 @@ describe( 'utils', () => {
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'develop',
+					tag: undefined,
 					directory: 'bar'
 				} );
 			} );
@@ -169,6 +223,7 @@ describe( 'utils', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
+					tag: undefined,
 					baseBranches: [ 'stable' ],
 					cwdPackageBranch: 'master'
 				} );
@@ -176,6 +231,7 @@ describe( 'utils', () => {
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'develop',
+					tag: undefined,
 					directory: 'bar'
 				} );
 			} );
@@ -184,6 +240,7 @@ describe( 'utils', () => {
 				const repository = parseRepositoryUrl( 'foo/bar', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
+					tag: undefined,
 					baseBranches: [ 'stable', 'master' ],
 					cwdPackageBranch: 'stable'
 				} );
@@ -191,6 +248,7 @@ describe( 'utils', () => {
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'stable',
+					tag: undefined,
 					directory: 'bar'
 				} );
 			} );
@@ -199,6 +257,7 @@ describe( 'utils', () => {
 				const repository = parseRepositoryUrl( 'foo/bar#mrgit', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
+					tag: undefined,
 					baseBranches: [ 'stable' ],
 					cwdPackageBranch: 'master'
 				} );
@@ -206,6 +265,7 @@ describe( 'utils', () => {
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'mrgit',
+					tag: undefined,
 					directory: 'bar'
 				} );
 			} );
@@ -214,6 +274,7 @@ describe( 'utils', () => {
 				const repository = parseRepositoryUrl( 'foo/bar#mrgit', {
 					urlTemplate: 'https://github.com/${ path }.git',
 					defaultBranch: 'develop',
+					tag: undefined,
 					baseBranches: [ 'master' ],
 					cwdPackageBranch: 'master'
 				} );
@@ -221,6 +282,7 @@ describe( 'utils', () => {
 				expect( repository ).to.deep.equal( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'mrgit',
+					tag: undefined,
 					directory: 'bar'
 				} );
 			} );

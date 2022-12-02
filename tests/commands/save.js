@@ -7,13 +7,14 @@
 
 'use strict';
 
-const path = require( 'upath' );
 const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
 
 describe( 'commands/save', () => {
 	let saveCommand, stubs, commandData, toolOptions, mrgitJsonPath, updateFunction;
+
+	const normalizedDirname = __dirname.replace( /\\/g, '/' );
 
 	beforeEach( () => {
 		mockery.enable( {
@@ -27,7 +28,7 @@ describe( 'commands/save', () => {
 				execute: sinon.stub()
 			},
 			path: {
-				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
+				join: sinon.stub().callsFake( ( ...chunks ) => chunks.join( '/' ) )
 			},
 			gitStatusParser: sinon.stub()
 		};
@@ -205,7 +206,7 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mrgitJsonPath ).to.equal( __dirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
@@ -247,7 +248,7 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mrgitJsonPath ).to.equal( __dirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
@@ -280,13 +281,53 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mrgitJsonPath ).to.equal( __dirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
 			expect( json.dependencies ).to.deep.equal( {
 				'test-package': 'organization/test-package'
+			} );
+		} );
+
+		it( 'overwrites tags defined in "mrgit.json"', () => {
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( 'test-package' );
+			processedPackages.add( 'package-test' );
+
+			commandResponses.add( {
+				packageName: 'test-package',
+				data: 'develop',
+				hash: false,
+				branch: true
+			} );
+			commandResponses.add( {
+				packageName: 'package-test',
+				data: 'develop',
+				hash: false,
+				branch: true
+			} );
+
+			saveCommand.afterExecute( processedPackages, commandResponses );
+
+			let json = {
+				dependencies: {
+					'test-package': 'organization/test-package@v30.0.0',
+					'package-test': 'organization/package-test@latest'
+				}
+			};
+
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( updateFunction ).to.be.a( 'function' );
+
+			json = updateFunction( json );
+
+			expect( json.dependencies ).to.deep.equal( {
+				'test-package': 'organization/test-package#develop',
+				'package-test': 'organization/package-test#develop'
 			} );
 		} );
 	} );

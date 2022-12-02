@@ -152,9 +152,16 @@ Examples:
 ```
 
 ```js
-// Clone 'https://github.com/cksource/foo.git' (via HTTPS) and check out to branch tag 'v1.2.3'.
+// Clone 'https://github.com/cksource/foo.git' (via HTTPS) and check out to tag 'v1.2.3'.
 {
-    "foo": "https://github.com/cksource/foo.git#v1.2.3"
+    "foo": "https://github.com/cksource/foo.git@v1.2.3"
+}
+```
+
+```js
+// Clone 'cksource/foo' and check out to the latest available tag.
+{
+    "foo": "cksource/foo@latest"
 }
 ```
 
@@ -212,8 +219,9 @@ You can also use full HTTPS URLs to configure `dependencies` in your `mrgit.json
 When you call `mrgit sync` or `mrgit co`, mrgit will use the following algorithm to determine the branch to which each repository should be checked out:
 
 1. If a branch is defined in `mrgit.json`, use it. A branch can be defined after `#` in a repository URL. For example: `"@cksource/foo": "cksource/foo#dev"`.
-2. If the root repository (assuming, it is a repository) is on one of the "base branches", use that branch name.
-3. Otherwise, use `master`.
+2. If a tag is defined in `mrgit.json`, use it. A tag can be defined after `@` in a repository URL. Its either a specific tag name, such as `@v30.0.0`, or `@latest` tag that will look for the latest available tag.
+3. If the root repository (assuming, it is a repository) is on one of the "base branches", use that branch name.
+4. Otherwise, use `master` branch.
 
 You can define the base branches as follows:
 
@@ -241,7 +249,7 @@ $ mrgit [command] --help
 
 ### sync
 
-Updates dependencies. Switches repositories to correct branches (specified in `mrgit.json`) and pulls changes.
+Updates dependencies. Switches repositories to correct branches or tags (specified in `mrgit.json`) and pulls changes.
 
 If any dependency is missing, the command will install this dependency as well.
 
@@ -258,8 +266,7 @@ mrgit sync --recursive
 
 ### pull
 
-Pulls changes in existing repositories. It does not change branches in the repositories and pull the changes even if
-the repository contains uncommitted changes.
+Pulls changes in existing repositories. It does not change branches in the repositories. It does not pull the changes if the repository contains uncommitted changes. It skips repositories that are in detached head mode (are checked out on a tag).
 
 Examples:
 
@@ -269,7 +276,7 @@ mrgit pull
 
 ### push
 
-Pushes changes in existing repositories.
+Pushes changes in existing repositories. It skips repositories that are in detached head mode (are checked out on a tag).
 
 Examples:
 
@@ -310,8 +317,7 @@ mrgit exec 'echo `pwd`'
 
 ### commit (alias: `ci`)
 
-For every repository that contains changes which can be committed, makes a commit with these files.
-You need to specify the message for the commit.
+For every repository that contains changes which can be committed, makes a commit with these files. You need to specify the message for the commit. It skips repositories that are in detached head mode (are checked out on a tag).
 
 Example:
 
@@ -324,10 +330,7 @@ mrgit commit --message 'Introduce PULL_REQUEST_TEMPLATE.md.'
 
 ### close
 
-Requires a second argument which is a branch name that will be merged to current one. You can also specify the message
-which will be added to the default git-merge message.
-
-Repositories which do not have specified branch will be ignored.
+Requires a second argument which is a branch name that will be merged to current one. You can also specify the message which will be added to the default git-merge message. Repositories which do not have specified branch will be ignored. It skips repositories that are in detached head mode (are checked out on a tag).
 
 After merging, the merged branch will be removed from the remote and the local registry.
 

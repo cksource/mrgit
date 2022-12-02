@@ -135,45 +135,50 @@ describe( 'commands/status', () => {
 		} );
 
 		it( 'returns a response with status of the repository', () => {
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ]
-				}
+			stubs.execCommand.execute.onCall( 0 ).resolves( {
+				logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
 			} );
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [ 'Response returned by "git status" command.' ]
-				}
+			stubs.execCommand.execute.onCall( 1 ).resolves( {
+				logs: { info: [ 'Response returned by "git status" command.' ] }
+			} );
+			stubs.execCommand.execute.onCall( 2 ).resolves( {
+				logs: { info: [ 'Response returned by "git describe" command.' ] }
+			} );
+			stubs.execCommand.execute.onCall( 3 ).resolves( {
+				logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
 
 			return statusCommand.execute( commandData )
 				.then( statusResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
 						getCommandArguments( 'git rev-parse HEAD' )
 					);
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
 						getCommandArguments( 'git status --branch --porcelain' )
+					);
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git describe --abbrev=0 --tags' )
+					);
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
 					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( 'Response returned by "git describe" command.' );
 
 					expect( statusResponse.response ).to.deep.equal( {
 						packageName: 'test-package',
-						commit: '6bfd379',
 						status: { response: 'Parsed response.' },
-						mrgitBranch: 'master'
+						commit: '6bfd379',
+						mrgitBranch: 'master',
+						mrgitTag: undefined,
+						latestTag: 'v35.3.2'
 					} );
 				} );
-
-			function getCommandArguments( command ) {
-				return Object.assign( {}, commandData, {
-					arguments: [ command ]
-				} );
-			}
 		} );
 
 		it( 'modifies the package name if "packagesPrefix" is an array', () => {
@@ -182,74 +187,107 @@ describe( 'commands/status', () => {
 				'@ckeditor/ckeditor5-'
 			];
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ]
-				}
+			stubs.execCommand.execute.onCall( 0 ).resolves( {
+				logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
 			} );
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [ 'Response returned by "git status" command.' ]
-				}
+			stubs.execCommand.execute.onCall( 1 ).resolves( {
+				logs: { info: [ 'Response returned by "git status" command.' ] }
+			} );
+			stubs.execCommand.execute.onCall( 2 ).resolves( {
+				logs: { info: [ 'Response returned by "git describe" command.' ] }
+			} );
+			stubs.execCommand.execute.onCall( 3 ).resolves( {
+				logs: { info: [ 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0\n' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
 
 			return statusCommand.execute( commandData )
 				.then( statusResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
 						getCommandArguments( 'git rev-parse HEAD' )
 					);
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
 						getCommandArguments( 'git status --branch --porcelain' )
+					);
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git describe --abbrev=0 --tags' )
+					);
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
 					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( 'Response returned by "git describe" command.' );
 
 					expect( statusResponse.response ).to.deep.equal( {
 						packageName: 'test-package',
-						commit: '6bfd379',
 						status: { response: 'Parsed response.' },
-						mrgitBranch: 'master'
+						commit: '6bfd379',
+						mrgitBranch: 'master',
+						mrgitTag: undefined,
+						latestTag: 'v35.3.2'
 					} );
 				} );
-
-			function getCommandArguments( command ) {
-				return Object.assign( {}, commandData, {
-					arguments: [ command ]
-				} );
-			}
 		} );
 
 		it( 'does not modify the package name if "packagesPrefix" option is not specified', () => {
 			// mrgit resolves this option to be an empty array if it isn't specified.
 			commandData.toolOptions.packagesPrefix = [];
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ]
-				}
+			stubs.execCommand.execute.onCall( 0 ).resolves( {
+				logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
 			} );
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [ 'Response returned by "git status" command.' ]
-				}
+			stubs.execCommand.execute.onCall( 1 ).resolves( {
+				logs: { info: [ 'Response returned by "git status" command.' ] }
+			} );
+			stubs.execCommand.execute.onCall( 2 ).resolves( {
+				logs: { info: [ 'Response returned by "git describe" command.' ] }
+			} );
+			stubs.execCommand.execute.onCall( 3 ).resolves( {
+				logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
 
 			return statusCommand.execute( commandData )
 				.then( statusResponse => {
+					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git rev-parse HEAD' )
+					);
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git status --branch --porcelain' )
+					);
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git describe --abbrev=0 --tags' )
+					);
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
+					);
+
+					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( 'Response returned by "git describe" command.' );
+
 					expect( statusResponse.response ).to.deep.equal( {
 						packageName: '@ckeditor/ckeditor5-test-package',
-						commit: '6bfd379',
 						status: { response: 'Parsed response.' },
-						mrgitBranch: 'master'
+						commit: '6bfd379',
+						mrgitBranch: 'master',
+						mrgitTag: undefined,
+						latestTag: 'v35.3.2'
 					} );
 				} );
 		} );
+
+		function getCommandArguments( command ) {
+			return Object.assign( {}, commandData, {
+				arguments: [ command ]
+			} );
+		}
 	} );
 
 	describe( 'afterExecute()', () => {
@@ -294,6 +332,8 @@ describe( 'commands/status', () => {
 				packageName: 'foo',
 				status: {
 					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 2,
 					staged: [],
@@ -301,14 +341,19 @@ describe( 'commands/status', () => {
 					untracked: [],
 					unmerged: []
 				},
+				commit: 'abcd123',
 				mrgitBranch: 'master',
-				commit: 'abcd123'
+				mrgitTag: undefined,
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
 			} );
 
 			commandResponses.add( {
 				packageName: 'bar',
 				status: {
 					branch: 't/1',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 3,
 					behind: 0,
 					staged: [ 'gulpfile.js' ],
@@ -316,8 +361,11 @@ describe( 'commands/status', () => {
 					untracked: [ 'CHANGELOG.md' ],
 					unmerged: []
 				},
+				commit: 'ef45678',
 				mrgitBranch: 't/1',
-				commit: 'ef45678'
+				mrgitTag: undefined,
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
 			} );
 
 			stubs.table.toString.returns( '┻━┻' );
@@ -325,7 +373,7 @@ describe( 'commands/status', () => {
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
 			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
-				head: [ 'Package', 'Branch', 'Commit', 'Status' ],
+				head: [ 'Package', 'Branch/Tag', 'Commit', 'Status' ],
 				style: {
 					compact: true
 				}
@@ -348,18 +396,20 @@ describe( 'commands/status', () => {
 			logStub.restore();
 		} );
 
-		it( 'highlights a row if current branch is other than master', () => {
+		it( 'adds green "L" before the tag name to indicate latest tag being up to date', () => {
 			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
 			const commandResponses = new Set();
 
-			processedPackages.add( '@ckeditor/ckeditor5-foo' );
+			processedPackages.add( '@ckeditor/ckeditor5-bar' );
 
 			commandResponses.add( {
-				packageName: 'foo',
+				packageName: 'bar',
 				status: {
-					branch: 't/ckeditor5-bar/1',
+					branch: 'HEAD (no branch)',
+					tag: 'v35.3.2',
+					detachedHead: true,
 					ahead: 0,
 					behind: 0,
 					staged: [],
@@ -367,41 +417,28 @@ describe( 'commands/status', () => {
 					untracked: [],
 					unmerged: []
 				},
+				commit: 'ef45678',
 				mrgitBranch: 'master',
-				commit: 'abcd123'
+				mrgitTag: 'latest',
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
 			} );
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
-			expect( stubs.chalk.magenta.called ).to.equal( true );
 
-			logStub.restore();
-		} );
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'bar', 'L v35.3.2', 'ef45678', '' ]
+			);
 
-		it( 'does not highlight a row if current branch is equal to master', () => {
-			const logStub = sinon.stub( console, 'log' );
+			expect( stubs.chalk.green.callCount ).to.equal( 4 );
 
-			const processedPackages = new Set();
-			const commandResponses = new Set();
-
-			processedPackages.add( '@ckeditor/ckeditor5-foo' );
-
-			commandResponses.add( {
-				packageName: 'foo',
-				status: {
-					branch: 'master',
-					ahead: 0,
-					behind: 0,
-					staged: [],
-					modified: [],
-					untracked: [],
-					unmerged: []
-				},
-				mrgitBranch: 'master',
-				commit: 'abcd123'
-			} );
-
-			statusCommand.afterExecute( processedPackages, commandResponses );
-			expect( stubs.chalk.magenta.called ).to.equal( false );
+			// Table
+			expect( stubs.chalk.green.getCall( 0 ).args[ 0 ] ).to.equal( 'L' );
+			// Legend
+			expect( stubs.chalk.green.getCall( 1 ).args[ 0 ] ).to.equal( '+' );
+			expect( stubs.chalk.green.getCall( 2 ).args[ 0 ] ).to.equal( 'L' );
+			// Hints
+			expect( stubs.chalk.green.getCall( 3 ).args[ 0 ] ).to.equal( 'L' );
 
 			logStub.restore();
 		} );
@@ -418,6 +455,8 @@ describe( 'commands/status', () => {
 				packageName: 'bar',
 				status: {
 					branch: 't/1',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 0,
 					staged: [],
@@ -425,8 +464,11 @@ describe( 'commands/status', () => {
 					untracked: [],
 					unmerged: []
 				},
+				commit: 'ef45678',
 				mrgitBranch: 'master',
-				commit: 'ef45678'
+				mrgitTag: undefined,
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
 			} );
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
@@ -435,13 +477,157 @@ describe( 'commands/status', () => {
 				[ 'bar', '! t/1', 'ef45678', '' ]
 			);
 
-			// First - in the table, second - in the legend.
-			expect( stubs.chalk.cyan.calledTwice ).to.equal( true );
+			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+
+			// Table
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			// Legend
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			// Hints
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
 
 			logStub.restore();
 		} );
 
-		it( 'sorts packages by alphabetically', () => {
+		it( 'adds "!" before the tag name to indicate latest tag not being up to date', () => {
+			const logStub = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-bar' );
+
+			commandResponses.add( {
+				packageName: 'bar',
+				status: {
+					branch: 'HEAD (no branch)',
+					tag: 'v30.0.0',
+					detachedHead: true,
+					ahead: 0,
+					behind: 0,
+					staged: [],
+					modified: [],
+					untracked: [],
+					unmerged: []
+				},
+				commit: 'ef45678',
+				mrgitBranch: 'master',
+				mrgitTag: 'latest',
+				currentTag: 'v30.0.0',
+				latestTag: 'v35.3.2'
+			} );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'bar', '! v30.0.0', 'ef45678', '' ]
+			);
+
+			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+
+			// Table
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			// Legend
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			// Hints
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
+
+			logStub.restore();
+		} );
+
+		it( 'adds "!" before the branch name if the latest tag should be checked out instead', () => {
+			const logStub = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-bar' );
+
+			commandResponses.add( {
+				packageName: 'bar',
+				status: {
+					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
+					ahead: 0,
+					behind: 0,
+					staged: [],
+					modified: [],
+					untracked: [],
+					unmerged: []
+				},
+				commit: 'ef45678',
+				mrgitBranch: 'master',
+				mrgitTag: 'latest',
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
+			} );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'bar', '! master', 'ef45678', '' ]
+			);
+
+			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+
+			// Table
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			// Legend
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			// Hints
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
+
+			logStub.restore();
+		} );
+
+		it( 'adds "!" before the branch name if specific tag should be checked out instead', () => {
+			const logStub = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-bar' );
+
+			commandResponses.add( {
+				packageName: 'bar',
+				status: {
+					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
+					ahead: 0,
+					behind: 0,
+					staged: [],
+					modified: [],
+					untracked: [],
+					unmerged: []
+				},
+				commit: 'ef45678',
+				mrgitBranch: 'master',
+				mrgitTag: 'v30.0.0',
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
+			} );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'bar', '! master', 'ef45678', '' ]
+			);
+
+			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+
+			// Table
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			// Legend
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			// Hints
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
+
+			logStub.restore();
+		} );
+
+		it( 'sorts packages alphabetically', () => {
 			const logStub = sinon.stub( console, 'log' );
 
 			const processedPackages = new Set();
@@ -471,6 +657,8 @@ describe( 'commands/status', () => {
 					packageName,
 					status: {
 						branch: 'master',
+						tag: undefined,
+						detachedHead: false,
 						ahead: 0,
 						behind: 0,
 						staged: [],
@@ -478,8 +666,11 @@ describe( 'commands/status', () => {
 						untracked: [],
 						unmerged: []
 					},
+					commit,
 					mrgitBranch: 'master',
-					commit
+					mrgitTag: undefined,
+					currentTag: 'v35.3.2',
+					latestTag: 'v35.3.2'
 				};
 			}
 		} );
@@ -496,6 +687,8 @@ describe( 'commands/status', () => {
 				packageName: 'foo',
 				status: {
 					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 2,
 					staged: [],
@@ -503,8 +696,11 @@ describe( 'commands/status', () => {
 					untracked: [],
 					unmerged: [ '.travis.yml' ]
 				},
+				commit: 'abcd123',
 				mrgitBranch: 'master',
-				commit: 'abcd123'
+				mrgitTag: undefined,
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
 			} );
 
 			stubs.table.toString.returns( '┻━┻' );
@@ -512,7 +708,7 @@ describe( 'commands/status', () => {
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
 			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
-				head: [ 'Package', 'Branch', 'Commit', 'Status' ],
+				head: [ 'Package', 'Branch/Tag', 'Commit', 'Status' ],
 				style: {
 					compact: true
 				}
@@ -544,6 +740,8 @@ describe( 'commands/status', () => {
 				packageName: 'foo',
 				status: {
 					branch: 'master',
+					tag: undefined,
+					detachedHead: false,
 					ahead: 0,
 					behind: 2,
 					staged: [],
@@ -551,8 +749,11 @@ describe( 'commands/status', () => {
 					untracked: [],
 					unmerged: [ '.travis.yml' ]
 				},
+				commit: 'abcd123',
 				mrgitBranch: 'master',
-				commit: 'abcd123'
+				mrgitTag: undefined,
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
 			} );
 
 			stubs.table.toString.returns( '┻━┻' );
@@ -560,7 +761,7 @@ describe( 'commands/status', () => {
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
 			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
-				head: [ 'Package', 'Branch', 'Commit', 'Status' ],
+				head: [ 'Package', 'Branch/Tag', 'Commit', 'Status' ],
 				style: {
 					compact: true
 				}

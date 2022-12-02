@@ -380,5 +380,44 @@ describe( 'commands/commit', () => {
 					] );
 				} );
 		} );
+
+		it( 'does not commit if repository is in detached head mode', () => {
+			toolOptions.message = 'Test.';
+
+			stubs.execCommand.execute.onFirstCall().resolves( {
+				logs: {
+					info: [
+						'Response returned by "git status" command.'
+					]
+				}
+			} );
+
+			stubs.execCommand.execute.onSecondCall().resolves( {
+				logs: {
+					info: [
+						'[master a89f9ee] Test.'
+					]
+				}
+			} );
+
+			stubs.gitStatusParser.returns( { anythingToCommit: true, detachedHead: true } );
+
+			return commitCommand.execute( commandData )
+				.then( commandResponse => {
+					expect( stubs.execCommand.execute.callCount ).to.equal( 1 );
+
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+						repository: {
+							branch: 'master'
+						},
+						arguments: [ 'git status --branch --porcelain' ],
+						toolOptions
+					} );
+
+					expect( commandResponse.logs.info ).to.deep.equal( [
+						'This repository is currently in detached head mode - skipping.'
+					] );
+				} );
+		} );
 	} );
 } );
