@@ -178,5 +178,37 @@ describe( 'utils', () => {
 			fsExistsStub.restore();
 			shelljsStub.restore();
 		} );
+
+		it( 'throws an error when --preset option is used, but presets are not defined in "mrgit.json"', () => {
+			try {
+				getOptions( { preset: 'foo' }, cwd );
+				throw new Error( 'Expected to throw.' );
+			} catch ( error ) {
+				expect( error.message ).to.equal( 'Preset "foo" is not defined in "mrgit.json" file.' );
+			}
+		} );
+
+		it( 'throws an error when --preset option is used, but the specific preset is not defined in "mrgit.json"', () => {
+			const cwdForPresets = path.resolve( __dirname, '..', 'fixtures', 'project-with-presets' );
+
+			try {
+				getOptions( { preset: 'foo' }, cwdForPresets );
+				throw new Error( 'Expected to throw.' );
+			} catch ( error ) {
+				expect( error.message ).to.equal( 'Preset "foo" is not defined in "mrgit.json" file.' );
+			}
+		} );
+
+		it( 'returns options with preset merged with dependencies when --preset option is used', () => {
+			const cwdForPresets = path.resolve( __dirname, '..', 'fixtures', 'project-with-presets' );
+
+			const options = getOptions( { preset: 'development' }, cwdForPresets );
+
+			expect( options ).to.have.property( 'dependencies' );
+			expect( options.dependencies ).to.deep.equal( {
+				'linters-config': 'foo/linters-config@latest',
+				'dev-tools': 'foo/dev-tools#developmentBranch'
+			} );
+		} );
 	} );
 } );

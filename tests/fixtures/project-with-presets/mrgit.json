@@ -1,0 +1,12 @@
+{
+  "packages": "packages/",
+  "dependencies": {
+    "linters-config": "foo/linters-config@latest",
+    "dev-tools": "foo/dev-tools@latest"
+  },
+  "presets": {
+    "development": {
+      "dev-tools": "foo/dev-tools#developmentBranch"
+    }
+  }
+}

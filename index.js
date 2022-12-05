@@ -114,6 +114,8 @@ function handleCli() {
         ${ y( '--scope' ) }                     Restricts the command to packages which names match the given glob pattern.
                                     ${ g( 'Default: null' ) }
 
+        ${ y( '--preset' ) }                    Uses an alternative set of dependencies defined in the config file.
+
     ${ u( 'Git Options:' ) }
         Git options are supported by the following commands: commit, diff, fetch, push.
         Type "mrgit [command] -h" in order to see which options are supported.
