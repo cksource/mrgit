@@ -179,7 +179,7 @@ Example:
         "dev": {
             "@cksource/foo": "cksource/foo#dev"
         },
-        "exampleFeature": {
+        "example-feature": {
             "@cksource/foo": "cksource/foo#i/1-example-feature",
             "@cksource/bar": "cksource/foo#i/1-example-feature"
         }
