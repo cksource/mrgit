@@ -180,23 +180,17 @@ describe( 'utils', () => {
 		} );
 
 		it( 'throws an error when --preset option is used, but presets are not defined in "mrgit.json"', () => {
-			try {
+			expect( () => {
 				getOptions( { preset: 'foo' }, cwd );
-				throw new Error( 'Expected to throw.' );
-			} catch ( error ) {
-				expect( error.message ).to.equal( 'Preset "foo" is not defined in "mrgit.json" file.' );
-			}
+			} ).to.throw( Error, 'Preset "foo" is not defined in "mrgit.json" file.' );
 		} );
 
 		it( 'throws an error when --preset option is used, but the specific preset is not defined in "mrgit.json"', () => {
 			const cwdForPresets = path.resolve( __dirname, '..', 'fixtures', 'project-with-presets' );
 
-			try {
+			expect( () => {
 				getOptions( { preset: 'foo' }, cwdForPresets );
-				throw new Error( 'Expected to throw.' );
-			} catch ( error ) {
-				expect( error.message ).to.equal( 'Preset "foo" is not defined in "mrgit.json" file.' );
-			}
+			} ).to.throw( Error, 'Preset "foo" is not defined in "mrgit.json" file.' );
 		} );
 
 		it( 'returns options with preset merged with dependencies when --preset option is used', () => {

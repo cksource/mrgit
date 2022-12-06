@@ -179,9 +179,9 @@ Example:
         "dev": {
             "@cksource/foo": "cksource/foo#dev"
         },
-        "newFeature": {
-            "@cksource/foo": "cksource/foo#newFeatureBranch",
-            "@cksource/bar": "cksource/foo#newFeatureBranch"
+        "exampleFeature": {
+            "@cksource/foo": "cksource/foo#i/1-example-feature",
+            "@cksource/bar": "cksource/foo#i/1-example-feature"
         }
     }
 }
