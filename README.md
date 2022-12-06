@@ -169,7 +169,7 @@ Examples:
 
 ### The `presets` option
 
-This option allows the user to create an easy switch between different states of the dependencies. When using any command with the `--preset` option, it will behave as if the `dependencies` option was using values from the given preset. Dependencies that are not defined in the preset but are defined in the `dependencies`, will use version from the `dependencies` as a fallback.
+This option allows the user to switch between different states of dependencies easily. When using any command with the `--preset` option, it will behave as if the `dependencies` option was using values from the given preset. Dependencies not specified in the preset but in the `dependencies` object will use a version from the latter as a fallback.
 
 Example:
 
