@@ -176,7 +176,7 @@ describe( 'commands/save', () => {
 	} );
 
 	describe( 'afterExecute()', () => {
-		it( 'updates collected hashes in "mrgit.json" (--hash option)', () => {
+		it( 'updates collected hashes in "mrgit.json" (--hash option, default behavior)', () => {
 			const processedPackages = new Set();
 			const commandResponses = new Set();
 
@@ -196,7 +196,7 @@ describe( 'commands/save', () => {
 				branch: false
 			} );
 
-			saveCommand.afterExecute( processedPackages, commandResponses );
+			saveCommand.afterExecute( processedPackages, commandResponses, toolOptions );
 
 			let json = {
 				dependencies: {
@@ -238,7 +238,7 @@ describe( 'commands/save', () => {
 				branch: true
 			} );
 
-			saveCommand.afterExecute( processedPackages, commandResponses );
+			saveCommand.afterExecute( processedPackages, commandResponses, toolOptions );
 
 			let json = {
 				dependencies: {
@@ -260,6 +260,215 @@ describe( 'commands/save', () => {
 			} );
 		} );
 
+		it( 'updates collected hashes in "mrgit.json" (--preset option)', () => {
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( 'test-package' );
+			processedPackages.add( 'package-test' );
+
+			commandResponses.add( {
+				packageName: 'test-package',
+				data: '584f341',
+				hash: true,
+				branch: false
+			} );
+			commandResponses.add( {
+				packageName: 'package-test',
+				data: '52910fe',
+				hash: true,
+				branch: false
+			} );
+
+			saveCommand.afterExecute( processedPackages, commandResponses, toolOptions );
+
+			let json = {
+				dependencies: {
+					'test-package': 'organization/test-package',
+					'package-test': 'organization/package-test'
+				},
+				preset: 'development',
+				presets: {
+					development: {
+						'test-package': 'organization/test-package#development',
+						'package-test': 'organization/package-test#development'
+					}
+				}
+			};
+
+			toolOptions.preset = 'development';
+
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( updateFunction ).to.be.a( 'function' );
+
+			json = updateFunction( json );
+
+			expect( json ).to.deep.equal( {
+				dependencies: {
+					'test-package': 'organization/test-package',
+					'package-test': 'organization/package-test'
+				},
+				preset: 'development',
+				presets: {
+					development: {
+						'test-package': 'organization/test-package#584f341',
+						'package-test': 'organization/package-test#52910fe'
+					}
+				}
+			} );
+		} );
+
+		it( 'adds new value to the preset if its not in it, but it is in the base dependencies (--preset option)', () => {
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( 'test-package' );
+			processedPackages.add( 'package-test' );
+
+			commandResponses.add( {
+				packageName: 'test-package',
+				data: '584f341',
+				hash: true,
+				branch: false
+			} );
+			commandResponses.add( {
+				packageName: 'package-test',
+				data: '52910fe',
+				hash: true,
+				branch: false
+			} );
+
+			saveCommand.afterExecute( processedPackages, commandResponses, toolOptions );
+
+			let json = {
+				dependencies: {
+					'test-package': 'organization/test-package',
+					'package-test': 'organization/package-test'
+				},
+				preset: 'development',
+				presets: {
+					development: {
+						'test-package': 'organization/test-package#development'
+					}
+				}
+			};
+
+			toolOptions.preset = 'development';
+
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( updateFunction ).to.be.a( 'function' );
+
+			json = updateFunction( json );
+
+			expect( json ).to.deep.equal( {
+				dependencies: {
+					'test-package': 'organization/test-package',
+					'package-test': 'organization/package-test'
+				},
+				preset: 'development',
+				presets: {
+					development: {
+						'test-package': 'organization/test-package#584f341',
+						'package-test': 'organization/package-test#52910fe'
+					}
+				}
+			} );
+		} );
+
+		it( 'updates base dependencies if specified preset is not defined (--preset option)', () => {
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( 'test-package' );
+			processedPackages.add( 'package-test' );
+
+			commandResponses.add( {
+				packageName: 'test-package',
+				data: '584f341',
+				hash: true,
+				branch: false
+			} );
+			commandResponses.add( {
+				packageName: 'package-test',
+				data: '52910fe',
+				hash: true,
+				branch: false
+			} );
+
+			saveCommand.afterExecute( processedPackages, commandResponses, toolOptions );
+
+			let json = {
+				dependencies: {
+					'test-package': 'organization/test-package',
+					'package-test': 'organization/package-test'
+				},
+				preset: 'development',
+				presets: {}
+			};
+
+			toolOptions.preset = 'development';
+
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( updateFunction ).to.be.a( 'function' );
+
+			json = updateFunction( json );
+
+			expect( json ).to.deep.equal( {
+				dependencies: {
+					'test-package': 'organization/test-package#584f341',
+					'package-test': 'organization/package-test#52910fe'
+				},
+				preset: 'development',
+				presets: {}
+			} );
+		} );
+
+		it( 'updates base dependencies if specified presets are not defined (--preset option)', () => {
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( 'test-package' );
+			processedPackages.add( 'package-test' );
+
+			commandResponses.add( {
+				packageName: 'test-package',
+				data: '584f341',
+				hash: true,
+				branch: false
+			} );
+			commandResponses.add( {
+				packageName: 'package-test',
+				data: '52910fe',
+				hash: true,
+				branch: false
+			} );
+
+			saveCommand.afterExecute( processedPackages, commandResponses, toolOptions );
+
+			let json = {
+				dependencies: {
+					'test-package': 'organization/test-package',
+					'package-test': 'organization/package-test'
+				},
+				preset: 'development'
+			};
+
+			toolOptions.preset = 'development';
+
+			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( updateFunction ).to.be.a( 'function' );
+
+			json = updateFunction( json );
+
+			expect( json ).to.deep.equal( {
+				dependencies: {
+					'test-package': 'organization/test-package#584f341',
+					'package-test': 'organization/package-test#52910fe'
+				},
+				preset: 'development'
+			} );
+		} );
+
 		it( 'does not save "#master" branch because it is default branch', () => {
 			const processedPackages = new Set();
 			const commandResponses = new Set();
@@ -273,7 +482,7 @@ describe( 'commands/save', () => {
 				branch: true
 			} );
 
-			saveCommand.afterExecute( processedPackages, commandResponses );
+			saveCommand.afterExecute( processedPackages, commandResponses, toolOptions );
 
 			let json = {
 				dependencies: {
@@ -311,7 +520,7 @@ describe( 'commands/save', () => {
 				branch: true
 			} );
 
-			saveCommand.afterExecute( processedPackages, commandResponses );
+			saveCommand.afterExecute( processedPackages, commandResponses, toolOptions );
 
 			let json = {
 				dependencies: {

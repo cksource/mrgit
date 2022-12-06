@@ -114,6 +114,8 @@ CLI options:
 
 --scope                     Restricts the command to packages which names match the given glob pattern.
                             Default: null
+
+--preset                    Uses an alternative set of dependencies defined in the config file.
 ```
 
 All these options can also be specified in `mrgit.json` (options passed through CLI takes precedence):
@@ -137,31 +139,51 @@ The dependency keys can be any strings, but it's recommended to use package name
 
 Examples:
 
-```js
+```json
 // Clone 'git@github.com:cksource/foo.git' and check out to 'master'.
 {
     "foo": "git@github.com:cksource/foo.git"
 }
 ```
 
-```js
+```json
 // Short format. Clone 'git@github.com:cksource/foo.git' and check out to branch 'dev'.
 {
     "@cksource/foo": "cksource/foo#dev"
 }
 ```
 
-```js
+```json
 // Clone 'https://github.com/cksource/foo.git' (via HTTPS) and check out to tag 'v1.2.3'.
 {
     "foo": "https://github.com/cksource/foo.git@v1.2.3"
 }
 ```
 
-```js
+```json
 // Clone 'cksource/foo' and check out to the latest available tag.
 {
     "foo": "cksource/foo@latest"
+}
+```
+
+### The `presets` option
+
+This option allows the user to switch between different states of dependencies easily. When using any command with the `--preset` option, it will behave as if the `dependencies` option was using values from the given preset. Dependencies not specified in the preset but in the `dependencies` object will use a version from the latter as a fallback.
+
+Example:
+
+```json
+{
+    "presets": {
+        "dev": {
+            "@cksource/foo": "cksource/foo#dev"
+        },
+        "example-feature": {
+            "@cksource/foo": "cksource/foo#i/1-example-feature",
+            "@cksource/bar": "cksource/foo#i/1-example-feature"
+        }
+    }
 }
 ```
 

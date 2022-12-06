@@ -627,6 +627,48 @@ describe( 'commands/status', () => {
 			logStub.restore();
 		} );
 
+		it( 'displays appropriate message when being checked out on a specific commit', () => {
+			const logStub = sinon.stub( console, 'log' );
+
+			const processedPackages = new Set();
+			const commandResponses = new Set();
+
+			processedPackages.add( '@ckeditor/ckeditor5-bar' );
+
+			commandResponses.add( {
+				packageName: 'bar',
+				status: {
+					branch: 'HEAD (no branch)',
+					tag: 'v35.3.2',
+					detachedHead: true,
+					ahead: null,
+					behind: null,
+					staged: [],
+					modified: [],
+					untracked: [],
+					unmerged: []
+				},
+				commit: 'ef45678',
+				mrgitBranch: 'ef45678',
+				mrgitTag: undefined,
+				currentTag: 'v35.3.2',
+				latestTag: 'v35.3.2'
+			} );
+
+			statusCommand.afterExecute( processedPackages, commandResponses );
+
+			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+				[ 'bar', 'Using saved commit →', 'ef45678', '' ]
+			);
+
+			expect( stubs.chalk.cyan.callCount ).to.equal( 1 );
+
+			// Table
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+
+			logStub.restore();
+		} );
+
 		it( 'sorts packages alphabetically', () => {
 			const logStub = sinon.stub( console, 'log' );
 
