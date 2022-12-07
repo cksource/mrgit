@@ -5,7 +5,7 @@ Changelog
 
 ### BREAKING CHANGES
 
-* A minimal version of `Node.js` has been increased to `12` and for `npm` to `5.7.1`.
+* A minimal version of `Node.js` has been increased to `14` and for `npm` to `5.7.1`.
 
 ### Features
 
@@ -18,8 +18,7 @@ Changelog
 
 ### Other changes
 
-* Changed minimal versions for Node to >=14.0.0. ([commit](https://github.com/cksource/mrgit/commit/8cac5b5d6071dcc29735fadcdd90a301d4bfcf0b))
-* Upgraded dependencies and changed minimal versions for Node (`>=12.0.0`) and npm (`>=5.7.1`). Closes [#121](https://github.com/cksource/mrgit/issues/121). ([commit](https://github.com/cksource/mrgit/commit/130e6b16b5b25556653e06b12fdb55a1ade54b8f))
+* Upgraded dependencies and changed minimal versions for Node (`>=14.0.0`) and npm (`>=5.7.1`). ([commit](https://github.com/cksource/mrgit/commit/130e6b16b5b25556653e06b12fdb55a1ade54b8f), [commit](https://github.com/cksource/mrgit/commit/8cac5b5d6071dcc29735fadcdd90a301d4bfcf0b))
 
 
 ## [1.0.0](https://github.com/cksource/mrgit/compare/v0.11.1...v1.0.0) (2019-07-23)
