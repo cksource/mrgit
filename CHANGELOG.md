@@ -1,6 +1,27 @@
 Changelog
 =========
 
+## [2.0.0](https://github.com/cksource/mrgit/compare/v1.0.0...v2.0.0) (2022-12-07)
+
+### BREAKING CHANGES
+
+* A minimal version of `Node.js` has been increased to `12` and for `npm` to `5.7.1`.
+
+### Features
+
+* Added support for presets. Closes [#151](https://github.com/cksource/mrgit/issues/151). ([commit](https://github.com/cksource/mrgit/commit/a86da0b9e3cf0cbda44c92e5dc8d79bfda855b30))
+* Added support for tags. Closes [#148](https://github.com/cksource/mrgit/issues/148). ([commit](https://github.com/cksource/mrgit/commit/be590461bbe26f8e68c7271b39bdd23527fae4d2))
+
+### Bug fixes
+
+* Fixed message displayed by the `status` command when using a specific commit defined in the config file. ([commit](https://github.com/cksource/mrgit/commit/a86da0b9e3cf0cbda44c92e5dc8d79bfda855b30))
+
+### Other changes
+
+* Changed minimal versions for Node to >=14.0.0. ([commit](https://github.com/cksource/mrgit/commit/8cac5b5d6071dcc29735fadcdd90a301d4bfcf0b))
+* Upgraded dependencies and changed minimal versions for Node (`>=12.0.0`) and npm (`>=5.7.1`). Closes [#121](https://github.com/cksource/mrgit/issues/121). ([commit](https://github.com/cksource/mrgit/commit/130e6b16b5b25556653e06b12fdb55a1ade54b8f))
+
+
 ## [1.0.0](https://github.com/cksource/mrgit/compare/v0.11.1...v1.0.0) (2019-07-23)
 
 ### Features
