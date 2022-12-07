@@ -63,7 +63,8 @@
   },
   "files": [
     "index.js",
-    "lib"
+    "lib",
+    "scripts/postinstall.js"
   ],
   "lint-staged": {
     "**/*.js": [
