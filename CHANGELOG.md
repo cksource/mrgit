@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [2.0.1](https://github.com/cksource/mrgit/compare/v2.0.0...v2.0.1) (2022-12-07)
+
+### Bug fixes
+
+* Added the missing "scripts/postinstall.js" file to the published package. ([commit](https://github.com/cksource/mrgit/commit/7240f72aac0b3499acc7f567545e30c56eb75e7a))
+
+
 ## [2.0.0](https://github.com/cksource/mrgit/compare/v1.0.0...v2.0.0) (2022-12-07)
 
 ### BREAKING CHANGES
