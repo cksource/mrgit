@@ -1,7 +1,7 @@
 dist: jammy
 language: node_js
 node_js:
-  - node
+  - lts/*
 cache:
   - node_modules
 install:
