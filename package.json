@@ -15,7 +15,6 @@
   ],
   "main": "index.js",
   "dependencies": {
-    "@ckeditor/ckeditor5-dev-ci": "^32.0.1",
     "chalk": "^4.1.0",
     "cli-table": "^0.3.1",
     "generic-pool": "^3.7.1",
@@ -28,6 +27,7 @@
   },
   "devDependencies": {
     "@ckeditor/ckeditor5-dev-bump-year": "^32.0.1",
+    "@ckeditor/ckeditor5-dev-ci": "^32.0.1",
     "@ckeditor/ckeditor5-dev-release-tools": "^32.0.1",
     "chai": "^4.2.0",
     "eslint": "^7.7.0",
