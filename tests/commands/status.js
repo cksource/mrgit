@@ -142,10 +142,10 @@ describe( 'commands/status', () => {
 				logs: { info: [ 'Response returned by "git status" command.' ] }
 			} );
 			stubs.execCommand.execute.onCall( 2 ).resolves( {
-				logs: { info: [ 'Response returned by "git describe" command.' ] }
+				logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
 			} );
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
+				logs: { info: [ 'Response returned by "git describe" command.' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
@@ -160,10 +160,10 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git status --branch --porcelain' )
 					);
 					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git describe --abbrev=0 --tags' )
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
+						getCommandArguments( 'git describe --abbrev=0 --tags' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
@@ -181,6 +181,47 @@ describe( 'commands/status', () => {
 				} );
 		} );
 
+		it( 'works properly for repositories without tags', () => {
+			stubs.execCommand.execute.onCall( 0 ).resolves( {
+				logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
+			} );
+			stubs.execCommand.execute.onCall( 1 ).resolves( {
+				logs: { info: [ 'Response returned by "git status" command.' ] }
+			} );
+			stubs.execCommand.execute.onCall( 2 ).resolves( {
+				logs: { info: [] }
+			} );
+
+			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
+
+			return statusCommand.execute( commandData )
+				.then( statusResponse => {
+					expect( stubs.execCommand.execute.callCount ).to.equal( 3 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git rev-parse HEAD' )
+					);
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git status --branch --porcelain' )
+					);
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
+					);
+
+					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( null );
+
+					expect( statusResponse.response ).to.deep.equal( {
+						packageName: 'test-package',
+						status: { response: 'Parsed response.' },
+						commit: '6bfd379',
+						mrgitBranch: 'master',
+						mrgitTag: undefined,
+						latestTag: null
+					} );
+				} );
+		} );
+
 		it( 'modifies the package name if "packagesPrefix" is an array', () => {
 			commandData.toolOptions.packagesPrefix = [
 				'@ckeditor/ckeditor-',
@@ -194,10 +235,10 @@ describe( 'commands/status', () => {
 				logs: { info: [ 'Response returned by "git status" command.' ] }
 			} );
 			stubs.execCommand.execute.onCall( 2 ).resolves( {
-				logs: { info: [ 'Response returned by "git describe" command.' ] }
+				logs: { info: [ 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0\n' ] }
 			} );
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: { info: [ 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0\n' ] }
+				logs: { info: [ 'Response returned by "git describe" command.' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
@@ -212,10 +253,10 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git status --branch --porcelain' )
 					);
 					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git describe --abbrev=0 --tags' )
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
+						getCommandArguments( 'git describe --abbrev=0 --tags' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
@@ -244,10 +285,10 @@ describe( 'commands/status', () => {
 				logs: { info: [ 'Response returned by "git status" command.' ] }
 			} );
 			stubs.execCommand.execute.onCall( 2 ).resolves( {
-				logs: { info: [ 'Response returned by "git describe" command.' ] }
+				logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
 			} );
 			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
+				logs: { info: [ 'Response returned by "git describe" command.' ] }
 			} );
 
 			stubs.gitStatusParser.returns( { response: 'Parsed response.' } );
@@ -262,10 +303,10 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git status --branch --porcelain' )
 					);
 					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git describe --abbrev=0 --tags' )
+						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
+						getCommandArguments( 'git describe --abbrev=0 --tags' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
