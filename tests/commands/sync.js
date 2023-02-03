@@ -466,6 +466,44 @@ describe( 'commands/sync', () => {
 					} );
 			} );
 
+			it( 'throws an error when trying to check out the latest tag in repository without tags', () => {
+				commandData.repository.tag = 'latest';
+
+				stubs.fs.existsSync.returns( true );
+
+				const exec = stubs.execCommand.execute;
+
+				exec.onCall( 0 ).returns( Promise.resolve( {
+					logs: getCommandLogs( '' )
+				} ) );
+
+				exec.onCall( 1 ).returns( Promise.resolve( {
+					logs: getCommandLogs( '' )
+				} ) );
+
+				exec.onCall( 2 ).returns( Promise.resolve( {
+					logs: getCommandLogs()
+				} ) );
+
+				return syncCommand.execute( commandData )
+					.then( () => {
+						throw new Error( 'Expected to throw' );
+					} )
+					.catch( response => {
+						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
+						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
+						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal(
+							'git log --tags --simplify-by-decoration --pretty="%S"'
+						);
+
+						expect( exec.callCount ).to.equal( 3 );
+
+						expect( response.logs.error[ 0 ] ).to.equal(
+							'Can\'t check out the latest tag as package "test-package" has no tags. Aborted.'
+						);
+					} );
+			} );
+
 			it( 'aborts if package has uncommitted changes', () => {
 				stubs.fs.existsSync.returns( true );
 
@@ -758,7 +796,7 @@ describe( 'commands/sync', () => {
 
 		if ( isError ) {
 			logs.error.push( msg );
-		} else {
+		} else if ( msg ) {
 			logs.info.push( msg );
 		}
 
