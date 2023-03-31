@@ -26,9 +26,9 @@
     "upath": "^2.0.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-bump-year": "^32.0.1",
-    "@ckeditor/ckeditor5-dev-ci": "^32.0.1",
-    "@ckeditor/ckeditor5-dev-release-tools": "^32.0.1",
+    "@ckeditor/ckeditor5-dev-bump-year": "^36.0.0",
+    "@ckeditor/ckeditor5-dev-ci": "^36.0.0",
+    "@ckeditor/ckeditor5-dev-release-tools": "^36.0.0",
     "chai": "^4.2.0",
     "eslint": "^7.7.0",
     "eslint-config-ckeditor5": "^4.0.0",
