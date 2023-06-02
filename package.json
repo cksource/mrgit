@@ -26,14 +26,15 @@
     "upath": "^2.0.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-bump-year": "^36.0.0",
-    "@ckeditor/ckeditor5-dev-ci": "^36.0.0",
-    "@ckeditor/ckeditor5-dev-release-tools": "^36.0.0",
+    "@ckeditor/ckeditor5-dev-bump-year": "^38.0.0",
+    "@ckeditor/ckeditor5-dev-ci": "^38.0.0",
+    "@ckeditor/ckeditor5-dev-release-tools": "^38.0.0",
     "chai": "^4.2.0",
     "eslint": "^7.7.0",
     "eslint-config-ckeditor5": "^4.0.0",
     "husky": "^8.0.2",
     "lint-staged": "^10.2.11",
+    "listr2": "^6.5.0",
     "mocha": "^9.0.0",
     "mockery": "^2.1.0",
     "nyc": "^15.1.0",
@@ -57,8 +58,8 @@
     "coverage": "nyc --reporter=lcov --reporter=text-summary yarn run test",
     "lint": "eslint --quiet \"**/*.js\"",
     "changelog": "node ./scripts/changelog.js",
-    "release:bump-version": "node ./scripts/bump-version.js",
-    "release:publish": "node ./scripts/publish.js"
+    "release:prepare-packages": "node ./scripts/preparepackages.js",
+    "release:publish-packages": "node ./scripts/publishpackages.js"
   },
   "bin": {
     "mrgit": "./index.js"
@@ -66,7 +67,8 @@
   "files": [
     "index.js",
     "lib",
-    "scripts/postinstall.js"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "lint-staged": {
     "**/*.js": [
