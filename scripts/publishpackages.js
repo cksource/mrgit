@@ -37,6 +37,15 @@ const tasks = new Listr( [
 		retry: 3
 	},
 	{
+		title: 'Pushing changes.',
+		task: () => {
+			return releaseTools.push( {
+				releaseBranch: 'master',
+				version: latestVersion
+			} );
+		}
+	},
+	{
 		title: 'Creating the release page.',
 		task: async ( _, task ) => {
 			const releaseUrl = await releaseTools.createGithubRelease( {
@@ -46,15 +55,6 @@ const tasks = new Listr( [
 			} );
 
 			task.output = `Release page: ${ releaseUrl }`;
-		}
-	},
-	{
-		title: 'Pushing changes.',
-		task: () => {
-			return releaseTools.push( {
-				releaseBranch: 'master',
-				version: latestVersion
-			} );
 		}
 	}
 ] );
