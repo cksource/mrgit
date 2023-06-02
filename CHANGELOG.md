@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [2.0.2](https://github.com/cksource/mrgit/compare/v2.0.1...v2.0.2) (2023-06-02)
+
+### Bug fixes
+
+* The `status` and `sync` commands will no longer fail when a repository has no tag. Closes [#157](https://github.com/cksource/mrgit/issues/157). ([commit](https://github.com/cksource/mrgit/commit/e30a42858c977d7b8700d25ef0b90c6495279e3b))
+
+
 ## [2.0.1](https://github.com/cksource/mrgit/compare/v2.0.0...v2.0.1) (2022-12-07)
 
 ### Bug fixes
