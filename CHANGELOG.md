@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## [2.0.3](https://github.com/cksource/mrgit/compare/v2.0.2...v2.0.3) (2023-06-05)
+
+Internal changes only (updated dependencies, documentation, etc.).
+
+
 ## [2.0.2](https://github.com/cksource/mrgit/compare/v2.0.1...v2.0.2) (2023-06-02)
 
 ### Bug fixes
