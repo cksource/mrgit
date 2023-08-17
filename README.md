@@ -116,6 +116,9 @@ CLI options:
                             Default: null
 
 --preset                    Uses an alternative set of dependencies defined in the config file.
+
+--skip-root                 Allows skipping root repository when executing command,
+                            if "$rootRepository" is defined in the config file.
 ```
 
 All these options can also be specified in `mrgit.json` (options passed through CLI takes precedence):
@@ -182,6 +185,39 @@ Example:
         "example-feature": {
             "@cksource/foo": "cksource/foo#i/1-example-feature",
             "@cksource/bar": "cksource/foo#i/1-example-feature"
+        }
+    }
+}
+```
+
+### The `$rootRepository` option
+
+`mrgit` allows for handling of the root repository as well. If such behavior is desired, `$rootRepository` option can be used in the config. When configured, using eg. the `pull` command will affect the root repository in addition to the usual dependencies. If required, this behavior can be disabled with the `--skip-root` CLI option. Additionally, the `$rootRepository` key can be included in any preset, and will work accordingly to presets logic.
+
+Not all commands are support execution in the root repository. If a command does not support this feature, it is executed normally, without affecting the root repository. Currently supported commands are:
+
+ - `checkout`
+ - `commit`
+ - `diff`
+ - `exec`
+ - `fetch`
+ - `pull`
+ - `push`
+ - `status`
+ - `sync`
+
+Example config:
+
+```json
+{
+    "packages": "/workspace/modules",
+    "$rootRepository": "cksource/root-repository",
+    "dependencies": {
+        "foo": "bar"
+    },
+    "presets": {
+        "dev": {
+            "$rootRepository": "cksource/root-repository#dev"
         }
     }
 }

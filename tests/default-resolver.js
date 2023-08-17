@@ -13,9 +13,13 @@ const expect = require( 'chai' ).expect;
 const cwd = require( 'upath' ).resolve( __dirname, 'fixtures', 'project-a' );
 
 describe( 'default resolver()', () => {
-	describe( 'with default options', () => {
-		const options = getOptions( {}, cwd );
+	let options;
 
+	beforeEach( () => {
+		options = getOptions( {}, cwd );
+	} );
+
+	describe( 'with default options', () => {
 		it( 'returns undefined if package was not defined', () => {
 			expect( resolver( '404', options ) ).to.equal( null );
 		} );
@@ -89,6 +93,28 @@ describe( 'default resolver()', () => {
 				branch: 'master',
 				tag: 'latest',
 				directory: 'b'
+			} );
+		} );
+
+		it( 'ignores "$rootRepository" if "isRootRepository" argument is not set to true', () => {
+			options = getOptions( { $rootRepository: 'rootOwner/rootName' }, cwd );
+
+			expect( resolver( 'simple-package', options ) ).to.deep.equal( {
+				url: 'git@github.com:a/b.git',
+				branch: 'master',
+				tag: undefined,
+				directory: 'b'
+			} );
+		} );
+
+		it( 'utilizes "$rootRepository" if "isRootRepository" argument is set to true', () => {
+			options = getOptions( { $rootRepository: 'rootOwner/rootName' }, cwd );
+
+			expect( resolver( 'simple-package', options, true ) ).to.deep.equal( {
+				url: 'git@github.com:rootOwner/rootName.git',
+				branch: 'master',
+				tag: undefined,
+				directory: 'rootName'
 			} );
 		} );
 	} );

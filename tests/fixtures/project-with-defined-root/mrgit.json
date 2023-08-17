@@ -1,0 +1,9 @@
+{
+  "packages": "packages/",
+  "$rootRepository": "ckeditor/ckeditor5",
+  "presets": {
+    "development": {
+      "$rootRepository": "ckeditor/ckeditor5#developmentBranch"
+    }
+  }
+}

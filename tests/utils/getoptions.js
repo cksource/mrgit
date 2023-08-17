@@ -34,6 +34,7 @@ describe( 'utils', () => {
 				resolverDefaultBranch: 'master',
 				scope: null,
 				ignore: null,
+				skipRoot: false,
 				packagesPrefix: [],
 				overrideDirectoryNames: {
 					'override-directory': 'custom-directory'
@@ -42,7 +43,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'returns depepndencies read from mrgit.json', () => {
+		it( 'returns dependencies read from mrgit.json', () => {
 			const options = getOptions( {}, cwd );
 			const mrgitJson = require( path.join( cwd, 'mrgit.json' ) );
 
@@ -62,6 +63,7 @@ describe( 'utils', () => {
 				resolverDefaultBranch: 'master',
 				scope: null,
 				ignore: null,
+				skipRoot: false,
 				packagesPrefix: [],
 				overrideDirectoryNames: {},
 				baseBranches: []
@@ -84,6 +86,7 @@ describe( 'utils', () => {
 				resolverDefaultBranch: 'master',
 				scope: null,
 				ignore: null,
+				skipRoot: false,
 				packagesPrefix: [],
 				overrideDirectoryNames: {},
 				baseBranches: []
@@ -109,6 +112,7 @@ describe( 'utils', () => {
 				resolverDefaultBranch: 'master',
 				scope: null,
 				ignore: null,
+				skipRoot: false,
 				packagesPrefix: [],
 				overrideDirectoryNames: {},
 				baseBranches: []
@@ -133,6 +137,7 @@ describe( 'utils', () => {
 				resolverDefaultBranch: 'master',
 				scope: null,
 				ignore: null,
+				skipRoot: false,
 				packagesPrefix: [
 					'ckeditor5-'
 				],
@@ -167,6 +172,7 @@ describe( 'utils', () => {
 				resolverDefaultBranch: 'master',
 				scope: null,
 				ignore: null,
+				skipRoot: false,
 				packagesPrefix: [],
 				overrideDirectoryNames: {
 					'override-directory': 'custom-directory'
@@ -203,6 +209,14 @@ describe( 'utils', () => {
 				'linters-config': 'foo/linters-config@latest',
 				'dev-tools': 'foo/dev-tools#developmentBranch'
 			} );
+		} );
+
+		it( 'returns options with "$rootRepository" taken from a preset if --preset option is used', () => {
+			const cwdForPresets = path.resolve( __dirname, '..', 'fixtures', 'project-with-defined-root' );
+
+			const options = getOptions( { preset: 'development' }, cwdForPresets );
+
+			expect( options.$rootRepository ).to.equal( 'ckeditor/ckeditor5#developmentBranch' );
 		} );
 	} );
 } );

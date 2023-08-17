@@ -116,6 +116,9 @@ function handleCli() {
 
         ${ y( '--preset' ) }                    Uses an alternative set of dependencies defined in the config file.
 
+        ${ y( '--skip-root' ) }                 Allows skipping root repository when executing command,
+                                    if "${ u( '$rootRepository' ) }" is defined in the config file.
+
     ${ u( 'Git Options:' ) }
         Git options are supported by the following commands: commit, diff, fetch, push.
         Type "mrgit [command] -h" in order to see which options are supported.

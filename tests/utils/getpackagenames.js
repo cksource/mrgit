@@ -19,7 +19,9 @@ describe( 'utils', () => {
 				'@ckeditor/ckeditor5-utils': '*'
 			};
 
-			const packages = getPackageNames( { dependencies } );
+			const command = { name: 'sync' };
+
+			const packages = getPackageNames( { dependencies }, command );
 
 			expect( packages ).to.deep.equal( Object.keys( dependencies ) );
 		} );
@@ -33,10 +35,12 @@ describe( 'utils', () => {
 				'@ckeditor/ckeditor5-utils': '*'
 			};
 
+			const command = { name: 'sync' };
+
 			const packages = getPackageNames( {
 				dependencies,
 				scope: 'ckeditor5-editor-*'
-			} );
+			}, command );
 
 			expect( packages ).to.deep.equal( [
 				'@ckeditor/ckeditor5-editor-classic',
@@ -53,10 +57,12 @@ describe( 'utils', () => {
 				'@ckeditor/ckeditor5-utils': '*'
 			};
 
+			const command = { name: 'sync' };
+
 			const packages = getPackageNames( {
 				dependencies,
 				ignore: 'ckeditor5-e*'
-			} );
+			}, command );
 
 			expect( packages ).to.deep.equal( [
 				'@ckeditor/ckeditor5-core',
@@ -72,15 +78,34 @@ describe( 'utils', () => {
 				'@ckeditor/ckeditor5-utils': '*'
 			};
 
+			const command = { name: 'sync' };
+
 			const packages = getPackageNames( {
 				dependencies,
 				scope: 'ckeditor5-editor-*',
 				ignore: 'ckeditor5-*-inline'
-			} );
+			}, command );
 
 			expect( packages ).to.deep.equal( [
 				'@ckeditor/ckeditor5-editor-classic'
 			] );
+		} );
+
+		it( 'returns root package name', () => {
+			const dependencies = {
+				'@ckeditor/ckeditor5-core': '*',
+				'@ckeditor/ckeditor5-engine': '*',
+				'@ckeditor/ckeditor5-utils': '*'
+			};
+
+			const command = { name: 'sync' };
+
+			const packages = getPackageNames( {
+				dependencies,
+				$rootRepository: 'rootOwner/rootName'
+			}, command );
+
+			expect( packages ).to.deep.equal( [ '$rootName', ...Object.keys( dependencies ) ] );
 		} );
 	} );
 } );
