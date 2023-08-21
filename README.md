@@ -194,7 +194,7 @@ Example:
 
 `mrgit` allows for handling of the root repository as well. If such behavior is desired, `$rootRepository` option can be used in the config. When configured, using eg. the `pull` command will affect the root repository in addition to the usual dependencies. If required, this behavior can be disabled with the `--skip-root` CLI option. Additionally, the `$rootRepository` key can be included in any preset, and will work accordingly to presets logic.
 
-Not all commands are support execution in the root repository. If a command does not support this feature, it is executed normally, without affecting the root repository. Currently supported commands are:
+Not all commands support execution in the root repository. If a command does not support this feature, it is executed normally, without affecting the root repository. Currently supported commands are:
 
  - `checkout`
  - `commit`
