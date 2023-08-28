@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [2.1.0](https://github.com/cksource/mrgit/compare/v2.0.3...v2.1.0) (2023-08-28)
+
+### Features
+
+* Added support for executing commands in the root repository. Closes [#160](https://github.com/cksource/mrgit/issues/160). ([commit](https://github.com/cksource/mrgit/commit/2271a029d30cba2abd7209888361e2fde646e748))
+
+
 ## [2.0.3](https://github.com/cksource/mrgit/compare/v2.0.2...v2.0.3) (2023-06-05)
 
 Internal changes only (updated dependencies, documentation, etc.).
