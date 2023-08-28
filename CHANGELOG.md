@@ -7,6 +7,22 @@ Changelog
 
 * Added support for executing commands in the root repository. Closes [#160](https://github.com/cksource/mrgit/issues/160). ([commit](https://github.com/cksource/mrgit/commit/2271a029d30cba2abd7209888361e2fde646e748))
 
+  Add [the `$rootRepository` option](https://github.com/cksource/mrgit/#the-rootrepository-option) to the `mrgit.json` configuration file to enable this feature. Its value should be a repository GitHub identifier (the same as defining the `dependencies` values). You can also define the option within [the preset feature](https://github.com/cksource/mrgit/#the-presets-option).
+
+  Below, you can find a list of supported commands that take into consideration the root repository if specified:
+
+    * `checkout`
+    * `commit`
+    * `diff`
+    * `exec`
+    * `fetch`
+    * `pull`
+    * `push`
+    * `status`
+    * `sync`
+
+  To disable executing a command in the root repository without modifying the configuration file, you can add the `--skip-root` modifier to mrgit. Example: `mrgit status --skip-root`.
+
 
 ## [2.0.3](https://github.com/cksource/mrgit/compare/v2.0.2...v2.0.3) (2023-06-05)
 
