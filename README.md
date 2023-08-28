@@ -142,28 +142,28 @@ The dependency keys can be any strings, but it's recommended to use package name
 
 Examples:
 
-```json
+```json5
 // Clone 'git@github.com:cksource/foo.git' and check out to 'master'.
 {
     "foo": "git@github.com:cksource/foo.git"
 }
 ```
 
-```json
+```json5
 // Short format. Clone 'git@github.com:cksource/foo.git' and check out to branch 'dev'.
 {
     "@cksource/foo": "cksource/foo#dev"
 }
 ```
 
-```json
+```json5
 // Clone 'https://github.com/cksource/foo.git' (via HTTPS) and check out to tag 'v1.2.3'.
 {
     "foo": "https://github.com/cksource/foo.git@v1.2.3"
 }
 ```
 
-```json
+```json5
 // Clone 'cksource/foo' and check out to the latest available tag.
 {
     "foo": "cksource/foo@latest"
@@ -176,7 +176,7 @@ This option allows the user to switch between different states of dependencies e
 
 Example:
 
-```json
+```json5
 {
     "presets": {
         "dev": {
@@ -210,15 +210,16 @@ Not all commands support execution in the root repository. If a command does not
 
 Example config:
 
-```json
+```json5
 {
     "packages": "/workspace/modules",
     "$rootRepository": "cksource/root-repository",
     "dependencies": {
-        "foo": "bar"
+       "@cksource/foo": "cksource/foo"
     },
     "presets": {
         "dev": {
+           "@cksource/foo": "cksource/foo#dev",
             "$rootRepository": "cksource/root-repository#dev"
         }
     }
