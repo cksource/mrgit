@@ -15,6 +15,8 @@ Multi-repo manager for git. A tool for managing projects build using multiple re
 1. [Usage](#usage)
 1. [Configuration](#configuration)
     1. [The `dependencies` option](#the-dependencies-option)
+    1. [The `presets` option](#the-presets-option)
+    1. [The `$rootRepository` option](#the-rootrepository-option)
     1. [Recursive cloning](#recursive-cloning)
     1. [Cloning repositories on CI servers](#cloning-repositories-on-ci-servers)
     1. [Base branches](#base-branches)
@@ -286,11 +288,11 @@ When you call `mrgit sync` or `mrgit co`, mrgit will use the following algorithm
 
 You can define the base branches as follows:
 
-```json
+```json5
 {
-  ...
+  // ...
   "baseBranches": [ "master", "stable" ],
-  ...
+  // ...
 }
 ```
 
