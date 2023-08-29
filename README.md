@@ -2,7 +2,7 @@
 
 ![Mrgit npm package badge](https://img.shields.io/npm/v/mrgit.svg)
 [![Build Status](https://circleci.com/gh/cksource/mrgit.svg?style=shield)](https://app.circleci.com/pipelines/github/cksource/mrgit?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/cksource/mrgit/badge.svg?branch=master)](https://coveralls.io/github/ckeditor/ckeditor5-vue2?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/cksource/mrgit/badge.svg?branch=master)](https://coveralls.io/github/cksource/mrgit?branch=master)
 ![Dependency Status](https://img.shields.io/librariesio/release/npm/mrgit)
 
 Multi-repo manager for git. A tool for managing projects build using multiple repositories.
