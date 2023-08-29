@@ -42,8 +42,9 @@
     "sinon": "^9.0.3"
   },
   "resolutions": {
-    "semver": "^7.0.0",
-    "string-width": "^4.0.0"
+    "string-width": "^4.0.0",
+    "wrap-ansi": "^7.0.0",
+    "semver": "^7.0.0"
   },
   "repository": {
     "type": "git",
