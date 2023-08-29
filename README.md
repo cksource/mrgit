@@ -1,7 +1,7 @@
 # Mr. Git
 
 ![Mrgit npm package badge](https://img.shields.io/npm/v/mrgit.svg)
-[![Build Status](https://travis-ci.org/cksource/mrgit.svg?branch=master)](https://travis-ci.org/ckeditor/ckeditor5-vue2)
+[![Build Status](https://circleci.com/gh/cksource/mrgit.svg?style=shield)](https://app.circleci.com/pipelines/github/ckeditor/mrgit?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/cksource/mrgit/badge.svg?branch=master)](https://coveralls.io/github/ckeditor/ckeditor5-vue2?branch=master)
 ![Dependency Status](https://img.shields.io/librariesio/release/npm/mrgit)
 
