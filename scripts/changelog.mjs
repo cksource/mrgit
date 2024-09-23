@@ -5,6 +5,6 @@
  * For licensing, see LICENSE.md.
  */
 
-'use strict';
+import { generateChangelogForSinglePackage } from '@ckeditor/ckeditor5-dev-release-tools';
 
-require( '@ckeditor/ckeditor5-dev-release-tools' ).generateChangelogForSinglePackage();
+generateChangelogForSinglePackage();
