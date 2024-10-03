@@ -26,9 +26,9 @@
     "upath": "^2.0.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-bump-year": "^39.0.0",
-    "@ckeditor/ckeditor5-dev-ci": "^39.0.0",
-    "@ckeditor/ckeditor5-dev-release-tools": "^39.0.0",
+    "@ckeditor/ckeditor5-dev-bump-year": "^44.0.0",
+    "@ckeditor/ckeditor5-dev-ci": "^44.0.0",
+    "@ckeditor/ckeditor5-dev-release-tools": "^44.0.0",
     "coveralls": "^3.1.1",
     "chai": "^4.2.0",
     "eslint": "^7.7.0",
@@ -61,10 +61,10 @@
     "postinstall": "node ./scripts/postinstall.js",
     "test": "mocha tests --recursive",
     "coverage": "nyc --reporter=lcov --reporter=text-summary yarn run test",
-    "lint": "eslint --quiet \"**/*.js\"",
-    "changelog": "node ./scripts/changelog.js",
-    "release:prepare-packages": "node ./scripts/preparepackages.js",
-    "release:publish-packages": "node ./scripts/publishpackages.js"
+    "lint": "eslint --quiet \"**/*.{js,mjs}\"",
+    "changelog": "node ./scripts/changelog.mjs",
+    "release:prepare-packages": "node ./scripts/preparepackages.mjs",
+    "release:publish-packages": "node ./scripts/publishpackages.mjs"
   },
   "bin": {
     "mrgit": "./index.js"
@@ -76,7 +76,7 @@
     "CHANGELOG.md"
   ],
   "lint-staged": {
-    "**/*.js": [
+    "**/*.{js,mjs}": [
       "eslint --quiet"
     ]
   }

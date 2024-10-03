@@ -7,10 +7,11 @@
 
 /* eslint-env node */
 
-'use strict';
+import { createRequire } from 'module';
+import { Listr } from 'listr2';
+import * as releaseTools from '@ckeditor/ckeditor5-dev-release-tools';
 
-const { Listr } = require( 'listr2' );
-const releaseTools = require( '@ckeditor/ckeditor5-dev-release-tools' );
+const require = createRequire( import.meta.url );
 
 const latestVersion = releaseTools.getLastFromChangelog();
 const versionChangelog = releaseTools.getChangesForVersion( latestVersion );
