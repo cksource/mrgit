@@ -22,7 +22,6 @@
     "minimatch": "^4.0.0",
     "minimist": "^1.2.5",
     "minimist-options": "^4.1.0",
-    "semver": "^7.0.0",
     "shelljs": "^0.8.4",
     "upath": "^2.0.0"
   },
