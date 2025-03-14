@@ -6,12 +6,10 @@ Changelog
 ### BREAKING CHANGES
 
 * Upgraded the minimal version of Node.js to 20.0.0 due to the end of LTS.
-* Upgraded the minimal versions of Node.js to `18.0.0` due to the end of LTS.
 
 ### Other changes
 
-* Updated the required version of Node.js to 18. See [ckeditor/ckeditor5#14924](https://github.com/ckeditor/ckeditor5/issues/14924). ([commit](https://github.com/cksource/mrgit/commit/fd5d80aeee314e5f7a560158bde1cd2eede79395))
-* Upgraded the minimal version of Node.js to 20.0.0 due to the end of LTS. ([commit](https://github.com/cksource/mrgit/commit/1f598905e2da7b7fe9fdf9fdfea22d43d9ae9cc3))
+* Updated the required version of Node.js to 20. ([commit](https://github.com/cksource/mrgit/commit/1f598905e2da7b7fe9fdf9fdfea22d43d9ae9cc3))
 
 
 ## [2.1.0](https://github.com/cksource/mrgit/compare/v2.0.3...v2.1.0) (2023-08-28)
