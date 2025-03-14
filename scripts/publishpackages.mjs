@@ -43,8 +43,7 @@ const tasks = new Listr( [
 						.run( confirm, { message: 'Do you want to continue?' } );
 				}
 			} );
-		},
-		retry: 3
+		}
 	},
 	{
 		title: 'Pushing changes.',
