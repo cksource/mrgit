@@ -6,5 +6,17 @@
  */
 
 import { generateChangelogForSinglePackage } from '@ckeditor/ckeditor5-dev-release-tools';
+import parseArguments from './utils/parsearguments.mjs';
 
-generateChangelogForSinglePackage();
+const cliArguments = parseArguments( process.argv.slice( 2 ) );
+
+const changelogOptions = {
+	cwd: process.cwd(),
+	releaseBranch: cliArguments.branch
+};
+
+if ( cliArguments.from ) {
+	changelogOptions.from = cliArguments.from;
+}
+
+generateChangelogForSinglePackage( changelogOptions );
