@@ -191,6 +191,8 @@ jobs:
       - git_credentials_command
       - run:
           name: Verify if a releaser triggered the job
+          environment:
+            CKE5_GITHUB_ORGANIZATION: ckeditor
           command: |
             #!/bin/bash
 
