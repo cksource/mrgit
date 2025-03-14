@@ -1,6 +1,17 @@
 Changelog
 =========
 
+## [3.0.0](https://github.com/cksource/mrgit/compare/v2.1.0...v3.0.0) (2025-03-14)
+
+### BREAKING CHANGES
+
+* Upgraded the minimal version of Node.js to 20.0.0 due to the end of LTS.
+
+### Other changes
+
+* Updated the required version of Node.js to 20. ([commit](https://github.com/cksource/mrgit/commit/1f598905e2da7b7fe9fdf9fdfea22d43d9ae9cc3))
+
+
 ## [2.1.0](https://github.com/cksource/mrgit/compare/v2.0.3...v2.1.0) (2023-08-28)
 
 ### Features
