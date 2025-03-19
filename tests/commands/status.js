@@ -164,7 +164,7 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git describe --abbrev=0 --tags' )
+						getCommandArguments( 'git describe --abbrev=0 --tags --always' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
@@ -259,7 +259,7 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git describe --abbrev=0 --tags' )
+						getCommandArguments( 'git describe --abbrev=0 --tags --always' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
@@ -310,7 +310,7 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git describe --abbrev=0 --tags' )
+						getCommandArguments( 'git describe --abbrev=0 --tags --always' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
@@ -360,7 +360,7 @@ describe( 'commands/status', () => {
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
-						getCommandArguments( 'git describe --abbrev=0 --tags' )
+						getCommandArguments( 'git describe --abbrev=0 --tags --always' )
 					);
 
 					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
