@@ -26,9 +26,10 @@
     "upath": "^2.0.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-bump-year": "^47.0.0",
-    "@ckeditor/ckeditor5-dev-ci": "^47.0.0",
-    "@ckeditor/ckeditor5-dev-release-tools": "^47.0.0",
+    "@ckeditor/ckeditor5-dev-bump-year": "^50.0.0",
+    "@ckeditor/ckeditor5-dev-changelog": "^50.0.0",
+    "@ckeditor/ckeditor5-dev-ci": "^50.0.0",
+    "@ckeditor/ckeditor5-dev-release-tools": "^50.0.0",
     "@inquirer/prompts": "^6.0.0",
     "@listr2/prompt-adapter-inquirer": "^2.0.16",
     "chai": "^4.2.0",
@@ -54,18 +55,19 @@
     "url": "https://github.com/cksource/mrgit.git"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "author": "CKSource (http://cksource.com/)",
   "license": "MIT",
   "bugs": "https://github.com/cksource/mrgit/issues",
   "homepage": "https://github.com/cksource/mrgit#readme",
   "scripts": {
+    "nice": "ckeditor5-dev-changelog-create-entry",
     "postinstall": "node ./scripts/postinstall.js",
     "test": "mocha tests --recursive",
     "coverage": "nyc --reporter=lcov --reporter=text-summary yarn run test",
     "lint": "eslint --quiet \"**/*.{js,mjs}\"",
-    "changelog": "node ./scripts/changelog.mjs",
+    "release:prepare-changelog": "node ./scripts/preparechangelog.mjs",
     "release:prepare-packages": "node ./scripts/preparepackages.mjs",
     "release:publish-packages": "node ./scripts/publishpackages.mjs"
   },
