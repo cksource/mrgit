@@ -33,7 +33,9 @@ describe( 'commands/save', () => {
 			gitStatusParser: sinon.stub()
 		};
 
-		toolOptions = {};
+		toolOptions = {
+			config: normalizedDirname + '/mrgit.json'
+		};
 
 		commandData = {
 			packageName: 'test-package',
@@ -125,7 +127,8 @@ describe( 'commands/save', () => {
 						packageName: commandData.packageName,
 						arguments: [ 'git rev-parse HEAD' ],
 						toolOptions: {
-							hash: true
+							hash: true,
+							config: normalizedDirname + '/mrgit.json'
 						}
 					} );
 
@@ -159,7 +162,8 @@ describe( 'commands/save', () => {
 						packageName: commandData.packageName,
 						arguments: [ 'git status --branch --porcelain' ],
 						toolOptions: {
-							branch: true
+							branch: true,
+							config: normalizedDirname + '/mrgit.json'
 						}
 					} );
 

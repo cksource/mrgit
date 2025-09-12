@@ -27,6 +27,7 @@ describe( 'utils', () => {
 
 			expect( options ).to.deep.equal( {
 				cwd,
+				config: path.resolve( cwd, 'mrgit.json' ),
 				packages: path.resolve( cwd, 'packages' ),
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
@@ -43,34 +44,28 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'returns dependencies read from mrgit.json', () => {
+		it( 'uses default process.cwd() if not specified', () => {
+			sinon.stub( process, 'cwd' ).returns( cwd );
+
+			const options = getOptions( {} );
+
+			expect( options.cwd ).to.equal( cwd );
+		} );
+
+		it( 'returns dependencies read from default configuration file', () => {
 			const options = getOptions( {}, cwd );
 			const mrgitJson = require( path.join( cwd, 'mrgit.json' ) );
 
 			expect( options.dependencies ).to.deep.equal( mrgitJson.dependencies );
 		} );
 
-		it( 'does not fail if mrgit.json is not defined ', () => {
+		it( 'fails if configuration file is not defined ', () => {
 			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-no-mrgitjson' );
-			const options = getOptions( {}, cwd );
 
-			expect( options ).to.deep.equal( {
-				cwd,
-				packages: path.resolve( cwd, 'packages' ),
-				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
-				resolverUrlTemplate: 'git@github.com:${ path }.git',
-				resolverTargetDirectory: 'git',
-				resolverDefaultBranch: 'master',
-				scope: null,
-				ignore: null,
-				skipRoot: false,
-				packagesPrefix: [],
-				overrideDirectoryNames: {},
-				baseBranches: []
-			} );
+			expect( () => getOptions( {}, cwd ) ).to.throw( Error, 'Cannot find the configuration file.' );
 		} );
 
-		it( 'reads options from mrgit.json', () => {
+		it( 'reads options from default configuration file', () => {
 			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mrgitjson' );
 			const options = getOptions( {}, cwd );
 
@@ -79,6 +74,7 @@ describe( 'utils', () => {
 					'simple-package': 'a/b'
 				},
 				cwd,
+				config: path.resolve( cwd, 'mrgit.json' ),
 				packages: path.resolve( cwd, 'foo' ),
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
@@ -93,6 +89,19 @@ describe( 'utils', () => {
 			} );
 		} );
 
+		it( 'reads options from custom configuration file', () => {
+			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-custom-config' );
+			const options = getOptions( {
+				config: 'mrgit-custom.json'
+			}, cwd );
+
+			expect( options.dependencies ).to.deep.equal( {
+				'simple-package': 'a/b'
+			} );
+
+			expect( options.config ).to.equal( path.resolve( cwd, 'mrgit-custom.json' ) );
+		} );
+
 		it( 'priorities passed options', () => {
 			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mrgitjson' );
 			const options = getOptions( {
@@ -105,6 +114,7 @@ describe( 'utils', () => {
 					'simple-package': 'a/b'
 				},
 				cwd,
+				config: path.resolve( cwd, 'mrgit.json' ),
 				packages: path.resolve( cwd, 'bar' ),
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'a/b/c',
@@ -130,6 +140,7 @@ describe( 'utils', () => {
 
 			expect( options ).to.deep.equal( {
 				cwd,
+				config: path.resolve( cwd, 'mrgit.json' ),
 				packages: path.resolve( cwd, 'packages' ),
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
@@ -165,6 +176,7 @@ describe( 'utils', () => {
 
 			expect( options ).to.deep.equal( {
 				cwd,
+				config: path.resolve( cwd, 'mrgit.json' ),
 				packages: path.resolve( cwd, 'packages' ),
 				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
@@ -185,18 +197,18 @@ describe( 'utils', () => {
 			shelljsStub.restore();
 		} );
 
-		it( 'throws an error when --preset option is used, but presets are not defined in "mrgit.json"', () => {
+		it( 'throws an error when --preset option is used, but presets are not defined in configuration', () => {
 			expect( () => {
 				getOptions( { preset: 'foo' }, cwd );
-			} ).to.throw( Error, 'Preset "foo" is not defined in "mrgit.json" file.' );
+			} ).to.throw( Error, 'Preset "foo" is not defined in configuration file.' );
 		} );
 
-		it( 'throws an error when --preset option is used, but the specific preset is not defined in "mrgit.json"', () => {
+		it( 'throws an error when --preset option is used, but the specific preset is not defined in configuration', () => {
 			const cwdForPresets = path.resolve( __dirname, '..', 'fixtures', 'project-with-presets' );
 
 			expect( () => {
 				getOptions( { preset: 'foo' }, cwdForPresets );
-			} ).to.throw( Error, 'Preset "foo" is not defined in "mrgit.json" file.' );
+			} ).to.throw( Error, 'Preset "foo" is not defined in configuration file.' );
 		} );
 
 		it( 'returns options with preset merged with dependencies when --preset option is used', () => {

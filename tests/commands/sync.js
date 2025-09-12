@@ -688,7 +688,7 @@ describe( 'commands/sync', () => {
 			expect( consoleLog.callCount ).to.equal( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
-				/Paths to directories listed below are skipped by mrgit because they are not defined in "mrgit\.json":/
+				/Paths to directories listed below are skipped by mrgit because they are not defined in configuration file:/
 			);
 			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/package-3/ );
 		} );
@@ -746,7 +746,7 @@ describe( 'commands/sync', () => {
 			expect( consoleLog.callCount ).to.equal( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
-				/Paths to directories listed below are skipped by mrgit because they are not defined in "mrgit\.json":/
+				/Paths to directories listed below are skipped by mrgit because they are not defined in configuration file:/
 			);
 			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/@foo\/package-3/ );
 		} );

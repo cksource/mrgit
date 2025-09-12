@@ -48,7 +48,7 @@ mrgit --help
 
 ## Usage
 
-First, create a configuration file `mrgit.json`:
+First, create a configuration file `mrgit.json`. If the project already contains `mrgit.json` file, but you want to provide your own settings, create another `*.json` file and use the `--config <path>` option (described below) to load your custom configuration when executing a command.
 
 ```json
 {
@@ -74,6 +74,9 @@ packages/
 CLI options:
 
 ```
+--config                    Name or path to custom configuration file.
+                            Default: '<cwd>/mrgit.json'
+
 --branch                    For "save" command: whether to save branch names.
                             For "checkout" command: name of branch that would be created.
 
@@ -111,7 +114,7 @@ CLI options:
                             whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
                             Default: 'git'
 
---resolver-default-branch   The branch name to use if not specified in mrgit.json dependencies.
+--resolver-default-branch   The branch name to use if not specified in dependencies in configuration file.
                             Default: master
 
 --scope                     Restricts the command to packages which names match the given glob pattern.
@@ -123,7 +126,7 @@ CLI options:
                             if "$rootRepository" is defined in the config file.
 ```
 
-All these options can also be specified in `mrgit.json` (options passed through CLI takes precedence):
+All these options can also be specified in configuration file (options passed through CLI takes precedence):
 
 ```json
 {
@@ -230,7 +233,7 @@ Example config:
 
 ### Recursive cloning
 
-When the `--recursive` option is used `mrgit` will clone repositories recursively. First, it will clone the `dependencies` specified in `mrgit.json` and, then, their `dependencies` and `devDependencies` specified in `package.json` files located in cloned repositories.
+When the `--recursive` option is used `mrgit` will clone repositories recursively. First, it will clone the `dependencies` specified in configuration file and, then, their `dependencies` and `devDependencies` specified in `package.json` files located in cloned repositories.
 
 However, `mrgit` needs to know repository URLs of those dependencies, as well as which dependencies to clone (usually, only the ones maintained by you). In order to configure that you need to use a custom repository resolver (`--resolver-path`).
 
@@ -275,14 +278,14 @@ If you need to run `mrgit` on a CI server, then configure it to use HTTPS URLs:
 mrgit --resolver-url-template="https://github.com/\${ path }.git"
 ```
 
-You can also use full HTTPS URLs to configure `dependencies` in your `mrgit.json`.
+You can also use full HTTPS URLs to configure `dependencies` in your configuration file.
 
 ### Base branches
 
 When you call `mrgit sync` or `mrgit co`, mrgit will use the following algorithm to determine the branch to which each repository should be checked out:
 
-1. If a branch is defined in `mrgit.json`, use it. A branch can be defined after `#` in a repository URL. For example: `"@cksource/foo": "cksource/foo#dev"`.
-2. If a tag is defined in `mrgit.json`, use it. A tag can be defined after `@` in a repository URL. Its either a specific tag name, such as `@v30.0.0`, or `@latest` tag that will look for the latest available tag.
+1. If a branch is defined in configuration file, use it. A branch can be defined after `#` in a repository URL. For example: `"@cksource/foo": "cksource/foo#dev"`.
+2. If a tag is defined in configuration file, use it. A tag can be defined after `@` in a repository URL. Its either a specific tag name, such as `@v30.0.0`, or `@latest` tag that will look for the latest available tag.
 3. If the root repository (assuming, it is a repository) is on one of the "base branches", use that branch name.
 4. Otherwise, use `master` branch.
 
@@ -312,13 +315,13 @@ $ mrgit [command] --help
 
 ### sync
 
-Updates dependencies. Switches repositories to correct branches or tags (specified in `mrgit.json`) and pulls changes.
+Updates dependencies. Switches repositories to correct branches or tags (specified in configuration file) and pulls changes.
 
 If any dependency is missing, the command will install this dependency as well.
 
 This command does not touch repositories in which there are uncommitted changes.
 
-If in the packages directory will be located some directories that are not specified in `mrgit.json`, paths to these directories
+If in the packages directory will be located some directories that are not specified in configuration file, paths to these directories
 will be printed out on the screen.
 
 Examples:
@@ -409,7 +412,7 @@ mrgit merge develop --message 'These changes are required for the future release
 
 ### save
 
-Saves hashes of packages in `mrgit.json`. It allows to easily fix project to a specific state.
+Saves hashes of packages in configuration file. It allows to easily fix project to a specific state.
 
 Example:
 
@@ -487,7 +490,7 @@ mrgit checkout
 mrgit co
 ```
 
-If specified an argument, specified branch will be used instead of default or saved in `mrgit.json` file.
+If specified an argument, specified branch will be used instead of default or saved in configuration file.
 
 ```bash
 # Checkout all repositories to "stable" branch.

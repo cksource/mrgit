@@ -65,12 +65,16 @@ function handleCli() {
         ${ c( 'fetch' ) }                       Fetches existing repositories.
         ${ c( 'pull' ) }                        Pulls changes in existing repositories.
         ${ c( 'push' ) }                        Pushes changes in existing repositories to remotes.
-        ${ c( 'save' ) }                        Saves hashes of packages in mrgit.json. It allows to easily fix project to a specific state.
+        ${ c( 'save' ) }                        Saves hashes of packages in a configuration file.
+                                    Useful for restoring the project to a specific state.
         ${ c( 'status' ) }                      Prints a table which contains useful information about the status of repositories.
         ${ c( 'sync' ) }                        Updates packages to the latest versions or install missing ones.
 
 
     ${ u( 'Options:' ) }
+        ${ y( '--config' ) }                    Name or path to custom configuration file.
+                                    ${ g( 'Default: \'<cwd>/mrgit.json\'' ) }
+
         ${ y( '--branch' ) }                    For "${ u( 'save' ) }" command: whether to save branch names.
                                     For "${ u( 'checkout' ) }" command: name of branch that would be created.
 
@@ -108,7 +112,7 @@ function handleCli() {
                                     whether the repository will be cloned to packages/@scope/pkgname' or 'packages/pkgname'.
                                     ${ g( 'Default: \'git\'' ) }
 
-        ${ y( '--resolver-default-branch' ) }   The branch name to use if not specified in mrgit.json dependencies.
+        ${ y( '--resolver-default-branch' ) }   The branch name to use if not specified in dependencies in configuration file.
                                     ${ g( 'Default: master' ) }
 
         ${ y( '--scope' ) }                     Restricts the command to packages which names match the given glob pattern.
