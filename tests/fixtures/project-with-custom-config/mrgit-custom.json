@@ -1,0 +1,6 @@
+{
+  "packages": "foo",
+  "dependencies": {
+    "simple-package": "a/b"
+  }
+}
