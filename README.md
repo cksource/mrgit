@@ -11,6 +11,7 @@ Multi-repo manager for git. A tool for managing projects build using multiple re
 
 # Table of content
 
+1. [Cloning](#cloning)
 1. [Installation](#installation)
 1. [Usage](#usage)
 1. [Configuration](#configuration)
@@ -33,6 +34,15 @@ Multi-repo manager for git. A tool for managing projects build using multiple re
     1. [`diff`](#diff)
     1. [`checkout` or `co`](#checkout-alias-co)
 1. [Projects using mrgit](#projects-using-mrgit)
+
+## Cloning
+
+> [!NOTE]
+> This project requires **pnpm v10** or higher. You can check your version with `pnpm --version` and update if needed with `npm install -g pnpm@latest`.
+
+1. Clone this repository.
+1. Do `pnpm install` inside.
+1. You're ready to go!
 
 ## Installation
 
