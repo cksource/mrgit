@@ -1,0 +1,6 @@
+shellEmulator: true
+shamefullyHoist: true
+preferFrozenLockfile: true
+
+onlyBuiltDependencies:
+  - esbuild
