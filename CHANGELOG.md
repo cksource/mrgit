@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [4.1.0](https://github.com/cksource/mrgit/compare/v4.0.0...v4.1.0) (September 16, 2025)
+
+### Features
+
+* Introduced `--config` CLI parameter which allows providing custom configuration filename that will be used instead of the default `mrgit.json` file. Closes [#189](https://github.com/cksource/mrgit/issues/189).
+
+
 ## [4.0.0](https://github.com/cksource/mrgit/compare/v3.0.0...v4.0.0) (June 26, 2025)
 
 ### BREAKING CHANGES
@@ -49,13 +56,6 @@ Changelog
 ## [2.0.3](https://github.com/cksource/mrgit/compare/v2.0.2...v2.0.3) (2023-06-05)
 
 Internal changes only (updated dependencies, documentation, etc.).
-
-
-## [2.0.2](https://github.com/cksource/mrgit/compare/v2.0.1...v2.0.2) (2023-06-02)
-
-### Bug fixes
-
-* The `status` and `sync` commands will no longer fail when a repository has no tag. Closes [#157](https://github.com/cksource/mrgit/issues/157). ([commit](https://github.com/cksource/mrgit/commit/e30a42858c977d7b8700d25ef0b90c6495279e3b))
 
 ---
 
