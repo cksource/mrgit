@@ -22,14 +22,14 @@
     "minimatch": "^4.0.0",
     "minimist": "^1.2.5",
     "minimist-options": "^4.1.0",
-    "shelljs": "^0.8.4",
+    "shelljs": "^0.10.0",
     "upath": "^2.0.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-bump-year": "^50.0.0",
-    "@ckeditor/ckeditor5-dev-changelog": "^50.0.0",
-    "@ckeditor/ckeditor5-dev-ci": "^50.0.0",
-    "@ckeditor/ckeditor5-dev-release-tools": "^50.0.0",
+    "@ckeditor/ckeditor5-dev-bump-year": "^53.0.0",
+    "@ckeditor/ckeditor5-dev-changelog": "^53.0.0",
+    "@ckeditor/ckeditor5-dev-ci": "^53.0.0",
+    "@ckeditor/ckeditor5-dev-release-tools": "^53.0.0",
     "@inquirer/prompts": "^7.8.3",
     "@listr2/prompt-adapter-inquirer": "^3.0.2",
     "chai": "^4.2.0",
@@ -45,18 +45,19 @@
     "nyc": "^15.1.0",
     "sinon": "^9.0.3"
   },
-  "resolutions": {
-    "form-data": "^2.5.4",
-    "semver": "^7.0.0",
-    "string-width": "^4.0.0",
-    "wrap-ansi": "^7.0.0"
+  "pnpm": {
+    "overrides": {
+      "form-data": "^4.0.4"
+    }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/cksource/mrgit.git"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.0.0",
+    "pnpm": ">=10.14.0",
+    "yarn": "\n\n┌─────────────────────────┐\n│  Hey, we use pnpm now!  │\n└─────────────────────────┘\n\n"
   },
   "author": "CKSource (http://cksource.com/)",
   "license": "MIT",
@@ -66,7 +67,7 @@
     "nice": "ckeditor5-dev-changelog-create-entry",
     "postinstall": "node ./scripts/postinstall.js",
     "test": "mocha tests --recursive",
-    "coverage": "nyc --reporter=lcov --reporter=text-summary yarn run test",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary pnpm run test",
     "lint": "eslint --quiet \"**/*.{js,mjs}\"",
     "release:prepare-changelog": "node ./scripts/preparechangelog.mjs",
     "release:prepare-packages": "node ./scripts/preparepackages.mjs",

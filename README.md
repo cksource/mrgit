@@ -7,10 +7,11 @@
 
 Multi-repo manager for git. A tool for managing projects build using multiple repositories.
 
-`mrgit` is designed to work with [yarn workspaces](https://yarnpkg.com/lang/en/docs/workspaces/) and [Lerna](https://github.com/lerna/lerna) out of the box, hence, it mixes the "package" and "repository" concepts. In other words, every repository is meant to be a single [npm](https://npmjs.com) package. It doesn't mean that you must use it with Lerna and npm, but don't be surprised that mrgit talks about "packages" and works best with npm packages.
+`mrgit` is designed to work with [workspaces](https://pnpm.io/workspaces) and [Lerna](https://github.com/lerna/lerna) out of the box, hence, it mixes the "package" and "repository" concepts. In other words, every repository is meant to be a single [npm](https://npmjs.com) package. It doesn't mean that you must use it with Lerna and npm, but don't be surprised that mrgit talks about "packages" and works best with npm packages.
 
 # Table of content
 
+1. [Cloning](#cloning)
 1. [Installation](#installation)
 1. [Usage](#usage)
 1. [Configuration](#configuration)
@@ -33,6 +34,15 @@ Multi-repo manager for git. A tool for managing projects build using multiple re
     1. [`diff`](#diff)
     1. [`checkout` or `co`](#checkout-alias-co)
 1. [Projects using mrgit](#projects-using-mrgit)
+
+## Cloning
+
+> [!NOTE]
+> This project requires **pnpm v10** or higher. You can check your version with `pnpm --version` and update if needed with `npm install -g pnpm@latest`.
+
+1. Clone this repository.
+1. Do `pnpm install` inside.
+1. You're ready to go!
 
 ## Installation
 
@@ -517,7 +527,7 @@ Before you start, you need to prepare the changelog entries.
 
 1. Make sure the `#master` branch is up-to-date: `git fetch && git checkout master && git pull`.
 1. Prepare a release branch: `git checkout -b release-[YYYYMMDD]` where `YYYYMMDD` is the current day.
-1. Generate the changelog entries: `yarn run release:prepare-changelog`.
+1. Generate the changelog entries: `pnpm run release:prepare-changelog`.
 	* You can specify the release date by passing the `--date` option, e.g., `--date=2025-06-11`.
 	* By passing the `--dry-run` option, you can check what the script will do without actually modifying the files.
 	* Read all the entries, correct poor wording and other issues, wrap code names in backticks to format them, etc.
