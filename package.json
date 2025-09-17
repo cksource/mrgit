@@ -47,7 +47,8 @@
   },
   "pnpm": {
     "overrides": {
-      "form-data": "^2.5.4"
+      "form-data": "^2.5.4",
+      "string-width": "^4.0.0"
     }
   },
   "repository": {
