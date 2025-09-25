@@ -5,8 +5,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* eslint-env node */
-
 import { createRequire } from 'module';
 import * as releaseTools from '@ckeditor/ckeditor5-dev-release-tools';
 

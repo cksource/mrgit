@@ -3,8 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* eslint-env node */
-
 /**
  * @param {ReleaseOptions} cliArguments
  * @returns {Object}
