@@ -5,16 +5,25 @@
  * For licensing, see LICENSE.md.
  */
 
-'use strict';
+import chalk from 'chalk';
+import meow from 'meow';
+import { mrgit } from './lib/mrgit.js';
+import { getCommandInstance } from './lib/utils/getcommandinstance.js';
 
-const chalk = require( 'chalk' );
-const meow = require( 'meow' );
-const mrgit = require( './lib/index' );
-const getCommandInstance = require( './lib/utils/getcommandinstance' );
+const _emitWarning = process.emitWarning;
 
-handleCli();
+process.emitWarning = ( ...args ) => {
+	// Silence the `url.parse()` deprecation warning.
+	if ( args[ 2 ] === 'DEP0169' ) {
+		return;
+	}
 
-function handleCli() {
+	return _emitWarning( ...args );
+};
+
+await handleCli();
+
+async function handleCli() {
 	const meowOptions = {
 		autoHelp: false,
 		flags: {
@@ -141,7 +150,7 @@ function handleCli() {
 		return cli.showHelp( 0 );
 	}
 
-	const commandInstance = getCommandInstance( commandName );
+	const commandInstance = await getCommandInstance( commandName );
 
 	if ( !commandInstance ) {
 		process.errorCode = 1;
