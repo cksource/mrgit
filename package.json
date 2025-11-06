@@ -45,11 +45,6 @@
     "nyc": "^15.1.0",
     "sinon": "^9.0.3"
   },
-  "pnpm": {
-    "overrides": {
-      "form-data": "^4.0.4"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/cksource/mrgit.git"
