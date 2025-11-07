@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
@@ -108,7 +104,7 @@ describe( 'commands/status', () => {
 
 			statusCommand.beforeExecute();
 
-			expect( logStub.calledOnce ).to.equal( true );
+			expect( logStub.calledOnce ).toEqual( true );
 			logStub.restore();
 		} );
 	} );
@@ -130,7 +126,7 @@ describe( 'commands/status', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -153,25 +149,25 @@ describe( 'commands/status', () => {
 
 			return statusCommand.execute( commandData )
 				.then( statusResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.callCount ).toEqual( 4 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git rev-parse HEAD' )
 					);
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git status --branch --porcelain' )
 					);
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git describe --abbrev=0 --tags --always' )
 					);
 
-					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
-					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
-					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( 'Response returned by "git describe" command.' );
+					expect( stubs.gitStatusParser.calledOnce ).toEqual( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).toEqual( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).toEqual( 'Response returned by "git describe" command.' );
 
-					expect( statusResponse.response ).to.deep.equal( {
+					expect( statusResponse.response ).toEqual( {
 						packageName: 'test-package',
 						status: { response: 'Parsed response.' },
 						isRootRepository: false,
@@ -198,22 +194,22 @@ describe( 'commands/status', () => {
 
 			return statusCommand.execute( commandData )
 				.then( statusResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 3 );
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.callCount ).toEqual( 3 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git rev-parse HEAD' )
 					);
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git status --branch --porcelain' )
 					);
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
 
-					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
-					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
-					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( null );
+					expect( stubs.gitStatusParser.calledOnce ).toEqual( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).toEqual( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).toEqual( null );
 
-					expect( statusResponse.response ).to.deep.equal( {
+					expect( statusResponse.response ).toEqual( {
 						packageName: 'test-package',
 						status: { response: 'Parsed response.' },
 						isRootRepository: false,
@@ -248,25 +244,25 @@ describe( 'commands/status', () => {
 
 			return statusCommand.execute( commandData )
 				.then( statusResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.callCount ).toEqual( 4 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git rev-parse HEAD' )
 					);
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git status --branch --porcelain' )
 					);
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git describe --abbrev=0 --tags --always' )
 					);
 
-					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
-					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
-					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( 'Response returned by "git describe" command.' );
+					expect( stubs.gitStatusParser.calledOnce ).toEqual( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).toEqual( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).toEqual( 'Response returned by "git describe" command.' );
 
-					expect( statusResponse.response ).to.deep.equal( {
+					expect( statusResponse.response ).toEqual( {
 						packageName: 'test-package',
 						status: { response: 'Parsed response.' },
 						isRootRepository: false,
@@ -299,25 +295,25 @@ describe( 'commands/status', () => {
 
 			return statusCommand.execute( commandData )
 				.then( statusResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.callCount ).toEqual( 4 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git rev-parse HEAD' )
 					);
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git status --branch --porcelain' )
 					);
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git describe --abbrev=0 --tags --always' )
 					);
 
-					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
-					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
-					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( 'Response returned by "git describe" command.' );
+					expect( stubs.gitStatusParser.calledOnce ).toEqual( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).toEqual( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).toEqual( 'Response returned by "git describe" command.' );
 
-					expect( statusResponse.response ).to.deep.equal( {
+					expect( statusResponse.response ).toEqual( {
 						packageName: '@ckeditor/ckeditor5-test-package',
 						status: { response: 'Parsed response.' },
 						isRootRepository: false,
@@ -349,25 +345,25 @@ describe( 'commands/status', () => {
 
 			return statusCommand.execute( commandData )
 				.then( statusResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 4 );
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.callCount ).toEqual( 4 );
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git rev-parse HEAD' )
 					);
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git status --branch --porcelain' )
 					);
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git log --tags --simplify-by-decoration --pretty="%S"' )
 					);
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal(
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).toEqual(
 						getCommandArguments( 'git describe --abbrev=0 --tags --always' )
 					);
 
-					expect( stubs.gitStatusParser.calledOnce ).to.equal( true );
-					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).to.equal( 'Response returned by "git status" command.' );
-					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).to.equal( 'Response returned by "git describe" command.' );
+					expect( stubs.gitStatusParser.calledOnce ).toEqual( true );
+					expect( stubs.gitStatusParser.firstCall.args[ 0 ] ).toEqual( 'Response returned by "git status" command.' );
+					expect( stubs.gitStatusParser.firstCall.args[ 1 ] ).toEqual( 'Response returned by "git describe" command.' );
 
-					expect( statusResponse.response ).to.deep.equal( {
+					expect( statusResponse.response ).toEqual( {
 						packageName: 'test-package [ROOT REPOSITORY]',
 						status: { response: 'Parsed response.' },
 						isRootRepository: true,
@@ -397,7 +393,7 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( logStub.called ).to.equal( false );
+			expect( logStub.called ).toEqual( false );
 			logStub.restore();
 		} );
 
@@ -411,7 +407,7 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( logStub.called ).to.equal( false );
+			expect( logStub.called ).toEqual( false );
 			logStub.restore();
 		} );
 
@@ -468,26 +464,26 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
+			expect( stubs.table.constructor.firstCall.args[ 0 ] ).toEqual( {
 				head: [ 'Package', 'Branch/Tag', 'Commit', 'Status' ],
 				style: {
 					compact: true
 				}
 			} );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'bar', 't/1 ↑3', 'ef45678', '+1 ?1' ]
 			);
-			expect( stubs.table.push.secondCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.secondCall.args[ 0 ] ).toEqual(
 				[ 'foo', 'master ↓2', 'abcd123', 'M1' ]
 			);
 
-			expect( stubs.table.toString.calledOnce ).to.equal( true );
+			expect( stubs.table.toString.calledOnce ).toEqual( true );
 
-			expect( logStub.calledTwice ).to.equal( true );
-			expect( logStub.firstCall.args[ 0 ] ).to.equal( '┻━┻' );
+			expect( logStub.calledTwice ).toEqual( true );
+			expect( logStub.firstCall.args[ 0 ] ).toEqual( '┻━┻' );
 			expect( logStub.secondCall.args[ 0 ] ).to.match( /^Legend:/ );
-			expect( stubs.chalk.cyan.calledOnce ).to.equal( true );
+			expect( stubs.chalk.cyan.calledOnce ).toEqual( true );
 
 			logStub.restore();
 		} );
@@ -522,19 +518,19 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'bar', 'L v35.3.2', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.green.callCount ).to.equal( 4 );
+			expect( stubs.chalk.green.callCount ).toEqual( 4 );
 
 			// Table
-			expect( stubs.chalk.green.getCall( 0 ).args[ 0 ] ).to.equal( 'L' );
+			expect( stubs.chalk.green.getCall( 0 ).args[ 0 ] ).toEqual( 'L' );
 			// Legend
-			expect( stubs.chalk.green.getCall( 1 ).args[ 0 ] ).to.equal( '+' );
-			expect( stubs.chalk.green.getCall( 2 ).args[ 0 ] ).to.equal( 'L' );
+			expect( stubs.chalk.green.getCall( 1 ).args[ 0 ] ).toEqual( '+' );
+			expect( stubs.chalk.green.getCall( 2 ).args[ 0 ] ).toEqual( 'L' );
 			// Hints
-			expect( stubs.chalk.green.getCall( 3 ).args[ 0 ] ).to.equal( 'L' );
+			expect( stubs.chalk.green.getCall( 3 ).args[ 0 ] ).toEqual( 'L' );
 
 			logStub.restore();
 		} );
@@ -569,18 +565,18 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'bar', '! t/1', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+			expect( stubs.chalk.cyan.callCount ).toEqual( 3 );
 
 			// Table
-			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).toEqual( '!' );
 			// Legend
-			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).toEqual( '!' );
 			// Hints
-			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).toEqual( '!' );
 
 			logStub.restore();
 		} );
@@ -615,18 +611,18 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'bar', '! v30.0.0', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+			expect( stubs.chalk.cyan.callCount ).toEqual( 3 );
 
 			// Table
-			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).toEqual( '!' );
 			// Legend
-			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).toEqual( '!' );
 			// Hints
-			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).toEqual( '!' );
 
 			logStub.restore();
 		} );
@@ -661,18 +657,18 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'bar', '! master', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+			expect( stubs.chalk.cyan.callCount ).toEqual( 3 );
 
 			// Table
-			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).toEqual( '!' );
 			// Legend
-			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).toEqual( '!' );
 			// Hints
-			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).toEqual( '!' );
 
 			logStub.restore();
 		} );
@@ -707,18 +703,18 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'bar', '! master', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.cyan.callCount ).to.equal( 3 );
+			expect( stubs.chalk.cyan.callCount ).toEqual( 3 );
 
 			// Table
-			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).toEqual( '!' );
 			// Legend
-			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 1 ).args[ 0 ] ).toEqual( '!' );
 			// Hints
-			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 2 ).args[ 0 ] ).toEqual( '!' );
 
 			logStub.restore();
 		} );
@@ -753,14 +749,14 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'bar', 'Using saved commit →', 'ef45678', '' ]
 			);
 
-			expect( stubs.chalk.cyan.callCount ).to.equal( 1 );
+			expect( stubs.chalk.cyan.callCount ).toEqual( 1 );
 
 			// Table
-			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).to.equal( '!' );
+			expect( stubs.chalk.cyan.getCall( 0 ).args[ 0 ] ).toEqual( '!' );
 
 			logStub.restore();
 		} );
@@ -783,10 +779,10 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.push.getCall( 0 ).args[ 0 ][ 0 ], 1 ).to.equal( 'aaa' );
-			expect( stubs.table.push.getCall( 1 ).args[ 0 ][ 0 ], 2 ).to.equal( 'bar' );
-			expect( stubs.table.push.getCall( 2 ).args[ 0 ][ 0 ], 3 ).to.equal( 'bom' );
-			expect( stubs.table.push.getCall( 3 ).args[ 0 ][ 0 ], 4 ).to.equal( 'foo' );
+			expect( stubs.table.push.getCall( 0 ).args[ 0 ][ 0 ], 1 ).toEqual( 'aaa' );
+			expect( stubs.table.push.getCall( 1 ).args[ 0 ][ 0 ], 2 ).toEqual( 'bar' );
+			expect( stubs.table.push.getCall( 2 ).args[ 0 ][ 0 ], 3 ).toEqual( 'bom' );
+			expect( stubs.table.push.getCall( 3 ).args[ 0 ][ 0 ], 4 ).toEqual( 'foo' );
 
 			logStub.restore();
 
@@ -845,23 +841,23 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
+			expect( stubs.table.constructor.firstCall.args[ 0 ] ).toEqual( {
 				head: [ 'Package', 'Branch/Tag', 'Commit', 'Status' ],
 				style: {
 					compact: true
 				}
 			} );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'foo', 'master ↓2', 'abcd123', 'M2' ]
 			);
 
-			expect( stubs.table.toString.calledOnce ).to.equal( true );
+			expect( stubs.table.toString.calledOnce ).toEqual( true );
 
-			expect( logStub.calledTwice ).to.equal( true );
-			expect( logStub.firstCall.args[ 0 ] ).to.equal( '┻━┻' );
+			expect( logStub.calledTwice ).toEqual( true );
+			expect( logStub.firstCall.args[ 0 ] ).toEqual( '┻━┻' );
 			expect( logStub.secondCall.args[ 0 ] ).to.match( /^Legend:/ );
-			expect( stubs.chalk.cyan.calledOnce ).to.equal( true );
+			expect( stubs.chalk.cyan.calledOnce ).toEqual( true );
 
 			logStub.restore();
 		} );
@@ -898,23 +894,23 @@ describe( 'commands/status', () => {
 
 			statusCommand.afterExecute( processedPackages, commandResponses );
 
-			expect( stubs.table.constructor.firstCall.args[ 0 ] ).to.deep.equal( {
+			expect( stubs.table.constructor.firstCall.args[ 0 ] ).toEqual( {
 				head: [ 'Package', 'Branch/Tag', 'Commit', 'Status' ],
 				style: {
 					compact: true
 				}
 			} );
 
-			expect( stubs.table.push.firstCall.args[ 0 ] ).to.deep.equal(
+			expect( stubs.table.push.firstCall.args[ 0 ] ).toEqual(
 				[ 'foo', 'master ↓2', 'abcd123', 'M1' ]
 			);
 
-			expect( stubs.table.toString.calledOnce ).to.equal( true );
+			expect( stubs.table.toString.calledOnce ).toEqual( true );
 
-			expect( logStub.calledTwice ).to.equal( true );
-			expect( logStub.firstCall.args[ 0 ] ).to.equal( '┻━┻' );
+			expect( logStub.calledTwice ).toEqual( true );
+			expect( logStub.firstCall.args[ 0 ] ).toEqual( '┻━┻' );
 			expect( logStub.secondCall.args[ 0 ] ).to.match( /^Legend:/ );
-			expect( stubs.chalk.cyan.calledOnce ).to.equal( true );
+			expect( stubs.chalk.cyan.calledOnce ).toEqual( true );
 
 			logStub.restore();
 		} );

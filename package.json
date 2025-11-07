@@ -33,7 +33,7 @@
     "@ckeditor/ckeditor5-dev-release-tools": "^53.0.0",
     "@inquirer/prompts": "^7.8.3",
     "@listr2/prompt-adapter-inquirer": "^3.0.2",
-    "chai": "^4.2.0",
+    "@vitest/coverage-v8": "4.0.8",
     "eslint": "^9.36.0",
     "eslint-config-ckeditor5": "^12.1.1",
     "eslint-plugin-ckeditor5-rules": "^12.1.1",
@@ -42,10 +42,7 @@
     "husky": "^8.0.2",
     "lint-staged": "^10.2.11",
     "listr2": "^9.0.2",
-    "mocha": "^10.0.0",
-    "mockery": "^2.1.0",
-    "nyc": "^15.1.0",
-    "sinon": "^9.0.3"
+    "vitest": "^4.0.8"
   },
   "pnpm": {
     "overrides": {
@@ -68,8 +65,8 @@
   "scripts": {
     "nice": "ckeditor5-dev-changelog-create-entry",
     "postinstall": "node ./scripts/postinstall.js",
-    "test": "mocha tests --recursive",
-    "coverage": "nyc --reporter=lcov --reporter=text-summary pnpm run test",
+    "test": "vitest",
+    "coverage": "vitest --coverage",
     "lint": "eslint",
     "release:prepare-changelog": "node ./scripts/preparechangelog.mjs",
     "release:prepare-packages": "node ./scripts/preparepackages.mjs",

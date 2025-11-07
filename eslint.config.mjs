@@ -47,6 +47,7 @@ export default defineConfig( [
 			] } ],
 			'import/extensions': [ 'error', {
 				js: 'always',
+				mjs: 'always',
 				json: 'always'
 			} ]
 		}

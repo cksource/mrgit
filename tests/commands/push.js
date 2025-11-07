@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const fs = require( 'fs' );
 const path = require( 'upath' );
 const sinon = require( 'sinon' );
@@ -73,7 +69,7 @@ describe( 'commands/push', () => {
 
 			return pushCommand.execute( commandData )
 				.then( response => {
-					expect( response ).to.deep.equal( {} );
+					expect( response ).toEqual( {} );
 				} );
 		} );
 
@@ -88,10 +84,10 @@ describe( 'commands/push', () => {
 
 			return pushCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch --show-current' );
+					expect( exec.callCount ).toEqual( 1 );
+					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch --show-current' );
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'This repository is currently in detached head mode - skipping.'
 					] );
 				} );
@@ -111,11 +107,11 @@ describe( 'commands/push', () => {
 
 			return pushCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 2 );
-					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch --show-current' );
-					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git push' );
+					expect( exec.callCount ).toEqual( 2 );
+					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch --show-current' );
+					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git push' );
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'Everything up-to-date'
 					] );
 				} );
@@ -134,11 +130,11 @@ describe( 'commands/push', () => {
 
 			return pushCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 2 );
-					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch --show-current' );
-					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git push --verbose --all' );
+					expect( exec.callCount ).toEqual( 2 );
+					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch --show-current' );
+					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git push --verbose --all' );
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'Everything up-to-date'
 					] );
 				} );
@@ -155,7 +151,7 @@ describe( 'commands/push', () => {
 
 			pushCommand.afterExecute( processedPackages );
 
-			expect( consoleLog.calledOnce ).to.equal( true );
+			expect( consoleLog.calledOnce ).toEqual( true );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 
 			consoleLog.restore();

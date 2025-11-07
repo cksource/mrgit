@@ -3,8 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-'use strict';
-
 const path = require( 'path' );
 const fs = require( 'fs' );
 const ROOT_DIRECTORY = path.join( __dirname, '..' );

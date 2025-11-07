@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const fs = require( 'fs' );
 const path = require( 'upath' );
 const sinon = require( 'sinon' );
@@ -93,7 +89,7 @@ describe( 'commands/exec', () => {
 					},
 					response => {
 						const err = 'Package "test-package" is not available. Run "mrgit sync" in order to download the package.';
-						expect( response.logs.error[ 0 ] ).to.equal( err );
+						expect( response.logs.error[ 0 ] ).toEqual( err );
 					}
 				);
 		} );
@@ -110,10 +106,10 @@ describe( 'commands/exec', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( stubs.process.chdir.calledTwice ).to.equal( true );
-						expect( stubs.process.chdir.firstCall.args[ 0 ] ).to.equal( 'packages/test-package' );
-						expect( stubs.process.chdir.secondCall.args[ 0 ] ).to.equal( __dirname );
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( stubs.process.chdir.calledTwice ).toEqual( true );
+						expect( stubs.process.chdir.firstCall.args[ 0 ] ).toEqual( 'packages/test-package' );
+						expect( stubs.process.chdir.secondCall.args[ 0 ] ).toEqual( __dirname );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -125,10 +121,10 @@ describe( 'commands/exec', () => {
 
 			return execCommand.execute( commandData )
 				.then( response => {
-					expect( stubs.process.chdir.calledTwice ).to.equal( true );
-					expect( stubs.process.chdir.firstCall.args[ 0 ] ).to.equal( 'packages/test-package' );
-					expect( stubs.process.chdir.secondCall.args[ 0 ] ).to.equal( __dirname );
-					expect( response.logs.info[ 0 ] ).to.equal( pwd );
+					expect( stubs.process.chdir.calledTwice ).toEqual( true );
+					expect( stubs.process.chdir.firstCall.args[ 0 ] ).toEqual( 'packages/test-package' );
+					expect( stubs.process.chdir.secondCall.args[ 0 ] ).toEqual( __dirname );
+					expect( response.logs.info[ 0 ] ).toEqual( pwd );
 				} );
 		} );
 	} );

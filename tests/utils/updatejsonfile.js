@@ -3,36 +3,30 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
+import { vi, describe, it, expect } from 'vitest';
+import { updateJsonFile } from '../../lib/utils/updatejsonfile.js';
+import fs from 'fs';
 
-'use strict';
-
-const updateJsonFile = require( '../../lib/utils/updatejsonfile' );
-const expect = require( 'chai' ).expect;
-const sinon = require( 'sinon' );
+vi.mock( 'fs' );
 
 describe( 'utils', () => {
-	afterEach( () => {
-		sinon.restore();
-	} );
-
 	describe( 'updateJsonFile()', () => {
 		it( 'should read, update and save JSON file', () => {
 			const path = 'path/to/file.json';
-			const fs = require( 'fs' );
-			const readFileStub = sinon.stub( fs, 'readFileSync' ).callsFake( () => '{}' );
-			const modifiedJSON = { modified: true };
-			const writeFileStub = sinon.stub( fs, 'writeFileSync' );
+			const originalFile = { original: true };
+			const updateFunction = object => ( { modified: true, ...object } );
+			fs.readFileSync.mockReturnValue( JSON.stringify( originalFile ) );
 
-			updateJsonFile( path, () => {
-				return modifiedJSON;
-			} );
+			updateJsonFile( path, updateFunction );
 
-			expect( readFileStub.calledOnce ).to.equal( true );
-			expect( readFileStub.firstCall.args[ 0 ] ).to.equal( path );
-			expect( writeFileStub.calledOnce ).to.equal( true );
-			expect( writeFileStub.firstCall.args[ 0 ] ).to.equal( path );
-			expect( writeFileStub.firstCall.args[ 1 ] ).to.equal( JSON.stringify( modifiedJSON, null, 2 ) + '\n' );
+			expect( fs.readFileSync ).toHaveBeenCalledExactlyOnceWith( path, 'utf-8' );
+			expect( fs.writeFileSync ).toHaveBeenCalledExactlyOnceWith( path, [
+				'{',
+				'  "modified": true,',
+				'  "original": true',
+				'}',
+				''
+			].join( '\n' ), 'utf-8' );
 		} );
 	} );
 } );

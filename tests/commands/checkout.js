@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
@@ -78,7 +74,7 @@ describe( 'commands/checkout', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -95,8 +91,8 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -104,7 +100,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Already on \'master\'',
 						'Already on \'master\'\nYour branch is up-to-date with \'origin/master\'.'
 					] );
@@ -125,8 +121,8 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -134,7 +130,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Switched to branch \'develop\'',
 						'Your branch is up to date with \'origin/develop\'.'
 					] );
@@ -164,9 +160,9 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -174,7 +170,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -182,7 +178,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Switched to a new branch \'develop\''
 					] );
 				} );
@@ -203,9 +199,9 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
+					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -213,7 +209,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Repository does not contain changes to commit. New branch was not created.'
 					] );
 				} );

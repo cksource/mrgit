@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const fs = require( 'fs' );
 const path = require( 'upath' );
 const sinon = require( 'sinon' );
@@ -73,7 +69,7 @@ describe( 'commands/fetch', () => {
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( response ).to.deep.equal( {} );
+					expect( response ).toEqual( {} );
 				} );
 		} );
 
@@ -88,10 +84,10 @@ describe( 'commands/fetch', () => {
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
+					expect( exec.callCount ).toEqual( 1 );
+					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'remote: Counting objects: 254, done.'
 					] );
 				} );
@@ -109,10 +105,10 @@ describe( 'commands/fetch', () => {
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch -p' );
+					expect( exec.callCount ).toEqual( 1 );
+					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch -p' );
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'remote: Counting objects: 254, done.'
 					] );
 				} );
@@ -129,10 +125,10 @@ describe( 'commands/fetch', () => {
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
+					expect( exec.callCount ).toEqual( 1 );
+					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'Repository is up to date.'
 					] );
 				} );
@@ -149,7 +145,7 @@ describe( 'commands/fetch', () => {
 
 			fetchCommand.afterExecute( processedPackages );
 
-			expect( consoleLog.calledOnce ).to.equal( true );
+			expect( consoleLog.calledOnce ).toEqual( true );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 
 			consoleLog.restore();

@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const fs = require( 'fs' );
 const path = require( 'upath' );
 const sinon = require( 'sinon' );
@@ -86,18 +82,18 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( stubs.shell.callCount ).to.equal( 2 );
+						expect( stubs.shell.callCount ).toEqual( 2 );
 
 						// Clone the repository.
-						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).to.equal(
+						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
 							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 						);
 						// Change the directory to cloned package and check out to proper branch.
-						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).to.equal(
+						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual(
 							'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
 						);
 
-						expect( response.logs.info ).to.deep.equal( [
+						expect( response.logs.info ).toEqual( [
 							'Package "test-package" was not found. Cloning...',
 							'Git clone log.'
 						] );
@@ -112,18 +108,18 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( stubs.shell.callCount ).to.equal( 2 );
+						expect( stubs.shell.callCount ).toEqual( 2 );
 
 						// Clone the repository.
-						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).to.equal(
+						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
 							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 						);
 						// Change the directory to cloned package and check out to proper branch.
-						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).to.equal(
+						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual(
 							'cd "/tmp/packages/test-package" && git checkout --quiet "tags/v30.0.0"'
 						);
 
-						expect( response.logs.info ).to.deep.equal( [
+						expect( response.logs.info ).toEqual( [
 							'Package "test-package" was not found. Cloning...',
 							'Git clone log.'
 						] );
@@ -141,20 +137,20 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( stubs.shell.callCount ).to.equal( 3 );
+						expect( stubs.shell.callCount ).toEqual( 3 );
 
 						// Clone the repository.
-						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).to.equal(
+						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
 							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 						);
 						// Look for the latest tag.
-						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).to.equal( command );
+						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual( command );
 						// Change the directory to cloned package and check out to proper branch.
-						expect( stubs.shell.getCall( 2 ).args[ 0 ] ).to.equal(
+						expect( stubs.shell.getCall( 2 ).args[ 0 ] ).toEqual(
 							'cd "/tmp/packages/test-package" && git checkout --quiet "tags/v35.3.2"'
 						);
 
-						expect( response.logs.info ).to.deep.equal( [
+						expect( response.logs.info ).toEqual( [
 							'Package "test-package" was not found. Cloning...',
 							'Git clone log.'
 						] );
@@ -172,7 +168,7 @@ describe( 'commands/sync', () => {
 				return syncCommand.execute( commandData )
 					.then( response => {
 						expect( response.packages ).is.an( 'array' );
-						expect( response.packages ).to.deep.equal( [ 'test-foo' ] );
+						expect( response.packages ).toEqual( [ 'test-foo' ] );
 					} );
 			} );
 
@@ -187,7 +183,7 @@ describe( 'commands/sync', () => {
 				return syncCommand.execute( commandData )
 					.then( response => {
 						expect( response.packages ).is.an( 'array' );
-						expect( response.packages ).to.deep.equal( [ 'test-bar' ] );
+						expect( response.packages ).toEqual( [ 'test-bar' ] );
 					} );
 			} );
 
@@ -212,25 +208,25 @@ describe( 'commands/sync', () => {
 
 					return syncCommand.execute( commandData )
 						.then( response => {
-							expect( stubs.shell.callCount ).to.equal( 3 );
+							expect( stubs.shell.callCount ).toEqual( 3 );
 
 							// First attempt.
 							// Clone the repository.
-							expect( stubs.shell.getCall( 0 ).args[ 0 ] ).to.equal(
+							expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
 								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 							);
 
 							// Second attempt.
 							// Clone the repository.
-							expect( stubs.shell.getCall( 1 ).args[ 0 ] ).to.equal(
+							expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual(
 								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 							);
 							// Change the directory to cloned package and check out to proper branch.
-							expect( stubs.shell.getCall( 2 ).args[ 0 ] ).to.equal(
+							expect( stubs.shell.getCall( 2 ).args[ 0 ] ).toEqual(
 								'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
 							);
 
-							expect( response.logs.info ).to.deep.equal( [
+							expect( response.logs.info ).toEqual( [
 								'Package "test-package" was not found. Cloning...',
 								'Git clone log.'
 							] );
@@ -255,25 +251,25 @@ describe( 'commands/sync', () => {
 
 					return syncCommand.execute( commandData )
 						.then( response => {
-							expect( stubs.shell.callCount ).to.equal( 3 );
+							expect( stubs.shell.callCount ).toEqual( 3 );
 
 							// First attempt.
 							// Clone the repository.
-							expect( stubs.shell.getCall( 0 ).args[ 0 ] ).to.equal(
+							expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
 								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 							);
 
 							// Second attempt.
 							// Clone the repository.
-							expect( stubs.shell.getCall( 1 ).args[ 0 ] ).to.equal(
+							expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual(
 								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 							);
 							// Change the directory to cloned package and check out to proper branch.
-							expect( stubs.shell.getCall( 2 ).args[ 0 ] ).to.equal(
+							expect( stubs.shell.getCall( 2 ).args[ 0 ] ).toEqual(
 								'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
 							);
 
-							expect( response.logs.info ).to.deep.equal( [
+							expect( response.logs.info ).toEqual( [
 								'Package "test-package" was not found. Cloning...',
 								'Git clone log.'
 							] );
@@ -307,13 +303,13 @@ describe( 'commands/sync', () => {
 								throw new Error( 'Expected that the Promise fails.' );
 							},
 							response => {
-								expect( stubs.shell.calledTwice ).to.equal( true );
+								expect( stubs.shell.calledTwice ).toEqual( true );
 
-								expect( response.logs.info ).to.deep.equal( [
+								expect( response.logs.info ).toEqual( [
 									'Package "test-package" was not found. Cloning...'
 								] );
 
-								expect( response.logs.error ).to.deep.equal( [
+								expect( response.logs.error ).toEqual( [
 									errorMessage
 								] );
 							}
@@ -350,18 +346,18 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
-						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git checkout "master"' );
-						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch' );
-						expect( exec.getCall( 4 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git pull origin "master"' );
+						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
+						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
+						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git checkout "master"' );
+						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch' );
+						expect( exec.getCall( 4 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git pull origin "master"' );
 
-						expect( response.logs.info ).to.deep.equal( [
+						expect( response.logs.info ).toEqual( [
 							'Already on \'master\'.',
 							'Already up-to-date.'
 						] );
 
-						expect( exec.callCount ).to.equal( 5 );
+						expect( exec.callCount ).toEqual( 5 );
 					} );
 			} );
 
@@ -398,17 +394,17 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
-						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git checkout "tags/v35.3.0"' );
-						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch' );
+						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
+						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
+						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git checkout "tags/v35.3.0"' );
+						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch' );
 
-						expect( response.logs.info ).to.deep.equal( [
+						expect( response.logs.info ).toEqual( [
 							'Note: checking out \'tags/v35.3.0\'.',
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( exec.callCount ).to.equal( 4 );
+						expect( exec.callCount ).toEqual( 4 );
 					} );
 			} );
 
@@ -449,20 +445,20 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
-						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal(
+						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
+						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
+						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).toEqual(
 							'git log --tags --simplify-by-decoration --pretty="%S"'
 						);
-						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git checkout "tags/v35.3.2"' );
-						expect( exec.getCall( 4 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git branch' );
+						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git checkout "tags/v35.3.2"' );
+						expect( exec.getCall( 4 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch' );
 
-						expect( response.logs.info ).to.deep.equal( [
+						expect( response.logs.info ).toEqual( [
 							'Note: checking out \'tags/v35.3.2\'.',
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( exec.callCount ).to.equal( 5 );
+						expect( exec.callCount ).toEqual( 5 );
 					} );
 			} );
 
@@ -490,15 +486,15 @@ describe( 'commands/sync', () => {
 						throw new Error( 'Expected to throw' );
 					} )
 					.catch( response => {
-						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
-						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).to.equal(
+						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
+						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
+						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).toEqual(
 							'git log --tags --simplify-by-decoration --pretty="%S"'
 						);
 
-						expect( exec.callCount ).to.equal( 3 );
+						expect( exec.callCount ).toEqual( 3 );
 
-						expect( response.logs.error[ 0 ] ).to.equal(
+						expect( response.logs.error[ 0 ] ).toEqual(
 							'Can\'t check out the latest tag as package "test-package" has no tags. Aborted.'
 						);
 					} );
@@ -521,8 +517,8 @@ describe( 'commands/sync', () => {
 						response => {
 							const errMsg = 'Package "test-package" has uncommitted changes. Aborted.';
 
-							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
-							expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git status -s' );
+							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
+							expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
 						}
 					);
 			} );
@@ -556,12 +552,12 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( response.logs.info ).to.deep.equal( [
+						expect( response.logs.info ).toEqual( [
 							'Note: checking out \'1a0ff0a\'.',
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( exec.callCount ).to.equal( 4 );
+						expect( exec.callCount ).toEqual( 4 );
 					} );
 			} );
 
@@ -598,14 +594,14 @@ describe( 'commands/sync', () => {
 							throw new Error( 'Supposed to be rejected.' );
 						},
 						response => {
-							expect( response.logs.info ).to.deep.equal( [
+							expect( response.logs.info ).toEqual( [
 								'Already on \'develop\'.'
 							] );
 
 							const errMsg = 'fatal: Couldn\'t find remote ref develop';
-							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
+							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
 
-							expect( exec.callCount ).to.equal( 5 );
+							expect( exec.callCount ).toEqual( 5 );
 						}
 					);
 			} );
@@ -636,9 +632,9 @@ describe( 'commands/sync', () => {
 						},
 						response => {
 							const errMsg = 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
-							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( errMsg );
+							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
 
-							expect( exec.callCount ).to.equal( 3 );
+							expect( exec.callCount ).toEqual( 3 );
 						}
 					);
 			} );
@@ -685,7 +681,7 @@ describe( 'commands/sync', () => {
 			syncCommand.afterExecute( processedPackages, null, toolOptions );
 			consoleLog.restore();
 
-			expect( consoleLog.callCount ).to.equal( 3 );
+			expect( consoleLog.callCount ).toEqual( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
 				/Paths to directories listed below are skipped by mrgit because they are not defined in configuration file:/
@@ -743,7 +739,7 @@ describe( 'commands/sync', () => {
 			syncCommand.afterExecute( processedPackages, null, toolOptions );
 			consoleLog.restore();
 
-			expect( consoleLog.callCount ).to.equal( 3 );
+			expect( consoleLog.callCount ).toEqual( 3 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
 				/Paths to directories listed below are skipped by mrgit because they are not defined in configuration file:/
@@ -781,7 +777,7 @@ describe( 'commands/sync', () => {
 
 			syncCommand.afterExecute( processedPackages, null, toolOptions );
 
-			expect( consoleLog.callCount ).to.equal( 1 );
+			expect( consoleLog.callCount ).toEqual( 1 );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
 
 			consoleLog.restore();

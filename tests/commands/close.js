@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
@@ -84,7 +80,7 @@ describe( 'commands/close', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -140,9 +136,9 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
+					expect( stubs.execCommand.execute.callCount ).toEqual( 5 );
 
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -150,7 +146,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -158,7 +154,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -166,7 +162,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -174,7 +170,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -182,7 +178,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
 
 						'Removing "develop" branch from the local registry.',
@@ -251,9 +247,9 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
+					expect( stubs.execCommand.execute.callCount ).toEqual( 5 );
 
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -261,7 +257,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -269,7 +265,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -277,7 +273,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -285,7 +281,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -293,7 +289,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
 
 						'Removing "develop" branch from the local registry.',
@@ -362,9 +358,9 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
+					expect( stubs.execCommand.execute.callCount ).toEqual( 5 );
 
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -372,7 +368,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -380,7 +376,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -388,7 +384,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -396,7 +392,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -404,7 +400,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
 
 						'Removing "develop" branch from the local registry.',
@@ -435,9 +431,9 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
+					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -445,7 +441,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Branch does not exist.'
 					] );
 				} );
@@ -474,9 +470,9 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 2 );
+					expect( stubs.execCommand.execute.callCount ).toEqual( 2 );
 
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -484,7 +480,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -492,7 +488,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'This repository is currently in detached head mode - skipping.'
 					] );
 				} );

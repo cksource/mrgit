@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
@@ -100,7 +96,7 @@ describe( 'commands/commit', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -128,9 +124,9 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -138,7 +134,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -146,7 +142,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test.'
 					] );
 				} );
@@ -176,9 +172,9 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -186,7 +182,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -194,7 +190,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test.'
 					] );
 				} );
@@ -225,9 +221,9 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -235,7 +231,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -243,7 +239,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test'
 					] );
 				} );
@@ -275,9 +271,9 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -285,7 +281,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -293,7 +289,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test.'
 					] );
 				} );
@@ -325,9 +321,9 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -335,7 +331,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -343,7 +339,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test.'
 					] );
 				} );
@@ -365,9 +361,9 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
+					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -375,7 +371,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Nothing to commit.'
 					] );
 				} );
@@ -404,9 +400,9 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 1 );
+					expect( stubs.execCommand.execute.callCount ).toEqual( 1 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						repository: {
 							branch: 'master'
 						},
@@ -414,7 +410,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'This repository is currently in detached head mode - skipping.'
 					] );
 				} );

@@ -3,10 +3,6 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
 const sinon = require( 'sinon' );
 const mockery = require( 'mockery' );
 const expect = require( 'chai' ).expect;
@@ -54,7 +50,7 @@ describe( 'commands/diff', () => {
 
 			diffCommand.beforeExecute();
 
-			expect( consoleLog.calledOnce ).to.equal( true );
+			expect( consoleLog.calledOnce ).toEqual( true );
 			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /Collecting changes\.\.\./ );
 
 			consoleLog.restore();
@@ -77,7 +73,7 @@ describe( 'commands/diff', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -101,12 +97,12 @@ describe( 'commands/diff', () => {
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						arguments: [ 'git diff --color' ]
 					} );
 
-					expect( diffResponse.logs.info[ 0 ] ).to.equal( diffResult );
+					expect( diffResponse.logs.info[ 0 ] ).toEqual( diffResult );
 				} );
 		} );
 
@@ -115,9 +111,9 @@ describe( 'commands/diff', () => {
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
+					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
 
-					expect( diffResponse ).to.deep.equal( {} );
+					expect( diffResponse ).toEqual( {} );
 				} );
 		} );
 
@@ -131,12 +127,12 @@ describe( 'commands/diff', () => {
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
+					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
 						arguments: [ 'git diff --color --stat --staged' ]
 					} );
 
-					expect( diffResponse ).to.deep.equal( {} );
+					expect( diffResponse ).toEqual( {} );
 				} );
 		} );
 	} );
@@ -147,7 +143,7 @@ describe( 'commands/diff', () => {
 
 			diffCommand.afterExecute();
 
-			expect( logStub.calledOnce ).to.equal( true );
+			expect( logStub.calledOnce ).toEqual( true );
 			logStub.restore();
 		} );
 	} );
