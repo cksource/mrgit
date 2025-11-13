@@ -9,10 +9,13 @@ export default defineConfig( {
 	test: {
 		testTimeout: 10000,
 		restoreMocks: true,
+		mockReset: true,
 		include: [
 			'tests/**/*.js'
 		],
-		exclude: [ 'tests/commands/**/*.js' ], // TODO: more tests.
+		setupFiles: [
+			'./scripts/testsSetup/chalk.js'
+		],
 		watch: false,
 		coverage: {
 			provider: 'v8',

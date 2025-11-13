@@ -3,41 +3,20 @@
  * For licensing, see LICENSE.md.
  */
 
-const fs = require( 'fs' );
-const path = require( 'upath' );
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+import { vi, describe, beforeEach, it, expect } from 'vitest';
+import syncCommand from '../../lib/commands/sync.js';
+import execCommand from '../../lib/commands/exec.js';
+import { shell } from '../../lib/utils/shell.js';
+import fs from 'fs';
+
+vi.mock( '../../lib/commands/exec.js' );
+vi.mock( '../../lib/utils/shell.js' );
+vi.mock( 'fs' );
 
 describe( 'commands/sync', () => {
-	let syncCommand, stubs, toolOptions, commandData;
+	let toolOptions, commandData;
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			shell: sinon.stub(),
-			exec: sinon.stub(),
-			fs: {
-				existsSync: sinon.stub( fs, 'existsSync' ),
-				readdirSync: sinon.stub( fs, 'readdirSync' )
-			},
-			path: {
-				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
-			},
-			bootstrapCommand: {
-				execute: sinon.stub()
-			},
-			execCommand: {
-				execute: sinon.stub()
-			},
-			repositoryResolver: sinon.stub()
-		};
-
 		toolOptions = {
 			cwd: '/tmp',
 			packages: '/tmp/packages',
@@ -54,42 +33,30 @@ describe( 'commands/sync', () => {
 				branch: 'master'
 			}
 		};
-
-		mockery.registerMock( './exec', stubs.execCommand );
-		mockery.registerMock( '../utils/shell', stubs.shell );
-		mockery.registerMock( 'PATH_TO_RESOLVER', stubs.repositoryResolver );
-
-		syncCommand = require( '../../lib/commands/sync' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( syncCommand.helpMessage ).is.a( 'string' );
+			expect( typeof syncCommand.helpMessage ).toEqual( 'string' );
 		} );
 	} );
 
 	describe( 'execute()', () => {
 		describe( 'first call on a package', () => {
 			it( 'clones the repository if is not available', () => {
-				stubs.fs.existsSync.returns( false );
-				stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
+				fs.existsSync.mockReturnValue( false );
+				shell.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( stubs.shell.callCount ).toEqual( 2 );
+						expect( shell ).toHaveBeenCalledTimes( 2 );
 
 						// Clone the repository.
-						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
+						expect( shell ).toHaveBeenNthCalledWith( 1,
 							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 						);
 						// Change the directory to cloned package and check out to proper branch.
-						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual(
+						expect( shell ).toHaveBeenNthCalledWith( 2,
 							'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
 						);
 
@@ -103,19 +70,19 @@ describe( 'commands/sync', () => {
 			it( 'clones the repository and checks out a specific tag', () => {
 				commandData.repository.tag = 'v30.0.0';
 
-				stubs.fs.existsSync.returns( false );
-				stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
+				fs.existsSync.mockReturnValue( false );
+				shell.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( stubs.shell.callCount ).toEqual( 2 );
+						expect( shell ).toHaveBeenCalledTimes( 2 );
 
 						// Clone the repository.
-						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
+						expect( shell ).toHaveBeenNthCalledWith( 1,
 							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 						);
 						// Change the directory to cloned package and check out to proper branch.
-						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual(
+						expect( shell ).toHaveBeenNthCalledWith( 2,
 							'cd "/tmp/packages/test-package" && git checkout --quiet "tags/v30.0.0"'
 						);
 
@@ -131,22 +98,27 @@ describe( 'commands/sync', () => {
 
 				const command = 'cd "/tmp/packages/test-package" && git log --tags --simplify-by-decoration --pretty="%S"';
 
-				stubs.fs.existsSync.returns( false );
-				stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
-				stubs.shell.withArgs( command ).returns( Promise.resolve( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ) );
+				fs.existsSync.mockReturnValue( false );
+				shell.mockImplementation( shellArg => {
+					if ( shellArg === command ) {
+						return Promise.resolve( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' );
+					}
+
+					return Promise.resolve( 'Git clone log.' );
+				} );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( stubs.shell.callCount ).toEqual( 3 );
+						expect( shell ).toHaveBeenCalledTimes( 3 );
 
 						// Clone the repository.
-						expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
+						expect( shell ).toHaveBeenNthCalledWith( 1,
 							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 						);
 						// Look for the latest tag.
-						expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual( command );
+						expect( shell ).toHaveBeenNthCalledWith( 2, command );
 						// Change the directory to cloned package and check out to proper branch.
-						expect( stubs.shell.getCall( 2 ).args[ 0 ] ).toEqual(
+						expect( shell ).toHaveBeenNthCalledWith( 3,
 							'cd "/tmp/packages/test-package" && git checkout --quiet "tags/v35.3.2"'
 						);
 
@@ -162,8 +134,8 @@ describe( 'commands/sync', () => {
 				commandData.toolOptions.packages = __dirname + '/../fixtures';
 				commandData.repository.directory = 'project-a';
 
-				stubs.fs.existsSync.returns( false );
-				stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
+				fs.existsSync.mockReturnValue( false );
+				shell.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -177,8 +149,8 @@ describe( 'commands/sync', () => {
 				commandData.toolOptions.packages = __dirname + '/../fixtures';
 				commandData.repository.directory = 'project-with-options-in-mrgitjson';
 
-				stubs.fs.existsSync.returns( false );
-				stubs.shell.returns( Promise.resolve( 'Git clone log.' ) );
+				fs.existsSync.mockReturnValue( false );
+				shell.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -187,42 +159,47 @@ describe( 'commands/sync', () => {
 					} );
 			} );
 
-			describe( 'repeats installation process', function() {
-				this.timeout( 5500 );
-
+			describe( 'repeats installation process', { timeout: 5_500 }, () => {
 				it( 'for errors with capital letters', () => {
-					stubs.fs.existsSync.returns( false );
+					fs.existsSync.mockReturnValue( false );
 
-					stubs.shell.onFirstCall().returns( Promise.reject( [
-						'exec: Cloning into \'/some/path\'...',
-						'remote: Enumerating objects: 6, done.',
-						'remote: Counting objects: 100% (6/6), done.',
-						'remote: Compressing objects: 100% (6/6), done.',
-						'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
-						'fatal: The remote end hung up unexpectedly',
-						'fatal: early EOF',
-						'fatal: index-pack failed'
-					].join( '\n' ) ) );
+					let shellCall = 0;
+					shell.mockImplementation( () => {
+						shellCall++;
 
-					stubs.shell.onSecondCall().returns( Promise.resolve( 'Git clone log.' ) );
+						switch ( shellCall ) {
+							case 1: return Promise.reject( [
+								'exec: Cloning into \'/some/path\'...',
+								'remote: Enumerating objects: 6, done.',
+								'remote: Counting objects: 100% (6/6), done.',
+								'remote: Compressing objects: 100% (6/6), done.',
+								'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
+								'fatal: The remote end hung up unexpectedly',
+								'fatal: early EOF',
+								'fatal: index-pack failed'
+							].join( '\n' ) );
+
+							case 2: return Promise.resolve( 'Git clone log.' );
+						}
+					} );
 
 					return syncCommand.execute( commandData )
 						.then( response => {
-							expect( stubs.shell.callCount ).toEqual( 3 );
+							expect( shell ).toHaveBeenCalledTimes( 3 );
 
 							// First attempt.
 							// Clone the repository.
-							expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
+							expect( shell ).toHaveBeenNthCalledWith( 1,
 								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 							);
 
 							// Second attempt.
 							// Clone the repository.
-							expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual(
+							expect( shell ).toHaveBeenNthCalledWith( 2,
 								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 							);
 							// Change the directory to cloned package and check out to proper branch.
-							expect( stubs.shell.getCall( 2 ).args[ 0 ] ).toEqual(
+							expect( shell ).toHaveBeenNthCalledWith( 3,
 								'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
 							);
 
@@ -233,39 +210,46 @@ describe( 'commands/sync', () => {
 						} );
 				} );
 
-				it( 'for errors with small letters', () => {
-					stubs.fs.existsSync.returns( false );
+				it( 'for errors with small letters', { timeout: 5_500 }, () => {
+					fs.existsSync.mockReturnValue( false );
 
-					stubs.shell.onFirstCall().returns( Promise.reject( [
-						'exec: Cloning into \'/some/path\'...',
-						'remote: Enumerating objects: 6, done.',
-						'remote: Counting objects: 100% (6/6), done.',
-						'remote: Compressing objects: 100% (6/6), done.',
-						'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
-						'fatal: the remote end hung up unexpectedly',
-						'fatal: early EOF',
-						'fatal: index-pack failed'
-					].join( '\n' ) ) );
+					let shellCall = 0;
+					shell.mockImplementation( () => {
+						shellCall++;
 
-					stubs.shell.onSecondCall().returns( Promise.resolve( 'Git clone log.' ) );
+						switch ( shellCall ) {
+							case 1: return Promise.reject( [
+								'exec: Cloning into \'/some/path\'...',
+								'remote: Enumerating objects: 6, done.',
+								'remote: Counting objects: 100% (6/6), done.',
+								'remote: Compressing objects: 100% (6/6), done.',
+								'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
+								'fatal: the remote end hung up unexpectedly',
+								'fatal: early EOF',
+								'fatal: index-pack failed'
+							].join( '\n' ) );
+
+							case 2: return Promise.resolve( 'Git clone log.' );
+						}
+					} );
 
 					return syncCommand.execute( commandData )
 						.then( response => {
-							expect( stubs.shell.callCount ).toEqual( 3 );
+							expect( shell ).toHaveBeenCalledTimes( 3 );
 
 							// First attempt.
 							// Clone the repository.
-							expect( stubs.shell.getCall( 0 ).args[ 0 ] ).toEqual(
+							expect( shell ).toHaveBeenNthCalledWith( 1,
 								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 							);
 
 							// Second attempt.
 							// Clone the repository.
-							expect( stubs.shell.getCall( 1 ).args[ 0 ] ).toEqual(
+							expect( shell ).toHaveBeenNthCalledWith( 2,
 								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
 							);
 							// Change the directory to cloned package and check out to proper branch.
-							expect( stubs.shell.getCall( 2 ).args[ 0 ] ).toEqual(
+							expect( shell ).toHaveBeenNthCalledWith( 3,
 								'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
 							);
 
@@ -276,8 +260,8 @@ describe( 'commands/sync', () => {
 						} );
 				} );
 
-				it( 'returns an error if command failed twice', () => {
-					stubs.fs.existsSync.returns( false );
+				it( 'returns an error if command failed twice', { timeout: 5_500 }, () => {
+					fs.existsSync.mockReturnValue( false );
 
 					const errorMessage = [
 						'exec: Cloning into \'/some/path\'...',
@@ -290,12 +274,7 @@ describe( 'commands/sync', () => {
 						'fatal: index-pack failed'
 					].join( '\n' );
 
-					stubs.shell.onFirstCall().returns( Promise.reject( new Error( errorMessage ) ) );
-
-					// Can't use `.returns()` because it generates `UnhandledPromiseRejectionWarning` in the console.
-					stubs.shell.onSecondCall().callsFake( () => {
-						return Promise.reject( errorMessage );
-					} );
+					shell.mockImplementation( () => Promise.reject( new Error( errorMessage ) ) );
 
 					return syncCommand.execute( commandData )
 						.then(
@@ -303,7 +282,7 @@ describe( 'commands/sync', () => {
 								throw new Error( 'Expected that the Promise fails.' );
 							},
 							response => {
-								expect( stubs.shell.calledTwice ).toEqual( true );
+								expect( shell ).toHaveBeenCalledTimes( 2 );
 
 								expect( response.logs.info ).toEqual( [
 									'Package "test-package" was not found. Cloning...'
@@ -320,179 +299,217 @@ describe( 'commands/sync', () => {
 
 		describe( 'the repository is already installed', () => {
 			it( 'resolves promise after pulling the changes', () => {
-				stubs.fs.existsSync.returns( true );
+				fs.existsSync.mockReturnValue( true );
 
-				const exec = stubs.execCommand.execute;
+				const execReturnValues = [
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 0 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 1 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( 'Already on \'master\'.' )
+					} ),
 
-				exec.onCall( 2 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'Already on \'master\'.' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( '* master\n  remotes/origin/master' )
+					} ),
 
-				exec.onCall( 3 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '* master\n  remotes/origin/master' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( 'Already up-to-date.' )
+					} )
+				];
 
-				exec.onCall( 4 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'Already up-to-date.' )
-				} ) );
+				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
-						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git checkout "master"' );
-						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch' );
-						expect( exec.getCall( 4 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git pull origin "master"' );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
+							{ arguments: [ 'git status -s' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, expect.objectContaining(
+							{ arguments: [ 'git fetch' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, expect.objectContaining(
+							{ arguments: [ 'git checkout "master"' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, expect.objectContaining(
+							{ arguments: [ 'git branch' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, expect.objectContaining(
+							{ arguments: [ 'git pull origin "master"' ] }
+						) );
 
 						expect( response.logs.info ).toEqual( [
 							'Already on \'master\'.',
 							'Already up-to-date.'
 						] );
 
-						expect( exec.callCount ).toEqual( 5 );
+						expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
 					} );
 			} );
 
 			it( 'checks out specific tag', () => {
 				commandData.repository.tag = 'v35.3.0';
 
-				stubs.fs.existsSync.returns( true );
+				fs.existsSync.mockReturnValue( true );
 
-				const exec = stubs.execCommand.execute;
+				const execReturnValues = [
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 0 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 1 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( 'Note: checking out \'tags/v35.3.0\'.' )
+					} ),
 
-				exec.onCall( 2 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'Note: checking out \'tags/v35.3.0\'.' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( [
+							'* (HEAD detached at 1a0ff0a)',
+							'  master',
+							'  remotes/origin/master'
+						].join( '\n' ) )
+					} ),
 
-				exec.onCall( 3 ).returns( Promise.resolve( {
-					logs: getCommandLogs( [
-						'* (HEAD detached at 1a0ff0a)',
-						'  master',
-						'  remotes/origin/master'
-					].join( '\n' ) )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( 'Already up-to-date.' )
+					} )
+				];
 
-				exec.onCall( 5 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'Already up-to-date.' )
-				} ) );
+				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
-						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git checkout "tags/v35.3.0"' );
-						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch' );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
+							{ arguments: [ 'git status -s' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, expect.objectContaining(
+							{ arguments: [ 'git fetch' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, expect.objectContaining(
+							{ arguments: [ 'git checkout "tags/v35.3.0"' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, expect.objectContaining(
+							{ arguments: [ 'git branch' ] }
+						) );
 
 						expect( response.logs.info ).toEqual( [
 							'Note: checking out \'tags/v35.3.0\'.',
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( exec.callCount ).toEqual( 4 );
+						expect( execCommand.execute ).toHaveBeenCalledTimes( 4 );
 					} );
 			} );
 
 			it( 'checks out the latest tag', () => {
 				commandData.repository.tag = 'latest';
 
-				stubs.fs.existsSync.returns( true );
+				fs.existsSync.mockReturnValue( true );
 
-				const exec = stubs.execCommand.execute;
+				const execReturnValues = [
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 0 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 1 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.3.0' )
+					} ),
 
-				exec.onCall( 2 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.3.0' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( 'Note: checking out \'tags/v35.3.2\'.' )
+					} ),
 
-				exec.onCall( 3 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'Note: checking out \'tags/v35.3.2\'.' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( [
+							'* (HEAD detached at 1a0ff0a)',
+							'  master',
+							'  remotes/origin/master'
+						].join( '\n' ) )
+					} ),
 
-				exec.onCall( 4 ).returns( Promise.resolve( {
-					logs: getCommandLogs( [
-						'* (HEAD detached at 1a0ff0a)',
-						'  master',
-						'  remotes/origin/master'
-					].join( '\n' ) )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( 'Already up-to-date.' )
+					} )
+				];
 
-				exec.onCall( 5 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'Already up-to-date.' )
-				} ) );
+				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
-						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).toEqual(
-							'git log --tags --simplify-by-decoration --pretty="%S"'
-						);
-						expect( exec.getCall( 3 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git checkout "tags/v35.3.2"' );
-						expect( exec.getCall( 4 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch' );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
+							{ arguments: [ 'git status -s' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, expect.objectContaining(
+							{ arguments: [ 'git fetch' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, expect.objectContaining(
+							{ arguments: [ 'git log --tags --simplify-by-decoration --pretty="%S"' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, expect.objectContaining(
+							{ arguments: [ 'git checkout "tags/v35.3.2"' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, expect.objectContaining(
+							{ arguments: [ 'git branch' ] }
+						) );
 
 						expect( response.logs.info ).toEqual( [
 							'Note: checking out \'tags/v35.3.2\'.',
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( exec.callCount ).toEqual( 5 );
+						expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
 					} );
 			} );
 
 			it( 'throws an error when trying to check out the latest tag in repository without tags', () => {
 				commandData.repository.tag = 'latest';
 
-				stubs.fs.existsSync.returns( true );
+				fs.existsSync.mockReturnValue( true );
 
-				const exec = stubs.execCommand.execute;
+				const execReturnValues = [
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 0 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 1 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs()
+					} )
+				];
 
-				exec.onCall( 2 ).returns( Promise.resolve( {
-					logs: getCommandLogs()
-				} ) );
+				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
 
 				return syncCommand.execute( commandData )
 					.then( () => {
 						throw new Error( 'Expected to throw' );
 					} )
 					.catch( response => {
-						expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
-						expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git fetch' );
-						expect( exec.getCall( 2 ).args[ 0 ].arguments[ 0 ] ).toEqual(
-							'git log --tags --simplify-by-decoration --pretty="%S"'
-						);
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
+							{ arguments: [ 'git status -s' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, expect.objectContaining(
+							{ arguments: [ 'git fetch' ] }
+						) );
+						expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, expect.objectContaining(
+							{ arguments: [ 'git log --tags --simplify-by-decoration --pretty="%S"' ] }
+						) );
 
-						expect( exec.callCount ).toEqual( 3 );
+						expect( execCommand.execute ).toHaveBeenCalledTimes( 3 );
 
 						expect( response.logs.error[ 0 ] ).toEqual(
 							'Can\'t check out the latest tag as package "test-package" has no tags. Aborted.'
@@ -501,11 +518,9 @@ describe( 'commands/sync', () => {
 			} );
 
 			it( 'aborts if package has uncommitted changes', () => {
-				stubs.fs.existsSync.returns( true );
+				fs.existsSync.mockReturnValue( true );
 
-				const exec = stubs.execCommand.execute;
-
-				exec.returns( Promise.resolve( {
+				execCommand.execute.mockReturnValue( Promise.resolve( {
 					logs: getCommandLogs( ' M first-file.js\n ?? second-file.js' )
 				} ) );
 
@@ -518,37 +533,41 @@ describe( 'commands/sync', () => {
 							const errMsg = 'Package "test-package" has uncommitted changes. Aborted.';
 
 							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
-							expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).toEqual( 'git status -s' );
+							expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
+								{ arguments: [ 'git status -s' ] }
+							) );
 						}
 					);
 			} );
 
 			it( 'does not pull the changes if detached on a commit or a tag', () => {
-				stubs.fs.existsSync.returns( true );
+				fs.existsSync.mockReturnValue( true );
 
 				commandData.repository.branch = '1a0ff0a';
 
-				const exec = stubs.execCommand.execute;
+				const execReturnValues = [
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 0 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( '' )
+					} ),
 
-				exec.onCall( 1 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( 'Note: checking out \'1a0ff0a\'.' )
+					} ),
 
-				exec.onCall( 2 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'Note: checking out \'1a0ff0a\'.' )
-				} ) );
+					Promise.resolve( {
+						logs: getCommandLogs( [
+							'* (HEAD detached at 1a0ff0a)',
+							'  master',
+							'  remotes/origin/master'
+						].join( '\n' ) )
+					} )
+				];
 
-				exec.onCall( 3 ).returns( Promise.resolve( {
-					logs: getCommandLogs( [
-						'* (HEAD detached at 1a0ff0a)',
-						'  master',
-						'  remotes/origin/master'
-					].join( '\n' ) )
-				} ) );
+				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -557,36 +576,41 @@ describe( 'commands/sync', () => {
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( exec.callCount ).toEqual( 4 );
+						expect( execCommand.execute ).toHaveBeenCalledTimes( 4 );
 					} );
 			} );
 
 			it( 'aborts if user wants to pull changes from non-existing branch', () => {
-				stubs.fs.existsSync.returns( true );
+				fs.existsSync.mockReturnValue( true );
 
 				commandData.repository.branch = 'develop';
 
-				const exec = stubs.execCommand.execute;
+				let execCall = 0;
+				execCommand.execute.mockImplementation( () => {
+					execCall++;
 
-				exec.onCall( 0 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					switch ( execCall ) {
+						case 1: return Promise.resolve( {
+							logs: getCommandLogs( '' )
+						} );
 
-				exec.onCall( 1 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+						case 2: return Promise.resolve( {
+							logs: getCommandLogs( '' )
+						} );
 
-				exec.onCall( 2 ).returns( Promise.resolve( {
-					logs: getCommandLogs( 'Already on \'develop\'.' )
-				} ) );
+						case 3: return Promise.resolve( {
+							logs: getCommandLogs( 'Already on \'develop\'.' )
+						} );
 
-				exec.onCall( 3 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '* develop' )
-				} ) );
+						case 4: return Promise.resolve( {
+							logs: getCommandLogs( '* develop' )
+						} );
 
-				exec.onCall( 4 ).returns( Promise.reject( {
-					logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true )
-				} ) );
+						case 5: return Promise.reject( {
+							logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true )
+						} );
+					}
+				} );
 
 				return syncCommand.execute( commandData )
 					.then(
@@ -601,29 +625,34 @@ describe( 'commands/sync', () => {
 							const errMsg = 'fatal: Couldn\'t find remote ref develop';
 							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
 
-							expect( exec.callCount ).toEqual( 5 );
+							expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
 						}
 					);
 			} );
 
 			it( 'aborts if user wants to check out to non-existing branch', () => {
-				stubs.fs.existsSync.returns( true );
+				fs.existsSync.mockReturnValue( true );
 
 				commandData.repository.branch = 'non-existing-branch';
 
-				const exec = stubs.execCommand.execute;
+				let execCall = 0;
+				execCommand.execute.mockImplementation( () => {
+					execCall++;
 
-				exec.onCall( 0 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+					switch ( execCall ) {
+						case 1: return Promise.resolve( {
+							logs: getCommandLogs( '' )
+						} );
 
-				exec.onCall( 1 ).returns( Promise.resolve( {
-					logs: getCommandLogs( '' )
-				} ) );
+						case 2: return Promise.resolve( {
+							logs: getCommandLogs( '' )
+						} );
 
-				exec.onCall( 2 ).returns( Promise.reject( {
-					logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true )
-				} ) );
+						case 3: return Promise.reject( {
+							logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true )
+						} );
+					}
+				} );
 
 				return syncCommand.execute( commandData )
 					.then(
@@ -634,7 +663,7 @@ describe( 'commands/sync', () => {
 							const errMsg = 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
 							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
 
-							expect( exec.callCount ).toEqual( 3 );
+							expect( execCommand.execute ).toHaveBeenCalledTimes( 3 );
 						}
 					);
 			} );
@@ -642,10 +671,9 @@ describe( 'commands/sync', () => {
 	} );
 
 	describe( 'afterExecute()', () => {
-		it( 'informs about number of processed packages and differences between packages in directory and defined in mrgit.json', () => {
-			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
-
-			const consoleLog = sinon.stub( console, 'log' );
+		// eslint-disable-next-line @stylistic/max-len
+		it( 'informs about number of processed packages and differences between packages in directory and defined in mrgit.json', async () => {
+			const consoleLog = vi.spyOn( console, 'log' ).mockImplementation( () => {} );
 
 			const processedPackages = new Set();
 			processedPackages.add( 'package-1' );
@@ -656,43 +684,54 @@ describe( 'commands/sync', () => {
 				'package-2': 'foo/package-2'
 			};
 
-			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
-			stubs.repositoryResolver.onSecondCall().returns( { directory: 'package-2' } );
+			const resolverReturnValues = [
+				{ directory: 'package-1' },
+				{ directory: 'package-2' }
+			];
 
-			stubs.fs.readdirSync.returns( [
+			vi.doMock( toolOptions.resolverPath, () => ( {
+				default: () => resolverReturnValues.shift()
+			} ) );
+
+			fs.readdirSync.mockReturnValue( [
 				'package-1',
 				'package-2',
 				'package-3',
 				'.DS_Store'
 			] );
 
-			stubs.fs.lstatSync.returns( {
-				isDirectory() {
-					return true;
+			fs.lstatSync.mockImplementation( path => {
+				if ( path === '/tmp/packages/.DS_Store' ) {
+					return {
+						isDirectory() {
+							return false;
+						}
+					};
 				}
+
+				return {
+					isDirectory() {
+						return true;
+					}
+				};
 			} );
 
-			stubs.fs.lstatSync.withArgs( '/tmp/packages/.DS_Store' ).returns( {
-				isDirectory() {
-					return false;
-				}
-			} );
+			await syncCommand.afterExecute( processedPackages, null, toolOptions );
 
-			syncCommand.afterExecute( processedPackages, null, toolOptions );
-			consoleLog.restore();
-
-			expect( consoleLog.callCount ).toEqual( 3 );
-			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
-			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
-				/Paths to directories listed below are skipped by mrgit because they are not defined in configuration file:/
+			expect( consoleLog ).toHaveBeenCalledTimes( 3 );
+			expect( consoleLog ).toHaveBeenNthCalledWith( 1,
+				'2 packages have been processed.'
 			);
-			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/package-3/ );
+			expect( consoleLog ).toHaveBeenNthCalledWith( 2,
+				'Paths to directories listed below are skipped by mrgit because they are not defined in configuration file:'
+			);
+			expect( consoleLog ).toHaveBeenNthCalledWith( 3,
+				'  - /tmp/packages/package-3'
+			);
 		} );
 
-		it( 'informs about differences between packages in directory and defined in mrgit.json for scopes packages', () => {
-			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
-
-			const consoleLog = sinon.stub( console, 'log' );
+		it( 'informs about differences between packages in directory and defined in mrgit.json for scopes packages', async () => {
+			const consoleLog = vi.spyOn( console, 'log' ).mockImplementation( () => {} );
 
 			const processedPackages = new Set();
 			processedPackages.add( 'package-1' );
@@ -703,54 +742,70 @@ describe( 'commands/sync', () => {
 				'package-2': 'foo/package-2'
 			};
 
-			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
-			stubs.repositoryResolver.onSecondCall().returns( { directory: 'package-2' } );
+			const resolverReturnValues = [
+				{ directory: 'package-1' },
+				{ directory: 'package-2' }
+			];
 
-			stubs.fs.readdirSync.onFirstCall().returns( [
-				'package-1',
-				'package-2',
-				'@foo',
-				'.DS_Store'
-			] );
+			vi.doMock( toolOptions.resolverPath, () => ( {
+				default: () => resolverReturnValues.shift()
+			} ) );
 
-			stubs.fs.readdirSync.onSecondCall().returns( [
-				'.DS_Store',
-				'package-3'
-			] );
+			const readdirSyncReturnValues = [
+				[
+					'package-1',
+					'package-2',
+					'@foo',
+					'.DS_Store'
+				],
+				[
+					'.DS_Store',
+					'package-3'
+				]
+			];
 
-			stubs.fs.lstatSync.returns( {
-				isDirectory() {
-					return true;
+			fs.readdirSync.mockImplementation( () => readdirSyncReturnValues.shift() );
+
+			fs.lstatSync.mockImplementation( path => {
+				if ( path === '/tmp/packages/@foo/.DS_Store' ) {
+					return {
+						isDirectory() {
+							return false;
+						}
+					};
 				}
+
+				if ( path === '/tmp/packages/.DS_Store' ) {
+					return {
+						isDirectory() {
+							return false;
+						}
+					};
+				}
+
+				return {
+					isDirectory() {
+						return true;
+					}
+				};
 			} );
 
-			stubs.fs.lstatSync.withArgs( '/tmp/packages/@foo/.DS_Store' ).returns( {
-				isDirectory() {
-					return false;
-				}
-			} );
+			await syncCommand.afterExecute( processedPackages, null, toolOptions );
 
-			stubs.fs.lstatSync.withArgs( '/tmp/packages/.DS_Store' ).returns( {
-				isDirectory() {
-					return false;
-				}
-			} );
-
-			syncCommand.afterExecute( processedPackages, null, toolOptions );
-			consoleLog.restore();
-
-			expect( consoleLog.callCount ).toEqual( 3 );
-			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
-			expect( consoleLog.secondCall.args[ 0 ] ).to.match(
-				/Paths to directories listed below are skipped by mrgit because they are not defined in configuration file:/
+			expect( consoleLog ).toHaveBeenCalledTimes( 3 );
+			expect( consoleLog ).toHaveBeenNthCalledWith( 1,
+				'2 packages have been processed.'
 			);
-			expect( consoleLog.thirdCall.args[ 0 ] ).to.match( / {2}- .*\/packages\/@foo\/package-3/ );
+			expect( consoleLog ).toHaveBeenNthCalledWith( 2,
+				'Paths to directories listed below are skipped by mrgit because they are not defined in configuration file:'
+			);
+			expect( consoleLog ).toHaveBeenNthCalledWith( 3,
+				'  - /tmp/packages/@foo/package-3'
+			);
 		} );
 
-		it( 'does not inform about differences between packages in directory and defined in mrgit.json if everything is ok', () => {
-			stubs.fs.lstatSync = sinon.stub( fs, 'lstatSync' );
-
-			const consoleLog = sinon.stub( console, 'log' );
+		it( 'does not inform about differences between packages in directory and defined in mrgit.json if everything is ok', async () => {
+			const consoleLog = vi.spyOn( console, 'log' ).mockImplementation( () => {} );
 
 			const processedPackages = new Set();
 			processedPackages.add( 'package-1' );
@@ -761,26 +816,32 @@ describe( 'commands/sync', () => {
 				'package-2': 'foo/package-2'
 			};
 
-			stubs.repositoryResolver.onFirstCall().returns( { directory: 'package-1' } );
-			stubs.repositoryResolver.onSecondCall().returns( { directory: 'package-2' } );
+			const resolverReturnValues = [
+				{ directory: 'package-1' },
+				{ directory: 'package-2' }
+			];
 
-			stubs.fs.readdirSync.returns( [
+			vi.doMock( toolOptions.resolverPath, () => ( {
+				default: () => resolverReturnValues.shift()
+			} ) );
+
+			fs.readdirSync.mockReturnValue( [
 				'package-1',
 				'package-2'
 			] );
 
-			stubs.fs.lstatSync.returns( {
+			fs.lstatSync.mockReturnValue( {
 				isDirectory() {
 					return true;
 				}
 			} );
 
-			syncCommand.afterExecute( processedPackages, null, toolOptions );
+			await syncCommand.afterExecute( processedPackages, null, toolOptions );
 
-			expect( consoleLog.callCount ).toEqual( 1 );
-			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
-
-			consoleLog.restore();
+			expect( consoleLog ).toHaveBeenCalledTimes( 1 );
+			expect( consoleLog ).toHaveBeenNthCalledWith( 1,
+				'2 packages have been processed.'
+			);
 		} );
 	} );
 
