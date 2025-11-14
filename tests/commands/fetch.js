@@ -3,39 +3,18 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import execCommand from '../../lib/commands/exec.js';
+import fetchCommand from '../../lib/commands/fetch.js';
+import fs from 'fs';
 
-'use strict';
-
-const fs = require( 'fs' );
-const path = require( 'upath' );
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+vi.mock( '../../lib/commands/exec.js' );
+vi.mock( 'fs' );
 
 describe( 'commands/fetch', () => {
-	let fetchCommand, stubs, commandData;
+	let commandData;
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			exec: sinon.stub(),
-			fs: {
-				existsSync: sinon.stub( fs, 'existsSync' )
-			},
-			path: {
-				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
-			},
-			execCommand: {
-				execute: sinon.stub()
-			}
-		};
-
 		commandData = {
 			arguments: [],
 			packageName: 'test-package',
@@ -49,49 +28,39 @@ describe( 'commands/fetch', () => {
 				branch: 'master'
 			}
 		};
-
-		mockery.registerMock( './exec', stubs.execCommand );
-
-		fetchCommand = require( '../../lib/commands/fetch' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( fetchCommand.helpMessage ).is.a( 'string' );
+			expect( typeof fetchCommand.helpMessage ).toEqual( 'string' );
 		} );
 	} );
 
 	describe( 'execute()', () => {
 		it( 'skips a package if is not available', () => {
-			stubs.fs.existsSync.returns( false );
+			fs.existsSync.mockReturnValue( false );
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( response ).to.deep.equal( {} );
+					expect( response ).toEqual( {} );
 				} );
 		} );
 
 		it( 'resolves promise after pushing the changes', () => {
-			stubs.fs.existsSync.returns( true );
+			fs.existsSync.mockReturnValue( true );
 
-			const exec = stubs.execCommand.execute;
-
-			exec.returns( Promise.resolve( {
+			execCommand.execute.mockReturnValue( Promise.resolve( {
 				logs: getCommandLogs( 'remote: Counting objects: 254, done.' )
 			} ) );
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
+						expect.objectContaining( { arguments: [ 'git fetch' ] } )
+					);
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'remote: Counting objects: 254, done.'
 					] );
 				} );
@@ -99,40 +68,40 @@ describe( 'commands/fetch', () => {
 
 		it( 'allows removing remote-tracking references that no longer exist', () => {
 			commandData.arguments.push( '--prune' );
-			stubs.fs.existsSync.returns( true );
+			fs.existsSync.mockReturnValue( true );
 
-			const exec = stubs.execCommand.execute;
-
-			exec.returns( Promise.resolve( {
+			execCommand.execute.mockReturnValue( Promise.resolve( {
 				logs: getCommandLogs( 'remote: Counting objects: 254, done.' )
 			} ) );
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch -p' );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
+						expect.objectContaining( { arguments: [ 'git fetch -p' ] } )
+					);
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'remote: Counting objects: 254, done.'
 					] );
 				} );
 		} );
 
 		it( 'prints a log if repository is up-to-date', () => {
-			stubs.fs.existsSync.returns( true );
+			fs.existsSync.mockReturnValue( true );
 
-			const exec = stubs.execCommand.execute;
-
-			exec.returns( Promise.resolve( {
+			execCommand.execute.mockReturnValue( Promise.resolve( {
 				logs: { info: [] }
 			} ) );
 
 			return fetchCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).to.equal( 1 );
-					expect( exec.firstCall.args[ 0 ].arguments[ 0 ] ).to.equal( 'git fetch' );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
+						expect.objectContaining( { arguments: [ 'git fetch' ] } )
+					);
 
-					expect( response.logs.info ).to.deep.equal( [
+					expect( response.logs.info ).toEqual( [
 						'Repository is up to date.'
 					] );
 				} );
@@ -141,7 +110,7 @@ describe( 'commands/fetch', () => {
 
 	describe( 'afterExecute()', () => {
 		it( 'informs about number of processed packages', () => {
-			const consoleLog = sinon.stub( console, 'log' );
+			const consoleLog = vi.spyOn( console, 'log' ).mockImplementation( () => {} );
 
 			const processedPackages = new Set();
 			processedPackages.add( 'package-1' );
@@ -149,10 +118,8 @@ describe( 'commands/fetch', () => {
 
 			fetchCommand.afterExecute( processedPackages );
 
-			expect( consoleLog.calledOnce ).to.equal( true );
-			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
-
-			consoleLog.restore();
+			expect( consoleLog ).toHaveBeenCalledTimes( 1 );
+			expect( consoleLog ).toHaveBeenCalledWith( '2 packages have been processed.' );
 		} );
 	} );
 

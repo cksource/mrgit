@@ -3,12 +3,8 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
-const expect = require( 'chai' ).expect;
-const parseRepositoryUrl = require( '../../lib/utils/parserepositoryurl' );
+import { describe, it, expect } from 'vitest';
+import { parseRepositoryUrl } from '../../lib/utils/parserepositoryurl.js';
 
 describe( 'utils', () => {
 	describe( 'parseRepositoryUrl()', () => {
@@ -17,7 +13,7 @@ describe( 'utils', () => {
 				urlTemplate: 'https://github.com/${ path }.git'
 			} );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'master',
 				tag: undefined,
@@ -30,7 +26,7 @@ describe( 'utils', () => {
 				urlTemplate: 'https://github.com/${ path }.git'
 			} );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'stable',
 				tag: undefined,
@@ -44,7 +40,7 @@ describe( 'utils', () => {
 				defaultBranch: 'master'
 			} );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'stable',
 				tag: undefined,
@@ -55,7 +51,7 @@ describe( 'utils', () => {
 		it( 'extracts all parameters basing on specified "http" URL', () => {
 			const repository = parseRepositoryUrl( 'http://github.com/foo/bar.git' );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'http://github.com/foo/bar.git',
 				branch: 'master',
 				tag: undefined,
@@ -66,7 +62,7 @@ describe( 'utils', () => {
 		it( 'extracts all parameters basing on specified "https" URL', () => {
 			const repository = parseRepositoryUrl( 'https://github.com/foo/bar.git' );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'master',
 				tag: undefined,
@@ -77,7 +73,7 @@ describe( 'utils', () => {
 		it( 'extracts all parameters basing on specified "file" (Unix path)', () => {
 			const repository = parseRepositoryUrl( 'file:///Users/Workspace/Projects/foo/bar' );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'file:///Users/Workspace/Projects/foo/bar',
 				branch: 'master',
 				tag: undefined,
@@ -88,7 +84,7 @@ describe( 'utils', () => {
 		it( 'extracts all parameters basing on specified "file" (Windows path)', () => {
 			const repository = parseRepositoryUrl( 'file://C:/Users/Workspace/Projects/foo/bar' );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'file://c/Users/Workspace/Projects/foo/bar',
 				branch: 'master',
 				tag: undefined,
@@ -99,7 +95,7 @@ describe( 'utils', () => {
 		it( 'extracts all parameters basing on specified "git" URL', () => {
 			const repository = parseRepositoryUrl( 'git@github.com:foo/bar.git' );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'git@github.com:foo/bar.git',
 				branch: 'master',
 				tag: undefined,
@@ -110,7 +106,7 @@ describe( 'utils', () => {
 		it( 'allows modifying the branch using hash in the URL', () => {
 			const repository = parseRepositoryUrl( 'https://github.com/foo/bar.git#stable' );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'stable',
 				tag: undefined,
@@ -123,7 +119,7 @@ describe( 'utils', () => {
 				urlTemplate: 'https://github.com/${ path }.git'
 			} );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'master',
 				tag: 'v30.0.0',
@@ -136,7 +132,7 @@ describe( 'utils', () => {
 				urlTemplate: 'https://github.com/${ path }.git'
 			} );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'master',
 				tag: 'customTagName',
@@ -149,7 +145,7 @@ describe( 'utils', () => {
 				urlTemplate: 'https://github.com/${ path }.git'
 			} );
 
-			expect( repository ).to.deep.equal( {
+			expect( repository ).toEqual( {
 				url: 'https://github.com/foo/bar.git',
 				branch: 'master',
 				tag: 'latest',
@@ -166,7 +162,7 @@ describe( 'utils', () => {
 					cwdPackageBranch: 'master'
 				} );
 
-				expect( repository ).to.deep.equal( {
+				expect( repository ).toEqual( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'develop',
 					tag: undefined,
@@ -180,7 +176,7 @@ describe( 'utils', () => {
 					defaultBranch: 'develop'
 				} );
 
-				expect( repository ).to.deep.equal( {
+				expect( repository ).toEqual( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'develop',
 					tag: undefined,
@@ -194,7 +190,7 @@ describe( 'utils', () => {
 					cwdPackageBranch: 'master'
 				} );
 
-				expect( repository ).to.deep.equal( {
+				expect( repository ).toEqual( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'master',
 					tag: undefined,
@@ -211,7 +207,7 @@ describe( 'utils', () => {
 					cwdPackageBranch: 'master'
 				} );
 
-				expect( repository ).to.deep.equal( {
+				expect( repository ).toEqual( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'develop',
 					tag: undefined,
@@ -228,7 +224,7 @@ describe( 'utils', () => {
 					cwdPackageBranch: 'master'
 				} );
 
-				expect( repository ).to.deep.equal( {
+				expect( repository ).toEqual( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'develop',
 					tag: undefined,
@@ -245,7 +241,7 @@ describe( 'utils', () => {
 					cwdPackageBranch: 'stable'
 				} );
 
-				expect( repository ).to.deep.equal( {
+				expect( repository ).toEqual( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'stable',
 					tag: undefined,
@@ -262,7 +258,7 @@ describe( 'utils', () => {
 					cwdPackageBranch: 'master'
 				} );
 
-				expect( repository ).to.deep.equal( {
+				expect( repository ).toEqual( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'mrgit',
 					tag: undefined,
@@ -279,7 +275,7 @@ describe( 'utils', () => {
 					cwdPackageBranch: 'master'
 				} );
 
-				expect( repository ).to.deep.equal( {
+				expect( repository ).toEqual( {
 					url: 'https://github.com/foo/bar.git',
 					branch: 'mrgit',
 					tag: undefined,

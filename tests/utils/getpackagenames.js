@@ -3,12 +3,8 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
-const getPackageNames = require( '../../lib/utils/getpackagenames' );
-const expect = require( 'chai' ).expect;
+import { describe, it, expect } from 'vitest';
+import { getPackageNames } from '../../lib/utils/getpackagenames.js';
 
 describe( 'utils', () => {
 	describe( 'getPackageNames()', () => {
@@ -23,7 +19,7 @@ describe( 'utils', () => {
 
 			const packages = getPackageNames( { dependencies }, command );
 
-			expect( packages ).to.deep.equal( Object.keys( dependencies ) );
+			expect( packages ).toEqual( Object.keys( dependencies ) );
 		} );
 
 		it( 'returns specified packages which match to specified pattern (scope)', () => {
@@ -42,7 +38,7 @@ describe( 'utils', () => {
 				scope: 'ckeditor5-editor-*'
 			}, command );
 
-			expect( packages ).to.deep.equal( [
+			expect( packages ).toEqual( [
 				'@ckeditor/ckeditor5-editor-classic',
 				'@ckeditor/ckeditor5-editor-inline'
 			] );
@@ -64,7 +60,7 @@ describe( 'utils', () => {
 				ignore: 'ckeditor5-e*'
 			}, command );
 
-			expect( packages ).to.deep.equal( [
+			expect( packages ).toEqual( [
 				'@ckeditor/ckeditor5-core',
 				'@ckeditor/ckeditor5-utils'
 			] );
@@ -86,7 +82,7 @@ describe( 'utils', () => {
 				ignore: 'ckeditor5-*-inline'
 			}, command );
 
-			expect( packages ).to.deep.equal( [
+			expect( packages ).toEqual( [
 				'@ckeditor/ckeditor5-editor-classic'
 			] );
 		} );
@@ -105,7 +101,7 @@ describe( 'utils', () => {
 				$rootRepository: 'rootOwner/rootName'
 			}, command );
 
-			expect( packages ).to.deep.equal( [ '$rootName', ...Object.keys( dependencies ) ] );
+			expect( packages ).toEqual( [ '$rootName', ...Object.keys( dependencies ) ] );
 		} );
 	} );
 } );

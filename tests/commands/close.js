@@ -3,30 +3,16 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import execCommand from '../../lib/commands/exec.js';
+import closeCommand from '../../lib/commands/close.js';
 
-'use strict';
-
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+vi.mock( '../../lib/commands/exec.js' );
 
 describe( 'commands/close', () => {
-	let closeCommand, stubs, commandData, toolOptions;
+	let commandData, toolOptions;
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			execCommand: {
-				execute: sinon.stub()
-			}
-		};
-
 		toolOptions = {};
 
 		commandData = {
@@ -36,21 +22,11 @@ describe( 'commands/close', () => {
 			},
 			toolOptions
 		};
-
-		mockery.registerMock( './exec', stubs.execCommand );
-
-		closeCommand = require( '../../lib/commands/close' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( closeCommand.helpMessage ).is.a( 'string' );
+			expect( typeof closeCommand.helpMessage ).toEqual( 'string' );
 		} );
 	} );
 
@@ -72,7 +48,7 @@ describe( 'commands/close', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			stubs.execCommand.execute.rejects( {
+			execCommand.execute.mockRejectedValue( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -84,7 +60,7 @@ describe( 'commands/close', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -92,57 +68,64 @@ describe( 'commands/close', () => {
 		it( 'merges specified branch and remove it from local and remote', () => {
 			commandData.arguments.push( 'develop' );
 
-			stubs.execCommand.execute.onCall( 0 ).resolves( {
-				logs: {
-					info: [
-						'* develop'
-					],
-					error: []
-				}
-			} );
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
 
-			stubs.execCommand.execute.onCall( 1 ).resolves( {
-				logs: {
-					info: [
-						'develop'
-					],
-					error: []
-				}
-			} );
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'* develop'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 2 ).resolves( {
-				logs: {
-					info: [
-						'Merge made by the \'recursive\' strategy.'
-					],
-					error: []
-				}
-			} );
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'develop'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: {
-					info: [
-						'Deleted branch develop (was e6bda2e9).'
-					],
-					error: []
-				}
-			} );
+					case 3: return Promise.resolve( {
+						logs: {
+							info: [
+								'Merge made by the \'recursive\' strategy.'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 4 ).resolves( {
-				logs: {
-					info: [
-						'To github.com:foo/bar.git\n' +
+					case 4: return Promise.resolve( {
+						logs: {
+							info: [
+								'Deleted branch develop (was e6bda2e9).'
+							],
+							error: []
+						}
+					} );
+
+					case 5: return Promise.resolve( {
+						logs: {
+							info: [
+								'To github.com:foo/bar.git\n' +
 						' - [deleted]         develop'
-					],
-					error: []
+							],
+							error: []
+						}
+					} );
 				}
 			} );
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
 
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -150,7 +133,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -158,7 +141,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, {
 						repository: {
 							branch: 'master'
 						},
@@ -166,7 +149,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, {
 						repository: {
 							branch: 'master'
 						},
@@ -174,7 +157,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, {
 						repository: {
 							branch: 'master'
 						},
@@ -182,7 +165,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
 
 						'Removing "develop" branch from the local registry.',
@@ -203,57 +186,64 @@ describe( 'commands/close', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			stubs.execCommand.execute.onCall( 0 ).resolves( {
-				logs: {
-					info: [
-						'* develop'
-					],
-					error: []
-				}
-			} );
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
 
-			stubs.execCommand.execute.onCall( 1 ).resolves( {
-				logs: {
-					info: [
-						'develop'
-					],
-					error: []
-				}
-			} );
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'* develop'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 2 ).resolves( {
-				logs: {
-					info: [
-						'Merge made by the \'recursive\' strategy.'
-					],
-					error: []
-				}
-			} );
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'develop'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: {
-					info: [
-						'Deleted branch develop (was e6bda2e9).'
-					],
-					error: []
-				}
-			} );
+					case 3: return Promise.resolve( {
+						logs: {
+							info: [
+								'Merge made by the \'recursive\' strategy.'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 4 ).resolves( {
-				logs: {
-					info: [
-						'To github.com:foo/bar.git\n' +
+					case 4: return Promise.resolve( {
+						logs: {
+							info: [
+								'Deleted branch develop (was e6bda2e9).'
+							],
+							error: []
+						}
+					} );
+
+					case 5: return Promise.resolve( {
+						logs: {
+							info: [
+								'To github.com:foo/bar.git\n' +
 						' - [deleted]         develop'
-					],
-					error: []
+							],
+							error: []
+						}
+					} );
 				}
 			} );
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
 
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -261,7 +251,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -269,7 +259,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, {
 						repository: {
 							branch: 'master'
 						},
@@ -277,7 +267,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, {
 						repository: {
 							branch: 'master'
 						},
@@ -285,7 +275,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, {
 						repository: {
 							branch: 'master'
 						},
@@ -293,7 +283,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
 
 						'Removing "develop" branch from the local registry.',
@@ -314,57 +304,64 @@ describe( 'commands/close', () => {
 
 			toolOptions.message = 'Test.';
 
-			stubs.execCommand.execute.onCall( 0 ).resolves( {
-				logs: {
-					info: [
-						'* develop'
-					],
-					error: []
-				}
-			} );
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
 
-			stubs.execCommand.execute.onCall( 1 ).resolves( {
-				logs: {
-					info: [
-						'develop'
-					],
-					error: []
-				}
-			} );
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'* develop'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 2 ).resolves( {
-				logs: {
-					info: [
-						'Merge made by the \'recursive\' strategy.'
-					],
-					error: []
-				}
-			} );
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'develop'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 3 ).resolves( {
-				logs: {
-					info: [
-						'Deleted branch develop (was e6bda2e9).'
-					],
-					error: []
-				}
-			} );
+					case 3: return Promise.resolve( {
+						logs: {
+							info: [
+								'Merge made by the \'recursive\' strategy.'
+							],
+							error: []
+						}
+					} );
 
-			stubs.execCommand.execute.onCall( 4 ).resolves( {
-				logs: {
-					info: [
-						'To github.com:foo/bar.git\n' +
+					case 4: return Promise.resolve( {
+						logs: {
+							info: [
+								'Deleted branch develop (was e6bda2e9).'
+							],
+							error: []
+						}
+					} );
+
+					case 5: return Promise.resolve( {
+						logs: {
+							info: [
+								'To github.com:foo/bar.git\n' +
 						' - [deleted]         develop'
-					],
-					error: []
+							],
+							error: []
+						}
+					} );
 				}
 			} );
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 5 );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
 
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -372,7 +369,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -380,7 +377,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 2 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, {
 						repository: {
 							branch: 'master'
 						},
@@ -388,7 +385,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 3 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, {
 						repository: {
 							branch: 'master'
 						},
@@ -396,7 +393,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 4 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, {
 						repository: {
 							branch: 'master'
 						},
@@ -404,7 +401,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
 
 						'Removing "develop" branch from the local registry.',
@@ -424,7 +421,7 @@ describe( 'commands/close', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
+			execCommand.execute.mockResolvedValue( {
 				logs: {
 					info: [
 						''
@@ -435,9 +432,9 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -445,7 +442,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Branch does not exist.'
 					] );
 				} );
@@ -454,29 +451,36 @@ describe( 'commands/close', () => {
 		it( 'does not merge branch if in detached head mode', () => {
 			commandData.arguments.push( 'develop' );
 
-			stubs.execCommand.execute.onCall( 0 ).resolves( {
-				logs: {
-					info: [
-						'* develop'
-					],
-					error: []
-				}
-			} );
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
 
-			stubs.execCommand.execute.onCall( 1 ).resolves( {
-				logs: {
-					info: [
-						''
-					],
-					error: []
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'* develop'
+							],
+							error: []
+						}
+					} );
+
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								''
+							],
+							error: []
+						}
+					} );
 				}
 			} );
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).to.equal( 2 );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
 
-					expect( stubs.execCommand.execute.getCall( 0 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -484,7 +488,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.getCall( 1 ).args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -492,7 +496,7 @@ describe( 'commands/close', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'This repository is currently in detached head mode - skipping.'
 					] );
 				} );

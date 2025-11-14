@@ -3,61 +3,35 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import diffCommand from '../../lib/commands/diff.js';
+import execCommand from '../../lib/commands/exec.js';
 
-'use strict';
-
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+vi.mock( '../../lib/commands/exec.js' );
 
 describe( 'commands/diff', () => {
-	let diffCommand, stubs, commandData;
+	let commandData;
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			execCommand: {
-				execute: sinon.stub()
-			}
-		};
-
 		commandData = {
 			arguments: []
 		};
-
-		mockery.registerMock( './exec', stubs.execCommand );
-
-		diffCommand = require( '../../lib/commands/diff' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( diffCommand.helpMessage ).is.a( 'string' );
+			expect( typeof diffCommand.helpMessage ).toEqual( 'string' );
 		} );
 	} );
 
 	describe( 'beforeExecute()', () => {
 		it( 'informs about starting the process', () => {
-			const consoleLog = sinon.stub( console, 'log' );
+			const consoleLog = vi.spyOn( console, 'log' ).mockImplementation( () => {} );
 
 			diffCommand.beforeExecute();
 
-			expect( consoleLog.calledOnce ).to.equal( true );
-			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /Collecting changes\.\.\./ );
-
-			consoleLog.restore();
+			expect( consoleLog ).toHaveBeenCalledTimes( 1 );
+			expect( consoleLog ).toHaveBeenCalledWith( 'Collecting changes...' );
 		} );
 	} );
 
@@ -65,7 +39,7 @@ describe( 'commands/diff', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			stubs.execCommand.execute.rejects( {
+			execCommand.execute.mockRejectedValue( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -77,7 +51,7 @@ describe( 'commands/diff', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -93,7 +67,7 @@ describe( 'commands/diff', () => {
 				' gulp.task( \'pre-commit\', [ \'lint-staged\' ] );\n' +
 				'+// Some comment.';
 
-			stubs.execCommand.execute.resolves( {
+			execCommand.execute.mockResolvedValue( {
 				logs: {
 					info: [ diffResult ]
 				}
@@ -101,28 +75,28 @@ describe( 'commands/diff', () => {
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
-						arguments: [ 'git diff --color' ]
-					} );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
+						expect.objectContaining( { arguments: [ 'git diff --color' ] } )
+					);
 
-					expect( diffResponse.logs.info[ 0 ] ).to.equal( diffResult );
+					expect( diffResponse.logs.info[ 0 ] ).toEqual( diffResult );
 				} );
 		} );
 
 		it( 'does not return the logs when repository has not changed', () => {
-			stubs.execCommand.execute.resolves( { logs: { info: [] } } );
+			execCommand.execute.mockResolvedValue( { logs: { info: [] } } );
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
 
-					expect( diffResponse ).to.deep.equal( {} );
+					expect( diffResponse ).toEqual( {} );
 				} );
 		} );
 
 		it( 'allows modifying the "git diff" command', () => {
-			stubs.execCommand.execute.resolves( { logs: { info: [] } } );
+			execCommand.execute.mockResolvedValue( { logs: { info: [] } } );
 
 			commandData.arguments = [
 				'--stat',
@@ -131,24 +105,23 @@ describe( 'commands/diff', () => {
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
-						arguments: [ 'git diff --color --stat --staged' ]
-					} );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
+						expect.objectContaining( { arguments: [ 'git diff --color --stat --staged' ] } )
+					);
 
-					expect( diffResponse ).to.deep.equal( {} );
+					expect( diffResponse ).toEqual( {} );
 				} );
 		} );
 	} );
 
 	describe( 'afterExecute()', () => {
 		it( 'should describe what kind of logs are displayed', () => {
-			const logStub = sinon.stub( console, 'log' );
+			const consoleLog = vi.spyOn( console, 'log' ).mockImplementation( () => {} );
 
 			diffCommand.afterExecute();
 
-			expect( logStub.calledOnce ).to.equal( true );
-			logStub.restore();
+			expect( consoleLog ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 } );
