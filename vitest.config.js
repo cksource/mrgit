@@ -19,6 +19,7 @@ export default defineConfig( {
 		watch: false,
 		coverage: {
 			provider: 'v8',
+			exclude: [ './lib/utils/shell.js' ],
 			reporter: [ 'text', 'json', 'html', 'lcov' ]
 		}
 	}
