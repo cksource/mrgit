@@ -19,9 +19,6 @@ export default defineConfig( {
 		watch: false,
 		coverage: {
 			provider: 'v8',
-			include: [
-				'lib/**'
-			],
 			reporter: [ 'text', 'json', 'html', 'lcov' ]
 		}
 	}
