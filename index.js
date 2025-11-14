@@ -10,17 +10,6 @@ import meow from 'meow';
 import { mrgit } from './lib/mrgit.js';
 import { getCommandInstance } from './lib/utils/getcommandinstance.js';
 
-const _emitWarning = process.emitWarning;
-
-process.emitWarning = ( ...args ) => {
-	// Silence the `url.parse()` deprecation warning.
-	if ( args[ 2 ] === 'DEP0169' ) {
-		return;
-	}
-
-	return _emitWarning( ...args );
-};
-
 await handleCli();
 
 async function handleCli() {
