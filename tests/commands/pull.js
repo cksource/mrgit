@@ -3,38 +3,18 @@
  * For licensing, see LICENSE.md.
  */
 
-const fs = require( 'fs' );
-const path = require( 'upath' );
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import pullCommand from '../../lib/commands/pull.js';
+import execCommand from '../../lib/commands/exec.js';
+import fs from 'fs';
+
+vi.mock( '../../lib/commands/exec.js' );
+vi.mock( 'fs' );
 
 describe( 'commands/pull', () => {
-	let pullCommand, stubs, commandData;
+	let commandData;
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			exec: sinon.stub(),
-			fs: {
-				existsSync: sinon.stub( fs, 'existsSync' )
-			},
-			path: {
-				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
-			},
-			bootstrapCommand: {
-				execute: sinon.stub()
-			},
-			execCommand: {
-				execute: sinon.stub()
-			}
-		};
-
 		commandData = {
 			arguments: [],
 			packageName: 'test-package',
@@ -48,28 +28,17 @@ describe( 'commands/pull', () => {
 				branch: 'master'
 			}
 		};
-
-		mockery.registerMock( './exec', stubs.execCommand );
-		mockery.registerMock( './bootstrap', stubs.bootstrapCommand );
-
-		pullCommand = require( '../../lib/commands/pull' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( pullCommand.helpMessage ).is.a( 'string' );
+			expect( typeof pullCommand.helpMessage ).toEqual( 'string' );
 		} );
 	} );
 
 	describe( 'execute()', () => {
 		it( 'skips a package if is not available', () => {
-			stubs.fs.existsSync.returns( false );
+			fs.existsSync.mockReturnValue( false );
 
 			return pullCommand.execute( commandData )
 				.then( response => {
@@ -78,18 +47,18 @@ describe( 'commands/pull', () => {
 		} );
 
 		it( 'skips a package if its in detached head mode', () => {
-			stubs.fs.existsSync.returns( true );
+			fs.existsSync.mockReturnValue( true );
 
-			const exec = stubs.execCommand.execute;
-
-			exec.onCall( 0 ).returns( Promise.resolve( {
+			execCommand.execute.mockReturnValue( Promise.resolve( {
 				logs: getCommandLogs( '' )
 			} ) );
 
 			return pullCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).toEqual( 1 );
-					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch --show-current' );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
+						expect.objectContaining( { arguments: [ 'git branch --show-current' ] } )
+					);
 
 					expect( response.logs.info ).toEqual( [
 						'This repository is currently in detached head mode - skipping.'
@@ -98,22 +67,32 @@ describe( 'commands/pull', () => {
 		} );
 
 		it( 'resolves promise after pulling the changes', () => {
-			stubs.fs.existsSync.returns( true );
+			fs.existsSync.mockReturnValue( true );
 
-			const exec = stubs.execCommand.execute;
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
 
-			exec.onCall( 0 ).returns( Promise.resolve( {
-				logs: getCommandLogs( 'master' )
-			} ) );
-			exec.onCall( 1 ).returns( Promise.resolve( {
-				logs: getCommandLogs( 'Already up-to-date.' )
-			} ) );
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: getCommandLogs( 'master' )
+					} );
+
+					case 2: return Promise.resolve( {
+						logs: getCommandLogs( 'Already up-to-date.' )
+					} );
+				}
+			} );
 
 			return pullCommand.execute( commandData )
 				.then( response => {
-					expect( exec.callCount ).toEqual( 2 );
-					expect( exec.getCall( 0 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git branch --show-current' );
-					expect( exec.getCall( 1 ).args[ 0 ].arguments[ 0 ] ).toEqual( 'git pull' );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
+						expect.objectContaining( { arguments: [ 'git branch --show-current' ] } )
+					);
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2,
+						expect.objectContaining( { arguments: [ 'git pull' ] } )
+					);
 
 					expect( response.logs.info ).toEqual( [
 						'Already up-to-date.'
@@ -124,18 +103,15 @@ describe( 'commands/pull', () => {
 
 	describe( 'afterExecute()', () => {
 		it( 'informs about number of processed packages', () => {
-			const consoleLog = sinon.stub( console, 'log' );
-
+			const consoleLog = vi.spyOn( console, 'log' ).mockImplementation( () => {} );
 			const processedPackages = new Set();
 			processedPackages.add( 'package-1' );
 			processedPackages.add( 'package-2' );
 
 			pullCommand.afterExecute( processedPackages );
 
-			expect( consoleLog.calledOnce ).toEqual( true );
-			expect( consoleLog.firstCall.args[ 0 ] ).to.match( /2 packages have been processed\./ );
-
-			consoleLog.restore();
+			expect( consoleLog ).toHaveBeenCalledTimes( 1 );
+			expect( consoleLog ).toHaveBeenCalledWith( '2 packages have been processed.' );
 		} );
 	} );
 

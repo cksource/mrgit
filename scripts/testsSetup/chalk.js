@@ -14,6 +14,7 @@ vi.mock( 'chalk', () => {
 		'green',
 		'inverse',
 		'italic',
+		'magenta',
 		'red',
 		'underline',
 		'yellow'

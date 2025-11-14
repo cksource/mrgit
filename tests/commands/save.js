@@ -3,32 +3,22 @@
  * For licensing, see LICENSE.md.
  */
 
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import { gitStatusParser } from '../../lib/utils/gitstatusparser.js';
+import { updateJsonFile } from '../../lib/utils/updatejsonfile.js';
+import execCommand from '../../lib/commands/exec.js';
+import saveCommand from '../../lib/commands/save.js';
+
+vi.mock( '../../lib/utils/gitstatusparser.js' );
+vi.mock( '../../lib/utils/updatejsonfile.js' );
+vi.mock( '../../lib/commands/exec.js' );
 
 describe( 'commands/save', () => {
-	let saveCommand, stubs, commandData, toolOptions, mrgitJsonPath, updateFunction;
+	let commandData, toolOptions, mrgitJsonPath, updateFunction;
 
-	const normalizedDirname = __dirname.replace( /\\/g, '/' );
+	const normalizedDirname = import.meta.dirname.replace( /\\/g, '/' );
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			execCommand: {
-				execute: sinon.stub()
-			},
-			path: {
-				join: sinon.stub().callsFake( ( ...chunks ) => chunks.join( '/' ) )
-			},
-			gitStatusParser: sinon.stub()
-		};
-
 		toolOptions = {
 			config: normalizedDirname + '/mrgit.json'
 		};
@@ -39,23 +29,10 @@ describe( 'commands/save', () => {
 			toolOptions
 		};
 
-		mockery.registerMock( './exec', stubs.execCommand );
-		mockery.registerMock( '../utils/updatejsonfile', ( pathToFile, callback ) => {
+		vi.mocked( updateJsonFile ).mockImplementation( ( pathToFile, callback ) => {
 			mrgitJsonPath = pathToFile;
 			updateFunction = callback;
 		} );
-		mockery.registerMock( '../utils/getcwd', () => {
-			return __dirname;
-		} );
-		mockery.registerMock( '../utils/gitstatusparser', stubs.gitStatusParser );
-
-		saveCommand = require( '../../lib/commands/save' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
@@ -88,7 +65,7 @@ describe( 'commands/save', () => {
 
 			const error = new Error( 'Unexpected error.' );
 
-			stubs.execCommand.execute.returns( Promise.reject( {
+			execCommand.execute.mockImplementation( () => Promise.reject( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -114,12 +91,12 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
+			execCommand.execute.mockReturnValue( Promise.resolve( execCommandResponse ) );
 
 			return saveCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						packageName: commandData.packageName,
 						arguments: [ 'git rev-parse HEAD' ],
 						toolOptions: {
@@ -148,13 +125,13 @@ describe( 'commands/save', () => {
 
 			toolOptions.branch = true;
 
-			stubs.gitStatusParser.returns( { branch: 'master' } );
-			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
+			gitStatusParser.mockReturnValue( { branch: 'master' } );
+			execCommand.execute.mockReturnValue( Promise.resolve( execCommandResponse ) );
 
 			return saveCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						packageName: commandData.packageName,
 						arguments: [ 'git status --branch --porcelain' ],
 						toolOptions: {

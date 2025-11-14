@@ -3,34 +3,19 @@
  * For licensing, see LICENSE.md.
  */
 
-const fs = require( 'fs' );
-const path = require( 'upath' );
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import execCommand from '../../lib/commands/exec.js';
+import { shell } from '../../lib/utils/shell.js';
+import fs from 'fs';
+
+vi.mock( '../../lib/utils/shell.js' );
+vi.mock( 'fs' );
 
 describe( 'commands/exec', () => {
-	let execCommand, stubs, commandData;
+	let commandData, chdir;
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			shell: sinon.stub(),
-			fs: {
-				existsSync: sinon.stub( fs, 'existsSync' )
-			},
-			path: {
-				join: sinon.stub( path, 'join' ).callsFake( ( ...chunks ) => chunks.join( '/' ) )
-			},
-			process: {
-				chdir: sinon.stub( process, 'chdir' )
-			}
-		};
+		chdir = vi.spyOn( process, 'chdir' ).mockImplementation( () => {} );
 
 		commandData = {
 			// Command `#execute` function is called without the "exec" command.
@@ -45,21 +30,11 @@ describe( 'commands/exec', () => {
 				directory: 'test-package'
 			}
 		};
-
-		mockery.registerMock( '../utils/shell', stubs.shell );
-
-		execCommand = require( '../../lib/commands/exec' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( execCommand.helpMessage ).is.a( 'string' );
+			expect( typeof execCommand.helpMessage ).toEqual( 'string' );
 		} );
 	} );
 
@@ -80,7 +55,7 @@ describe( 'commands/exec', () => {
 
 	describe( 'execute()', () => {
 		it( 'does not execute the command if package is not available', () => {
-			stubs.fs.existsSync.returns( false );
+			fs.existsSync.mockReturnValue( false );
 
 			return execCommand.execute( commandData )
 				.then(
@@ -97,8 +72,8 @@ describe( 'commands/exec', () => {
 		it( 'rejects promise if something went wrong', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			stubs.fs.existsSync.returns( true );
-			stubs.shell.returns( Promise.reject( error ) );
+			fs.existsSync.mockReturnValue( true );
+			shell.mockImplementation( () => Promise.reject( error ) );
 
 			return execCommand.execute( commandData )
 				.then(
@@ -106,9 +81,9 @@ describe( 'commands/exec', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( stubs.process.chdir.calledTwice ).toEqual( true );
-						expect( stubs.process.chdir.firstCall.args[ 0 ] ).toEqual( 'packages/test-package' );
-						expect( stubs.process.chdir.secondCall.args[ 0 ] ).toEqual( __dirname );
+						expect( chdir ).toHaveBeenCalledTimes( 2 );
+						expect( chdir ).toHaveBeenNthCalledWith( 1, 'packages/test-package' );
+						expect( chdir ).toHaveBeenNthCalledWith( 2, import.meta.dirname );
 						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
@@ -116,14 +91,14 @@ describe( 'commands/exec', () => {
 
 		it( 'resolves promise if command has been executed', () => {
 			const pwd = '/packages/test-package';
-			stubs.fs.existsSync.returns( true );
-			stubs.shell.returns( Promise.resolve( pwd ) );
+			fs.existsSync.mockReturnValue( true );
+			shell.mockReturnValue( Promise.resolve( pwd ) );
 
 			return execCommand.execute( commandData )
 				.then( response => {
-					expect( stubs.process.chdir.calledTwice ).toEqual( true );
-					expect( stubs.process.chdir.firstCall.args[ 0 ] ).toEqual( 'packages/test-package' );
-					expect( stubs.process.chdir.secondCall.args[ 0 ] ).toEqual( __dirname );
+					expect( chdir ).toHaveBeenCalledTimes( 2 );
+					expect( chdir ).toHaveBeenNthCalledWith( 1, 'packages/test-package' );
+					expect( chdir ).toHaveBeenNthCalledWith( 2, import.meta.dirname );
 					expect( response.logs.info[ 0 ] ).toEqual( pwd );
 				} );
 		} );

@@ -3,27 +3,18 @@
  * For licensing, see LICENSE.md.
  */
 
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import { gitStatusParser } from '../../lib/utils/gitstatusparser.js';
+import execCommand from '../../lib/commands/exec.js';
+import commitCommand from '../../lib/commands/commit.js';
+
+vi.mock( '../../lib/utils/gitstatusparser.js' );
+vi.mock( '../../lib/commands/exec.js' );
 
 describe( 'commands/commit', () => {
-	let commitCommand, stubs, commandData, toolOptions;
+	let commandData, toolOptions;
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			execCommand: {
-				execute: sinon.stub()
-			},
-			gitStatusParser: sinon.stub()
-		};
-
 		toolOptions = {};
 
 		commandData = {
@@ -33,22 +24,11 @@ describe( 'commands/commit', () => {
 			},
 			toolOptions
 		};
-
-		mockery.registerMock( './exec', stubs.execCommand );
-		mockery.registerMock( '../utils/gitstatusparser', stubs.gitStatusParser );
-
-		commitCommand = require( '../../lib/commands/commit' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( commitCommand.helpMessage ).is.a( 'string' );
+			expect( typeof commitCommand.helpMessage ).toEqual( 'string' );
 		} );
 	} );
 
@@ -60,7 +40,7 @@ describe( 'commands/commit', () => {
 
 	describe( 'beforeExecute()', () => {
 		it( 'throws an error if merge message is missing', () => {
-			sinon.stub( commitCommand, '_parseArguments' ).returns( {} );
+			vi.spyOn( commitCommand, '_parseArguments' ).mockImplementation( () => ( {} ) );
 
 			expect( () => {
 				commitCommand.beforeExecute( [ 'commit' ], {} );
@@ -84,7 +64,7 @@ describe( 'commands/commit', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			stubs.execCommand.execute.rejects( {
+			execCommand.execute.mockRejectedValue( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -104,29 +84,36 @@ describe( 'commands/commit', () => {
 		it( 'commits all changes', () => {
 			toolOptions.message = 'Test.';
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [
-						'Response returned by "git status" command.'
-					]
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
+
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'Response returned by "git status" command.'
+							]
+						}
+					} );
+
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'[master a89f9ee] Test.'
+							]
+						}
+					} );
 				}
 			} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [
-						'[master a89f9ee] Test.'
-					]
-				}
-			} );
-
-			stubs.gitStatusParser.returns( { anythingToCommit: true } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -134,7 +121,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -152,29 +139,36 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [
-						'Response returned by "git status" command.'
-					]
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
+
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'Response returned by "git status" command.'
+							]
+						}
+					} );
+
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'[master a89f9ee] Test.'
+							]
+						}
+					} );
 				}
 			} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [
-						'[master a89f9ee] Test.'
-					]
-				}
-			} );
-
-			stubs.gitStatusParser.returns( { anythingToCommit: true } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -182,7 +176,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -201,29 +195,36 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test' );
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [
-						'Response returned by "git status" command.'
-					]
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
+
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'Response returned by "git status" command.'
+							]
+						}
+					} );
+
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'[master a89f9ee] Test'
+							]
+						}
+					} );
 				}
 			} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [
-						'[master a89f9ee] Test'
-					]
-				}
-			} );
-
-			stubs.gitStatusParser.returns( { anythingToCommit: true } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -231,7 +232,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -251,29 +252,36 @@ describe( 'commands/commit', () => {
 				'Foo.'
 			];
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [
-						'Response returned by "git status" command.'
-					]
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
+
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'Response returned by "git status" command.'
+							]
+						}
+					} );
+
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'[master a89f9ee] Test.'
+							]
+						}
+					} );
 				}
 			} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [
-						'[master a89f9ee] Test.'
-					]
-				}
-			} );
-
-			stubs.gitStatusParser.returns( { anythingToCommit: true } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -281,7 +289,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -301,29 +309,36 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '-m' );
 			commandData.arguments.push( 'Foo.' );
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [
-						'Response returned by "git status" command.'
-					]
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
+
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'Response returned by "git status" command.'
+							]
+						}
+					} );
+
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'[master a89f9ee] Test.'
+							]
+						}
+					} );
 				}
 			} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [
-						'[master a89f9ee] Test.'
-					]
-				}
-			} );
-
-			stubs.gitStatusParser.returns( { anythingToCommit: true } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).toEqual( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -331,7 +346,7 @@ describe( 'commands/commit', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -349,7 +364,7 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
+			execCommand.execute.mockResolvedValue( {
 				logs: {
 					info: [
 						'Response returned by "git status" command.'
@@ -357,13 +372,13 @@ describe( 'commands/commit', () => {
 				}
 			} );
 
-			stubs.gitStatusParser.returns( { anythingToCommit: false } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: false } );
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).toEqual( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -380,29 +395,36 @@ describe( 'commands/commit', () => {
 		it( 'does not commit if repository is in detached head mode', () => {
 			toolOptions.message = 'Test.';
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [
-						'Response returned by "git status" command.'
-					]
+			let execCall = 0;
+			execCommand.execute.mockImplementation( () => {
+				execCall++;
+
+				switch ( execCall ) {
+					case 1: return Promise.resolve( {
+						logs: {
+							info: [
+								'Response returned by "git status" command.'
+							]
+						}
+					} );
+
+					case 2: return Promise.resolve( {
+						logs: {
+							info: [
+								'[master a89f9ee] Test.'
+							]
+						}
+					} );
 				}
 			} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [
-						'[master a89f9ee] Test.'
-					]
-				}
-			} );
-
-			stubs.gitStatusParser.returns( { anythingToCommit: true, detachedHead: true } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: true, detachedHead: true } );
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.callCount ).toEqual( 1 );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).toEqual( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
