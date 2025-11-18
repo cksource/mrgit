@@ -49,7 +49,7 @@ describe( 'commands/push', () => {
 		it( 'skips a package if its in detached head mode', () => {
 			fs.existsSync.mockReturnValue( true );
 
-			execCommand.execute.mockReturnValue( Promise.resolve( {
+			execCommand.execute.mockReturnValueOnce( Promise.resolve( {
 				logs: getCommandLogs( '' )
 			} ) );
 

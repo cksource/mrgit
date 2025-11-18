@@ -159,7 +159,7 @@ describe( 'commands/checkout', () => {
 		it( 'does not create a branch if a repository has no-changes that could be committed when specified --branch option', () => {
 			toolOptions.branch = 'develop';
 
-			execCommand.execute.mockResolvedValue( {
+			execCommand.execute.mockResolvedValueOnce( {
 				logs: {
 					info: [
 						'Response returned by "git status" command.'

@@ -361,7 +361,7 @@ describe( 'commands/close', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			execCommand.execute.mockResolvedValue( {
+			execCommand.execute.mockResolvedValueOnce( {
 				logs: {
 					info: [
 						''

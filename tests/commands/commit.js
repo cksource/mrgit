@@ -289,7 +289,7 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			execCommand.execute.mockResolvedValue( {
+			execCommand.execute.mockResolvedValueOnce( {
 				logs: {
 					info: [
 						'Response returned by "git status" command.'
