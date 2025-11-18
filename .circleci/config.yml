@@ -88,11 +88,8 @@ jobs:
               circleci-agent step halt
             fi
       - run:
-          environment:
-            CKE5_SLACK_NOTIFY_HIDE_AUTHOR: << parameters.hideAuthor >>
-            CKE5_PIPELINE_NUMBER: << pipeline.number >>
           name: Waiting for other jobs to finish and sending notification on failure
-          command: pnpm ckeditor5-dev-ci-circle-workflow-notifier
+          command: pnpm ckeditor5-dev-ci-circle-workflow-notifier --task "pnpm ckeditor5-dev-ci-notify-circle-status --pipeline-id << pipeline.number >> --hide-author << parameters.hideAuthor >>"
           no_output_timeout: 1h
 
   validate_and_tests:
@@ -159,11 +156,7 @@ jobs:
             fi
       - run:
           name: Trigger the release pipeline
-          environment:
-            CKE5_GITHUB_RELEASE_BRANCH: master
-            CKE5_GITHUB_REPOSITORY_SLUG: cksource/mrgit
-            CKE5_COMMIT_SHA1: << pipeline.git.revision >>
-          command: pnpm ckeditor5-dev-ci-trigger-circle-build
+          command: pnpm ckeditor5-dev-ci-trigger-circle-build --slug cksource/mrgit --release-branch master
 
   release_project:
     docker:
@@ -187,15 +180,12 @@ jobs:
       - git_credentials_command
       - run:
           name: Verify if a releaser triggered the job
-          environment:
-            CKE5_CIRCLE_APPROVAL_JOB_NAME: release_approval
-            CKE5_GITHUB_ORGANIZATION: ckeditor
           command: |
             #!/bin/bash
 
             # Do not fail if the Node script ends with non-zero exit code.
             set +e
-            pnpm ckeditor5-dev-ci-is-job-triggered-by-member
+            pnpm ckeditor5-dev-ci-is-job-triggered-by-member --job release_approval --organization ckeditor --team ckeditor-5-publishers
             EXIT_CODE=$( echo $? )
 
             if [ ${EXIT_CODE} -ne 0 ];
@@ -205,10 +195,7 @@ jobs:
             fi
       - run:
           name: Disable the redundant workflows option
-          environment:
-            CKE5_GITHUB_ORGANIZATION: cksource
-            CKE5_GITHUB_REPOSITORY: mrgit
-          command: pnpm ckeditor5-dev-ci-circle-disable-auto-cancel-builds
+          command: pnpm ckeditor5-dev-ci-circle-disable-auto-cancel-builds --organization cksource --repository mrgit
       - run:
           name: Prepare the new version to release
           command: npm run release:prepare-packages -- --verbose
@@ -217,10 +204,7 @@ jobs:
           command: npm run release:publish-packages -- --verbose
       - run:
           name: Enable the redundant workflows option
-          environment:
-            CKE5_GITHUB_ORGANIZATION: cksource
-            CKE5_GITHUB_REPOSITORY: mrgit
-          command: pnpm ckeditor5-dev-ci-circle-enable-auto-cancel-builds
+          command: pnpm ckeditor5-dev-ci-circle-enable-auto-cancel-builds --organization cksource --repository mrgit
           when: always
       - run:
           name: Pack the "release/" directory (in case of failure)

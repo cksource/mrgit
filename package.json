@@ -27,10 +27,10 @@
     "upath": "^2.0.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-bump-year": "^53.0.0",
-    "@ckeditor/ckeditor5-dev-changelog": "^53.0.0",
-    "@ckeditor/ckeditor5-dev-ci": "^53.0.0",
-    "@ckeditor/ckeditor5-dev-release-tools": "^53.0.0",
+    "@ckeditor/ckeditor5-dev-bump-year": "^54.0.0",
+    "@ckeditor/ckeditor5-dev-changelog": "^54.0.0",
+    "@ckeditor/ckeditor5-dev-ci": "^54.0.0",
+    "@ckeditor/ckeditor5-dev-release-tools": "^54.0.0",
     "@inquirer/prompts": "^7.8.3",
     "@listr2/prompt-adapter-inquirer": "^3.0.2",
     "@vitest/coverage-v8": "4.0.8",
@@ -43,11 +43,6 @@
     "lint-staged": "^10.2.11",
     "listr2": "^9.0.2",
     "vitest": "^4.0.8"
-  },
-  "pnpm": {
-    "overrides": {
-      "form-data": "^4.0.4"
-    }
   },
   "repository": {
     "type": "git",
