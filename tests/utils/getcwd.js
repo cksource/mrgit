@@ -27,7 +27,17 @@ describe( 'utils', () => {
 		it( 'scans dir tree up in order to find configuration file', () => {
 			vi.spyOn( process, 'cwd' ).mockReturnValue( '/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor' );
 
-			fs.existsSync.mockImplementation( path => path === '/workspace/ckeditor/ckeditor5/mrgit-custom.json' );
+			fs.existsSync
+				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor
+				.mockReturnValue( false )
+				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules
+				.mockReturnValue( false )
+				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine
+				.mockReturnValue( false )
+				// /workspace/ckeditor/ckeditor5/packages
+				.mockReturnValue( false )
+				// /workspace/ckeditor/ckeditor5
+				.mockReturnValue( true );
 
 			expect( getCwd( 'mrgit-custom.json' ) ).toEqual( '/workspace/ckeditor/ckeditor5' );
 

@@ -121,12 +121,20 @@ describe( 'commands/checkout', () => {
 			toolOptions.branch = 'develop';
 
 			execCommand.execute
-				.mockResolvedValueOnce( { logs: { info: [
-					'Response returned by "git status" command.'
-				] } } )
-				.mockResolvedValueOnce( { logs: { info: [
-					'Switched to a new branch \'develop\''
-				] } } );
+				.mockResolvedValueOnce( {
+					logs: {
+						info: [
+							'Response returned by "git status" command.'
+						]
+					}
+				} )
+				.mockResolvedValueOnce( {
+					logs: {
+						info: [
+							'Switched to a new branch \'develop\''
+						]
+					}
+				} );
 
 			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 

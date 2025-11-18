@@ -70,8 +70,12 @@ describe( 'commands/pull', () => {
 			fs.existsSync.mockReturnValue( true );
 
 			execCommand.execute
-				.mockResolvedValueOnce( { logs: getCommandLogs( 'master' ) } )
-				.mockResolvedValueOnce( { logs: getCommandLogs( 'Already up-to-date.' ) } );
+				.mockResolvedValueOnce( {
+					logs: getCommandLogs( 'master' )
+				} )
+				.mockResolvedValueOnce( {
+					logs: getCommandLogs( 'Already up-to-date.' )
+				} );
 
 			return pullCommand.execute( commandData )
 				.then( response => {

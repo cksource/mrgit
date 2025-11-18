@@ -318,11 +318,21 @@ describe( 'commands/sync', () => {
 				fs.existsSync.mockReturnValue( true );
 
 				execCommand.execute
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already on \'master\'.' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '* master\n  remotes/origin/master' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already up-to-date.' ) } );
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'Already on \'master\'.' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '* master\n  remotes/origin/master' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'Already up-to-date.' )
+					} );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -357,15 +367,24 @@ describe( 'commands/sync', () => {
 				fs.existsSync.mockReturnValue( true );
 
 				execCommand.execute
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'Note: checking out \'tags/v35.3.0\'.' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( [
-						'* (HEAD detached at 1a0ff0a)',
-						'  master',
-						'  remotes/origin/master'
-					].join( '\n' ) ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already up-to-date.' ) } );
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'Note: checking out \'tags/v35.3.0\'.' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( [
+							'* (HEAD detached at 1a0ff0a)',
+							'  master',
+							'  remotes/origin/master'
+						].join( '\n' ) ) } )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'Already up-to-date.' )
+					} );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -397,16 +416,27 @@ describe( 'commands/sync', () => {
 				fs.existsSync.mockReturnValue( true );
 
 				execCommand.execute
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.3.0' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'Note: checking out \'tags/v35.3.2\'.' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( [
-						'* (HEAD detached at 1a0ff0a)',
-						'  master',
-						'  remotes/origin/master'
-					].join( '\n' ) ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already up-to-date.' ) } );
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.3.0' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'Note: checking out \'tags/v35.3.2\'.' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( [
+							'* (HEAD detached at 1a0ff0a)',
+							'  master',
+							'  remotes/origin/master'
+						].join( '\n' ) ) } )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'Already up-to-date.' )
+					} );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -441,9 +471,15 @@ describe( 'commands/sync', () => {
 				fs.existsSync.mockReturnValue( true );
 
 				execCommand.execute
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs() } );
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs()
+					} );
 
 				return syncCommand.execute( commandData )
 					.then( () => {
@@ -497,14 +533,21 @@ describe( 'commands/sync', () => {
 				commandData.repository.branch = '1a0ff0a';
 
 				execCommand.execute
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'Note: checking out \'1a0ff0a\'.' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( [
-						'* (HEAD detached at 1a0ff0a)',
-						'  master',
-						'  remotes/origin/master'
-					].join( '\n' ) ) } );
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'Note: checking out \'1a0ff0a\'.' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( [
+							'* (HEAD detached at 1a0ff0a)',
+							'  master',
+							'  remotes/origin/master'
+						].join( '\n' ) ) } );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -523,11 +566,21 @@ describe( 'commands/sync', () => {
 				commandData.repository.branch = 'develop';
 
 				execCommand.execute
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already on \'develop\'.' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '* develop' ) } )
-					.mockRejectedValueOnce( { logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true ) } );
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( 'Already on \'develop\'.' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '* develop' )
+					} )
+					.mockRejectedValueOnce( {
+						logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true )
+					} );
 
 				return syncCommand.execute( commandData )
 					.then(
@@ -553,8 +606,12 @@ describe( 'commands/sync', () => {
 				commandData.repository.branch = 'non-existing-branch';
 
 				execCommand.execute
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
-					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
+					.mockResolvedValueOnce( {
+						logs: getCommandLogs( '' )
+					} )
 					.mockRejectedValueOnce( {
 						logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true )
 					} );

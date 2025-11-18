@@ -70,7 +70,9 @@ describe( 'commands/status', () => {
 
 			execCommand.execute
 				.mockResolvedValueOnce( {} )
-				.mockRejectedValueOnce( { logs: { error: [ error.stack ] } } );
+				.mockRejectedValueOnce( {
+					logs: { error: [ error.stack ] }
+				} );
 
 			return statusCommand.execute( commandData )
 				.then(
@@ -85,10 +87,18 @@ describe( 'commands/status', () => {
 
 		it( 'returns a response with status of the repository', () => {
 			execCommand.execute
-				.mockResolvedValueOnce( { logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git status" command.' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git describe" command.' ] } } );
+				.mockResolvedValueOnce( {
+					logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git status" command.' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git describe" command.' ] }
+				} );
 
 			gitStatusParser.mockReturnValue( { response: 'Parsed response.' } );
 
@@ -128,9 +138,15 @@ describe( 'commands/status', () => {
 
 		it( 'works properly for repositories without tags', () => {
 			execCommand.execute
-				.mockResolvedValueOnce( { logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git status" command.' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [] } } );
+				.mockResolvedValueOnce( {
+					logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git status" command.' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [] }
+				} );
 
 			gitStatusParser.mockReturnValue( { response: 'Parsed response.' } );
 
@@ -172,10 +188,18 @@ describe( 'commands/status', () => {
 			];
 
 			execCommand.execute
-				.mockResolvedValueOnce( { logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git status" command.' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0\n' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git describe" command.' ] } } );
+				.mockResolvedValueOnce( {
+					logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git status" command.' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0\n' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git describe" command.' ] }
+				} );
 
 			gitStatusParser.mockReturnValue( { response: 'Parsed response.' } );
 
@@ -218,10 +242,18 @@ describe( 'commands/status', () => {
 			commandData.toolOptions.packagesPrefix = [];
 
 			execCommand.execute
-				.mockResolvedValueOnce( { logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git status" command.' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git describe" command.' ] } } );
+				.mockResolvedValueOnce( {
+					logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git status" command.' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git describe" command.' ] }
+				} );
 
 			gitStatusParser.mockReturnValue( { response: 'Parsed response.' } );
 
@@ -263,10 +295,18 @@ describe( 'commands/status', () => {
 			commandData.isRootRepository = true;
 
 			execCommand.execute
-				.mockResolvedValueOnce( { logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git status" command.' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] } } )
-				.mockResolvedValueOnce( { logs: { info: [ 'Response returned by "git describe" command.' ] } } );
+				.mockResolvedValueOnce( {
+					logs: { info: [ '6bfd379a56a32c9f8b6e58bf08e39c124cdbae10' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git status" command.' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ '\nv35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' ] }
+				} )
+				.mockResolvedValueOnce( {
+					logs: { info: [ 'Response returned by "git describe" command.' ] }
+				} );
 
 			gitStatusParser.mockReturnValue( { response: 'Parsed response.' } );
 
