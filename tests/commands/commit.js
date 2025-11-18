@@ -84,28 +84,13 @@ describe( 'commands/commit', () => {
 		it( 'commits all changes', () => {
 			toolOptions.message = 'Test.';
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'Response returned by "git status" command.'
-							]
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'[master a89f9ee] Test.'
-							]
-						}
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: { info: [
+					'Response returned by "git status" command.'
+				] } } )
+				.mockResolvedValueOnce( { logs: { info: [
+					'[master a89f9ee] Test.'
+				] } } );
 
 			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
@@ -139,28 +124,13 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'Response returned by "git status" command.'
-							]
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'[master a89f9ee] Test.'
-							]
-						}
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: { info: [
+					'Response returned by "git status" command.'
+				] } } )
+				.mockResolvedValueOnce( { logs: { info: [
+					'[master a89f9ee] Test.'
+				] } } );
 
 			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
@@ -195,28 +165,13 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test' );
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'Response returned by "git status" command.'
-							]
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'[master a89f9ee] Test'
-							]
-						}
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: { info: [
+					'Response returned by "git status" command.'
+				] } } )
+				.mockResolvedValueOnce( { logs: { info: [
+					'[master a89f9ee] Test'
+				] } } );
 
 			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
@@ -252,28 +207,13 @@ describe( 'commands/commit', () => {
 				'Foo.'
 			];
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'Response returned by "git status" command.'
-							]
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'[master a89f9ee] Test.'
-							]
-						}
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: { info: [
+					'Response returned by "git status" command.'
+				] } } )
+				.mockResolvedValueOnce( { logs: { info: [
+					'[master a89f9ee] Test.'
+				] } } );
 
 			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
@@ -309,28 +249,13 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '-m' );
 			commandData.arguments.push( 'Foo.' );
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'Response returned by "git status" command.'
-							]
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'[master a89f9ee] Test.'
-							]
-						}
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: { info: [
+					'Response returned by "git status" command.'
+				] } } )
+				.mockResolvedValueOnce( { logs: { info: [
+					'[master a89f9ee] Test.'
+				] } } );
 
 			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
@@ -395,28 +320,13 @@ describe( 'commands/commit', () => {
 		it( 'does not commit if repository is in detached head mode', () => {
 			toolOptions.message = 'Test.';
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'Response returned by "git status" command.'
-							]
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'[master a89f9ee] Test.'
-							]
-						}
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: { info: [
+					'Response returned by "git status" command.'
+				] } } )
+				.mockResolvedValueOnce( { logs: { info: [
+					'[master a89f9ee] Test.'
+				] } } );
 
 			gitStatusParser.mockReturnValue( { anythingToCommit: true, detachedHead: true } );
 

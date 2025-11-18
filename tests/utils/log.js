@@ -4,12 +4,12 @@
  */
 
 import { vi, beforeEach, describe, it, expect } from 'vitest';
-import { log } from '../../lib/utils/log.js';
+import { logFactory } from '../../lib/utils/log.js';
 
 describe( 'utils/log', () => {
 	describe( 'log()', () => {
 		it( 'returns the logger', () => {
-			const logger = log();
+			const logger = logFactory();
 
 			expect( logger ).to.be.an( 'object' );
 			expect( logger.info ).to.be.a( 'function' );
@@ -24,7 +24,7 @@ describe( 'utils/log', () => {
 		let logger, logSpy, infoSpy, errorSpy;
 
 		beforeEach( () => {
-			logger = log();
+			logger = logFactory();
 
 			logSpy = vi.spyOn( logger, 'log' );
 			infoSpy = vi.spyOn( logger, 'info' );

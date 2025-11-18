@@ -3,7 +3,7 @@
  * For licensing, see LICENSE.md.
  */
 
-import { vi, describe, beforeEach, it, expect } from 'vitest';
+import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest';
 import syncCommand from '../../lib/commands/sync.js';
 import execCommand from '../../lib/commands/exec.js';
 import { shell } from '../../lib/utils/shell.js';
@@ -17,6 +17,8 @@ describe( 'commands/sync', () => {
 	let toolOptions, commandData;
 
 	beforeEach( () => {
+		vi.useFakeTimers();
+
 		toolOptions = {
 			cwd: '/tmp',
 			packages: '/tmp/packages',
@@ -33,6 +35,10 @@ describe( 'commands/sync', () => {
 				branch: 'master'
 			}
 		};
+	} );
+
+	afterEach( () => {
+		vi.useRealTimers();
 	} );
 
 	describe( '#helpMessage', () => {
@@ -159,31 +165,28 @@ describe( 'commands/sync', () => {
 					} );
 			} );
 
-			describe( 'repeats installation process', { timeout: 5_500 }, () => {
-				it( 'for errors with capital letters', () => {
+			describe( 'repeats installation process', () => {
+				it( 'for errors with capital letters', async () => {
 					fs.existsSync.mockReturnValue( false );
 
-					let shellCall = 0;
-					shell.mockImplementation( () => {
-						shellCall++;
+					shell
+						.mockRejectedValueOnce( [
+							'exec: Cloning into \'/some/path\'...',
+							'remote: Enumerating objects: 6, done.',
+							'remote: Counting objects: 100% (6/6), done.',
+							'remote: Compressing objects: 100% (6/6), done.',
+							'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
+							'fatal: The remote end hung up unexpectedly',
+							'fatal: early EOF',
+							'fatal: index-pack failed'
+						].join( '\n' ) )
+						.mockResolvedValueOnce( 'Git clone log.' );
 
-						switch ( shellCall ) {
-							case 1: return Promise.reject( [
-								'exec: Cloning into \'/some/path\'...',
-								'remote: Enumerating objects: 6, done.',
-								'remote: Counting objects: 100% (6/6), done.',
-								'remote: Compressing objects: 100% (6/6), done.',
-								'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
-								'fatal: The remote end hung up unexpectedly',
-								'fatal: early EOF',
-								'fatal: index-pack failed'
-							].join( '\n' ) );
+					const promise = syncCommand.execute( commandData );
 
-							case 2: return Promise.resolve( 'Git clone log.' );
-						}
-					} );
+					await vi.runAllTimersAsync();
 
-					return syncCommand.execute( commandData )
+					return promise
 						.then( response => {
 							expect( shell ).toHaveBeenCalledTimes( 3 );
 
@@ -210,30 +213,27 @@ describe( 'commands/sync', () => {
 						} );
 				} );
 
-				it( 'for errors with small letters', { timeout: 5_500 }, () => {
+				it( 'for errors with small letters', async () => {
 					fs.existsSync.mockReturnValue( false );
 
-					let shellCall = 0;
-					shell.mockImplementation( () => {
-						shellCall++;
+					shell
+						.mockRejectedValueOnce( [
+							'exec: Cloning into \'/some/path\'...',
+							'remote: Enumerating objects: 6, done.',
+							'remote: Counting objects: 100% (6/6), done.',
+							'remote: Compressing objects: 100% (6/6), done.',
+							'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
+							'fatal: the remote end hung up unexpectedly',
+							'fatal: early EOF',
+							'fatal: index-pack failed'
+						].join( '\n' ) )
+						.mockResolvedValueOnce( 'Git clone log.' );
 
-						switch ( shellCall ) {
-							case 1: return Promise.reject( [
-								'exec: Cloning into \'/some/path\'...',
-								'remote: Enumerating objects: 6, done.',
-								'remote: Counting objects: 100% (6/6), done.',
-								'remote: Compressing objects: 100% (6/6), done.',
-								'packet_write_wait: Connection to 000.00.000.000 port 22: Broken pipe',
-								'fatal: the remote end hung up unexpectedly',
-								'fatal: early EOF',
-								'fatal: index-pack failed'
-							].join( '\n' ) );
+					const promise = syncCommand.execute( commandData );
 
-							case 2: return Promise.resolve( 'Git clone log.' );
-						}
-					} );
+					await vi.runAllTimersAsync();
 
-					return syncCommand.execute( commandData )
+					return promise
 						.then( response => {
 							expect( shell ).toHaveBeenCalledTimes( 3 );
 
@@ -260,7 +260,7 @@ describe( 'commands/sync', () => {
 						} );
 				} );
 
-				it( 'returns an error if command failed twice', { timeout: 5_500 }, () => {
+				it( 'returns an error if command failed twice', async () => {
 					fs.existsSync.mockReturnValue( false );
 
 					const errorMessage = [
@@ -274,9 +274,25 @@ describe( 'commands/sync', () => {
 						'fatal: index-pack failed'
 					].join( '\n' );
 
-					shell.mockImplementation( () => Promise.reject( new Error( errorMessage ) ) );
+					shell
+						.mockRejectedValueOnce( new Error( errorMessage ) )
+						.mockRejectedValueOnce( new Error( errorMessage ) );
 
-					return syncCommand.execute( commandData )
+					const promise = syncCommand.execute( commandData );
+
+					// Attach assertion before running timers to avoid error leak.
+					const assertion = expect( promise ).rejects.toMatchObject( {
+						logs: {
+							info: [ 'Package "test-package" was not found. Cloning...' ],
+							error: [ errorMessage ]
+						}
+					} );
+
+					await vi.runAllTimersAsync();
+
+					await assertion;
+
+					return promise
 						.then(
 							() => {
 								throw new Error( 'Expected that the Promise fails.' );
@@ -301,29 +317,12 @@ describe( 'commands/sync', () => {
 			it( 'resolves promise after pulling the changes', () => {
 				fs.existsSync.mockReturnValue( true );
 
-				const execReturnValues = [
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( 'Already on \'master\'.' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( '* master\n  remotes/origin/master' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( 'Already up-to-date.' )
-					} )
-				];
-
-				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
+				execCommand.execute
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already on \'master\'.' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '* master\n  remotes/origin/master' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already up-to-date.' ) } );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -357,33 +356,16 @@ describe( 'commands/sync', () => {
 
 				fs.existsSync.mockReturnValue( true );
 
-				const execReturnValues = [
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( 'Note: checking out \'tags/v35.3.0\'.' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( [
-							'* (HEAD detached at 1a0ff0a)',
-							'  master',
-							'  remotes/origin/master'
-						].join( '\n' ) )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( 'Already up-to-date.' )
-					} )
-				];
-
-				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
+				execCommand.execute
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'Note: checking out \'tags/v35.3.0\'.' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( [
+						'* (HEAD detached at 1a0ff0a)',
+						'  master',
+						'  remotes/origin/master'
+					].join( '\n' ) ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already up-to-date.' ) } );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -414,37 +396,17 @@ describe( 'commands/sync', () => {
 
 				fs.existsSync.mockReturnValue( true );
 
-				const execReturnValues = [
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.3.0' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( 'Note: checking out \'tags/v35.3.2\'.' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( [
-							'* (HEAD detached at 1a0ff0a)',
-							'  master',
-							'  remotes/origin/master'
-						].join( '\n' ) )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( 'Already up-to-date.' )
-					} )
-				];
-
-				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
+				execCommand.execute
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.3.0' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'Note: checking out \'tags/v35.3.2\'.' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( [
+						'* (HEAD detached at 1a0ff0a)',
+						'  master',
+						'  remotes/origin/master'
+					].join( '\n' ) ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already up-to-date.' ) } );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -478,21 +440,10 @@ describe( 'commands/sync', () => {
 
 				fs.existsSync.mockReturnValue( true );
 
-				const execReturnValues = [
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs()
-					} )
-				];
-
-				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
+				execCommand.execute
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs() } );
 
 				return syncCommand.execute( commandData )
 					.then( () => {
@@ -545,29 +496,15 @@ describe( 'commands/sync', () => {
 
 				commandData.repository.branch = '1a0ff0a';
 
-				const execReturnValues = [
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( '' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( 'Note: checking out \'1a0ff0a\'.' )
-					} ),
-
-					Promise.resolve( {
-						logs: getCommandLogs( [
-							'* (HEAD detached at 1a0ff0a)',
-							'  master',
-							'  remotes/origin/master'
-						].join( '\n' ) )
-					} )
-				];
-
-				execCommand.execute.mockImplementation( () => execReturnValues.shift() );
+				execCommand.execute
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'Note: checking out \'1a0ff0a\'.' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( [
+						'* (HEAD detached at 1a0ff0a)',
+						'  master',
+						'  remotes/origin/master'
+					].join( '\n' ) ) } );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -585,32 +522,12 @@ describe( 'commands/sync', () => {
 
 				commandData.repository.branch = 'develop';
 
-				let execCall = 0;
-				execCommand.execute.mockImplementation( () => {
-					execCall++;
-
-					switch ( execCall ) {
-						case 1: return Promise.resolve( {
-							logs: getCommandLogs( '' )
-						} );
-
-						case 2: return Promise.resolve( {
-							logs: getCommandLogs( '' )
-						} );
-
-						case 3: return Promise.resolve( {
-							logs: getCommandLogs( 'Already on \'develop\'.' )
-						} );
-
-						case 4: return Promise.resolve( {
-							logs: getCommandLogs( '* develop' )
-						} );
-
-						case 5: return Promise.reject( {
-							logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true )
-						} );
-					}
-				} );
+				execCommand.execute
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( 'Already on \'develop\'.' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '* develop' ) } )
+					.mockRejectedValueOnce( { logs: getCommandLogs( 'fatal: Couldn\'t find remote ref develop', true ) } );
 
 				return syncCommand.execute( commandData )
 					.then(
@@ -635,24 +552,12 @@ describe( 'commands/sync', () => {
 
 				commandData.repository.branch = 'non-existing-branch';
 
-				let execCall = 0;
-				execCommand.execute.mockImplementation( () => {
-					execCall++;
-
-					switch ( execCall ) {
-						case 1: return Promise.resolve( {
-							logs: getCommandLogs( '' )
-						} );
-
-						case 2: return Promise.resolve( {
-							logs: getCommandLogs( '' )
-						} );
-
-						case 3: return Promise.reject( {
-							logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true )
-						} );
-					}
-				} );
+				execCommand.execute
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockResolvedValueOnce( { logs: getCommandLogs( '' ) } )
+					.mockRejectedValueOnce( {
+						logs: getCommandLogs( 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.', true )
+					} );
 
 				return syncCommand.execute( commandData )
 					.then(
@@ -684,13 +589,9 @@ describe( 'commands/sync', () => {
 				'package-2': 'foo/package-2'
 			};
 
-			const resolverReturnValues = [
-				{ directory: 'package-1' },
-				{ directory: 'package-2' }
-			];
-
-			vi.doMock( toolOptions.resolverPath, () => ( {
-				default: () => resolverReturnValues.shift()
+			vi.doMock( toolOptions.resolverPath, () => ( { default: vi.fn()
+				.mockReturnValueOnce( { directory: 'package-1' } )
+				.mockReturnValueOnce( { directory: 'package-2' } )
 			} ) );
 
 			fs.readdirSync.mockReturnValue( [
@@ -742,29 +643,22 @@ describe( 'commands/sync', () => {
 				'package-2': 'foo/package-2'
 			};
 
-			const resolverReturnValues = [
-				{ directory: 'package-1' },
-				{ directory: 'package-2' }
-			];
-
-			vi.doMock( toolOptions.resolverPath, () => ( {
-				default: () => resolverReturnValues.shift()
+			vi.doMock( toolOptions.resolverPath, () => ( { default: vi.fn()
+				.mockReturnValueOnce( { directory: 'package-1' } )
+				.mockReturnValueOnce( { directory: 'package-2' } )
 			} ) );
 
-			const readdirSyncReturnValues = [
-				[
+			fs.readdirSync
+				.mockReturnValueOnce( [
 					'package-1',
 					'package-2',
 					'@foo',
 					'.DS_Store'
-				],
-				[
+				] )
+				.mockReturnValueOnce( [
 					'.DS_Store',
 					'package-3'
-				]
-			];
-
-			fs.readdirSync.mockImplementation( () => readdirSyncReturnValues.shift() );
+				] );
 
 			fs.lstatSync.mockImplementation( path => {
 				if ( path === '/tmp/packages/@foo/.DS_Store' ) {
@@ -816,13 +710,9 @@ describe( 'commands/sync', () => {
 				'package-2': 'foo/package-2'
 			};
 
-			const resolverReturnValues = [
-				{ directory: 'package-1' },
-				{ directory: 'package-2' }
-			];
-
-			vi.doMock( toolOptions.resolverPath, () => ( {
-				default: () => resolverReturnValues.shift()
+			vi.doMock( toolOptions.resolverPath, () => ( { default: vi.fn()
+				.mockReturnValueOnce( { directory: 'package-1' } )
+				.mockReturnValueOnce( { directory: 'package-2' } )
 			} ) );
 
 			fs.readdirSync.mockReturnValue( [

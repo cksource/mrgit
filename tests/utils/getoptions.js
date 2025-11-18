@@ -76,7 +76,7 @@ describe( 'utils', () => {
 
 		it( 'returns dependencies read from default configuration file', async () => {
 			const options = await getOptions( {}, cwd );
-			const mrgitJson = require( upath.join( cwd, 'mrgit.json' ) );
+			const mrgitJson = await import( upath.join( cwd, 'mrgit.json' ) );
 
 			expect( options.dependencies ).toEqual( mrgitJson.dependencies );
 		} );

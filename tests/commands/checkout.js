@@ -120,28 +120,13 @@ describe( 'commands/checkout', () => {
 		it( 'creates a new branch if a repository has changes that could be committed and specified --branch option', () => {
 			toolOptions.branch = 'develop';
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'Response returned by "git status" command.'
-							]
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'Switched to a new branch \'develop\''
-							]
-						}
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: { info: [
+					'Response returned by "git status" command.'
+				] } } )
+				.mockResolvedValueOnce( { logs: { info: [
+					'Switched to a new branch \'develop\''
+				] } } );
 
 			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 

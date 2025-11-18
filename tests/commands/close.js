@@ -68,58 +68,38 @@ describe( 'commands/close', () => {
 		it( 'merges specified branch and remove it from local and remote', () => {
 			commandData.arguments.push( 'develop' );
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'* develop'
-							],
-							error: []
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'develop'
-							],
-							error: []
-						}
-					} );
-
-					case 3: return Promise.resolve( {
-						logs: {
-							info: [
-								'Merge made by the \'recursive\' strategy.'
-							],
-							error: []
-						}
-					} );
-
-					case 4: return Promise.resolve( {
-						logs: {
-							info: [
-								'Deleted branch develop (was e6bda2e9).'
-							],
-							error: []
-						}
-					} );
-
-					case 5: return Promise.resolve( {
-						logs: {
-							info: [
-								'To github.com:foo/bar.git\n' +
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'* develop'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'develop'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'Merge made by the \'recursive\' strategy.'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'Deleted branch develop (was e6bda2e9).'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'To github.com:foo/bar.git\n' +
 						' - [deleted]         develop'
-							],
-							error: []
-						}
-					} );
-				}
-			} );
+					],
+					error: []
+				} } );
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
@@ -186,58 +166,38 @@ describe( 'commands/close', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'* develop'
-							],
-							error: []
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'develop'
-							],
-							error: []
-						}
-					} );
-
-					case 3: return Promise.resolve( {
-						logs: {
-							info: [
-								'Merge made by the \'recursive\' strategy.'
-							],
-							error: []
-						}
-					} );
-
-					case 4: return Promise.resolve( {
-						logs: {
-							info: [
-								'Deleted branch develop (was e6bda2e9).'
-							],
-							error: []
-						}
-					} );
-
-					case 5: return Promise.resolve( {
-						logs: {
-							info: [
-								'To github.com:foo/bar.git\n' +
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'* develop'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'develop'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'Merge made by the \'recursive\' strategy.'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'Deleted branch develop (was e6bda2e9).'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'To github.com:foo/bar.git\n' +
 						' - [deleted]         develop'
-							],
-							error: []
-						}
-					} );
-				}
-			} );
+					],
+					error: []
+				} } );
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
@@ -304,58 +264,38 @@ describe( 'commands/close', () => {
 
 			toolOptions.message = 'Test.';
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'* develop'
-							],
-							error: []
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								'develop'
-							],
-							error: []
-						}
-					} );
-
-					case 3: return Promise.resolve( {
-						logs: {
-							info: [
-								'Merge made by the \'recursive\' strategy.'
-							],
-							error: []
-						}
-					} );
-
-					case 4: return Promise.resolve( {
-						logs: {
-							info: [
-								'Deleted branch develop (was e6bda2e9).'
-							],
-							error: []
-						}
-					} );
-
-					case 5: return Promise.resolve( {
-						logs: {
-							info: [
-								'To github.com:foo/bar.git\n' +
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'* develop'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'develop'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'Merge made by the \'recursive\' strategy.'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'Deleted branch develop (was e6bda2e9).'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'To github.com:foo/bar.git\n' +
 						' - [deleted]         develop'
-							],
-							error: []
-						}
-					} );
-				}
-			} );
+					],
+					error: []
+				} } );
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
@@ -451,30 +391,19 @@ describe( 'commands/close', () => {
 		it( 'does not merge branch if in detached head mode', () => {
 			commandData.arguments.push( 'develop' );
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: {
-							info: [
-								'* develop'
-							],
-							error: []
-						}
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: {
-							info: [
-								''
-							],
-							error: []
-						}
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						'* develop'
+					],
+					error: []
+				} } )
+				.mockResolvedValueOnce( { logs: {
+					info: [
+						''
+					],
+					error: []
+				} } );
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {

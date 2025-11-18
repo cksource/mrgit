@@ -69,20 +69,9 @@ describe( 'commands/pull', () => {
 		it( 'resolves promise after pulling the changes', () => {
 			fs.existsSync.mockReturnValue( true );
 
-			let execCall = 0;
-			execCommand.execute.mockImplementation( () => {
-				execCall++;
-
-				switch ( execCall ) {
-					case 1: return Promise.resolve( {
-						logs: getCommandLogs( 'master' )
-					} );
-
-					case 2: return Promise.resolve( {
-						logs: getCommandLogs( 'Already up-to-date.' )
-					} );
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( { logs: getCommandLogs( 'master' ) } )
+				.mockResolvedValueOnce( { logs: getCommandLogs( 'Already up-to-date.' ) } );
 
 			return pullCommand.execute( commandData )
 				.then( response => {

@@ -3,17 +3,13 @@
  * For licensing, see LICENSE.md.
  */
 
-import { vi, beforeEach, describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import { getCwd } from '../../lib/utils/getcwd.js';
 import fs from 'fs';
 
 vi.mock( 'fs' );
 
 describe( 'utils', () => {
-	beforeEach( () => {
-		vi.clearAllMocks();
-	} );
-
 	describe( 'getCwd()', () => {
 		it( 'returns "process.cwd()" value if the "mrgit.json" has been found', () => {
 			vi.spyOn( process, 'cwd' ).mockReturnValue( '/workspace/ckeditor/ckeditor5' );
