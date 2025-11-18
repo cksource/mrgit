@@ -29,15 +29,15 @@ describe( 'utils', () => {
 
 			fs.existsSync
 				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor
-				.mockReturnValue( false )
+				.mockReturnValueOnce( false )
 				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules
-				.mockReturnValue( false )
+				.mockReturnValueOnce( false )
 				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine
-				.mockReturnValue( false )
+				.mockReturnValueOnce( false )
 				// /workspace/ckeditor/ckeditor5/packages
-				.mockReturnValue( false )
+				.mockReturnValueOnce( false )
 				// /workspace/ckeditor/ckeditor5
-				.mockReturnValue( true );
+				.mockReturnValueOnce( true );
 
 			expect( getCwd( 'mrgit-custom.json' ) ).toEqual( '/workspace/ckeditor/ckeditor5' );
 
