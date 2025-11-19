@@ -7,17 +7,21 @@ import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest';
 import syncCommand from '../../lib/commands/sync.js';
 import execCommand from '../../lib/commands/exec.js';
 import { shell } from '../../lib/utils/shell.js';
+import { pathToFileURL } from 'url';
 import fs from 'fs';
 
 vi.mock( '../../lib/commands/exec.js' );
 vi.mock( '../../lib/utils/shell.js' );
 vi.mock( 'fs' );
+vi.mock( 'url' );
 
 describe( 'commands/sync', () => {
 	let toolOptions, commandData;
 
 	beforeEach( () => {
 		vi.useFakeTimers();
+
+		pathToFileURL.mockImplementation( path => ( { href: path } ) );
 
 		toolOptions = {
 			cwd: '/tmp',
