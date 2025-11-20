@@ -3,36 +3,22 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import { gitStatusParser } from '../../lib/utils/gitstatusparser.js';
+import { updateJsonFile } from '../../lib/utils/updatejsonfile.js';
+import execCommand from '../../lib/commands/exec.js';
+import saveCommand from '../../lib/commands/save.js';
 
-'use strict';
-
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+vi.mock( '../../lib/utils/gitstatusparser.js' );
+vi.mock( '../../lib/utils/updatejsonfile.js' );
+vi.mock( '../../lib/commands/exec.js' );
 
 describe( 'commands/save', () => {
-	let saveCommand, stubs, commandData, toolOptions, mrgitJsonPath, updateFunction;
+	let commandData, toolOptions, mrgitJsonPath, updateFunction;
 
-	const normalizedDirname = __dirname.replace( /\\/g, '/' );
+	const normalizedDirname = import.meta.dirname.replace( /\\/g, '/' );
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			execCommand: {
-				execute: sinon.stub()
-			},
-			path: {
-				join: sinon.stub().callsFake( ( ...chunks ) => chunks.join( '/' ) )
-			},
-			gitStatusParser: sinon.stub()
-		};
-
 		toolOptions = {
 			config: normalizedDirname + '/mrgit.json'
 		};
@@ -43,23 +29,10 @@ describe( 'commands/save', () => {
 			toolOptions
 		};
 
-		mockery.registerMock( './exec', stubs.execCommand );
-		mockery.registerMock( '../utils/updatejsonfile', ( pathToFile, callback ) => {
+		vi.mocked( updateJsonFile ).mockImplementation( ( pathToFile, callback ) => {
 			mrgitJsonPath = pathToFile;
 			updateFunction = callback;
 		} );
-		mockery.registerMock( '../utils/getcwd', () => {
-			return __dirname;
-		} );
-		mockery.registerMock( '../utils/gitstatusparser', stubs.gitStatusParser );
-
-		saveCommand = require( '../../lib/commands/save' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
@@ -71,7 +44,7 @@ describe( 'commands/save', () => {
 	describe( 'beforeExecute()', () => {
 		it( 'defined which type of data should be saved', () => {
 			saveCommand.beforeExecute( [], toolOptions );
-			expect( toolOptions.hash ).to.equal( true );
+			expect( toolOptions.hash ).toEqual( true );
 		} );
 
 		it( 'throws an error if used both options', () => {
@@ -92,7 +65,7 @@ describe( 'commands/save', () => {
 
 			const error = new Error( 'Unexpected error.' );
 
-			stubs.execCommand.execute.returns( Promise.reject( {
+			execCommand.execute.mockImplementation( () => Promise.reject( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -104,7 +77,7 @@ describe( 'commands/save', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
@@ -118,12 +91,12 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
+			execCommand.execute.mockReturnValue( Promise.resolve( execCommandResponse ) );
 
 			return saveCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						packageName: commandData.packageName,
 						arguments: [ 'git rev-parse HEAD' ],
 						toolOptions: {
@@ -132,14 +105,14 @@ describe( 'commands/save', () => {
 						}
 					} );
 
-					expect( commandResponse.response ).to.deep.equal( {
+					expect( commandResponse.response ).toEqual( {
 						packageName: commandData.packageName,
 						data: '584f341',
 						hash: true,
 						branch: undefined
 					} );
 
-					expect( commandResponse.logs.info[ 0 ] ).to.equal( 'Commit: "584f341".' );
+					expect( commandResponse.logs.info[ 0 ] ).toEqual( 'Commit: "584f341".' );
 				} );
 		} );
 
@@ -152,13 +125,13 @@ describe( 'commands/save', () => {
 
 			toolOptions.branch = true;
 
-			stubs.gitStatusParser.returns( { branch: 'master' } );
-			stubs.execCommand.execute.returns( Promise.resolve( execCommandResponse ) );
+			gitStatusParser.mockReturnValue( { branch: 'master' } );
+			execCommand.execute.mockReturnValue( Promise.resolve( execCommandResponse ) );
 
 			return saveCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						packageName: commandData.packageName,
 						arguments: [ 'git status --branch --porcelain' ],
 						toolOptions: {
@@ -167,14 +140,14 @@ describe( 'commands/save', () => {
 						}
 					} );
 
-					expect( commandResponse.response ).to.deep.equal( {
+					expect( commandResponse.response ).toEqual( {
 						packageName: commandData.packageName,
 						data: 'master',
 						branch: true,
 						hash: undefined
 					} );
 
-					expect( commandResponse.logs.info[ 0 ] ).to.equal( 'Branch: "master".' );
+					expect( commandResponse.logs.info[ 0 ] ).toEqual( 'Branch: "master".' );
 				} );
 		} );
 	} );
@@ -210,12 +183,12 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).toEqual( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
-			expect( json.dependencies ).to.deep.equal( {
+			expect( json.dependencies ).toEqual( {
 				'test-package': 'organization/test-package#584f341',
 				'package-test': 'organization/package-test#52910fe',
 				'other-package': 'organization/other-package'
@@ -252,12 +225,12 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).toEqual( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
-			expect( json.dependencies ).to.deep.equal( {
+			expect( json.dependencies ).toEqual( {
 				'test-package': 'organization/test-package#develop',
 				'package-test': 'organization/package-test#develop',
 				'other-package': 'organization/other-package'
@@ -302,12 +275,12 @@ describe( 'commands/save', () => {
 
 			toolOptions.preset = 'development';
 
-			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).toEqual( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
-			expect( json ).to.deep.equal( {
+			expect( json ).toEqual( {
 				dependencies: {
 					'test-package': 'organization/test-package',
 					'package-test': 'organization/package-test'
@@ -359,12 +332,12 @@ describe( 'commands/save', () => {
 
 			toolOptions.preset = 'development';
 
-			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).toEqual( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
-			expect( json ).to.deep.equal( {
+			expect( json ).toEqual( {
 				dependencies: {
 					'test-package': 'organization/test-package',
 					'package-test': 'organization/package-test'
@@ -412,12 +385,12 @@ describe( 'commands/save', () => {
 
 			toolOptions.preset = 'development';
 
-			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).toEqual( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
-			expect( json ).to.deep.equal( {
+			expect( json ).toEqual( {
 				dependencies: {
 					'test-package': 'organization/test-package#584f341',
 					'package-test': 'organization/package-test#52910fe'
@@ -459,12 +432,12 @@ describe( 'commands/save', () => {
 
 			toolOptions.preset = 'development';
 
-			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).toEqual( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
-			expect( json ).to.deep.equal( {
+			expect( json ).toEqual( {
 				dependencies: {
 					'test-package': 'organization/test-package#584f341',
 					'package-test': 'organization/package-test#52910fe'
@@ -494,12 +467,12 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).toEqual( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
-			expect( json.dependencies ).to.deep.equal( {
+			expect( json.dependencies ).toEqual( {
 				'test-package': 'organization/test-package'
 			} );
 		} );
@@ -533,12 +506,12 @@ describe( 'commands/save', () => {
 				}
 			};
 
-			expect( mrgitJsonPath ).to.equal( normalizedDirname + '/mrgit.json' );
+			expect( mrgitJsonPath ).toEqual( normalizedDirname + '/mrgit.json' );
 			expect( updateFunction ).to.be.a( 'function' );
 
 			json = updateFunction( json );
 
-			expect( json.dependencies ).to.deep.equal( {
+			expect( json.dependencies ).toEqual( {
 				'test-package': 'organization/test-package#develop',
 				'package-test': 'organization/package-test#develop'
 			} );

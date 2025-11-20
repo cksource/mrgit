@@ -3,33 +3,55 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import { getOptions } from '../../lib/utils/getoptions.js';
 
-'use strict';
+import fs from 'fs';
+import shelljs from 'shelljs';
+import upath from 'upath';
 
-const getOptions = require( '../../lib/utils/getoptions' );
-const path = require( 'upath' );
-const fs = require( 'fs' );
-const shell = require( 'shelljs' );
-const expect = require( 'chai' ).expect;
-const sinon = require( 'sinon' );
+vi.mock( 'fs' );
+vi.mock( 'shelljs' );
 
-const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-a' );
+const cwd = upath.resolve( import.meta.dirname, '..', 'fixtures', 'project-a' );
 
 describe( 'utils', () => {
-	describe( 'getOptions()', () => {
-		it( 'returns default options', () => {
-			const options = getOptions( {}, cwd );
+	let mrgitJsonExists, dotGitExists;
 
-			expect( options ).to.have.property( 'dependencies' );
+	beforeEach( () => {
+		mrgitJsonExists = true;
+		dotGitExists = false;
+
+		fs.existsSync.mockImplementation( path => {
+			if ( path.endsWith( '/mrgit.json' ) ) {
+				return mrgitJsonExists;
+			}
+
+			if ( path.endsWith( '/mrgit-custom.json' ) ) {
+				return true;
+			}
+
+			if ( path.endsWith( '/.git' ) ) {
+				return dotGitExists;
+			}
+
+			return false;
+		} );
+	} );
+
+	describe( 'getOptions()', () => {
+		it( 'returns default options', async () => {
+			const options = await getOptions( {}, cwd );
+
+			expect( options ).toHaveProperty( 'dependencies' );
 
 			delete options.dependencies;
 
-			expect( options ).to.deep.equal( {
+			expect( options ).toEqual( {
 				cwd,
-				config: path.resolve( cwd, 'mrgit.json' ),
-				packages: path.resolve( cwd, 'packages' ),
-				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				config: upath.resolve( cwd, 'mrgit.json' ),
+				packages: upath.resolve( cwd, 'packages' ),
+				resolverPath: upath.resolve( import.meta.dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
@@ -44,39 +66,46 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'uses default process.cwd() if not specified', () => {
-			sinon.stub( process, 'cwd' ).returns( cwd );
+		it( 'uses default process.cwd() if not specified', async () => {
+			vi.spyOn( process, 'cwd' ).mockReturnValue( cwd );
 
-			const options = getOptions( {} );
+			const options = await getOptions( {} );
 
-			expect( options.cwd ).to.equal( cwd );
+			expect( options.cwd ).toEqual( cwd );
 		} );
 
-		it( 'returns dependencies read from default configuration file', () => {
-			const options = getOptions( {}, cwd );
-			const mrgitJson = require( path.join( cwd, 'mrgit.json' ) );
+		it( 'returns dependencies read from default configuration file', async () => {
+			const options = await getOptions( {}, cwd );
+			const mrgitJson = await import( upath.join( cwd, 'mrgit.json' ) );
 
-			expect( options.dependencies ).to.deep.equal( mrgitJson.dependencies );
+			expect( options.dependencies ).toEqual( mrgitJson.dependencies );
 		} );
 
-		it( 'fails if configuration file is not defined ', () => {
-			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-no-mrgitjson' );
+		it( 'fails if configuration file is not defined ', async () => {
+			mrgitJsonExists = false;
+			const cwd = upath.resolve( import.meta.dirname, '..', 'fixtures', 'project-with-no-mrgitjson' );
 
-			expect( () => getOptions( {}, cwd ) ).to.throw( Error, 'Cannot find the configuration file.' );
+			try {
+				await getOptions( {}, cwd );
+
+				throw new Error( 'Expected the test to throw.' );
+			} catch ( error ) {
+				expect( error.message ).toEqual( 'Cannot find the configuration file.' );
+			}
 		} );
 
-		it( 'reads options from default configuration file', () => {
-			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mrgitjson' );
-			const options = getOptions( {}, cwd );
+		it( 'reads options from default configuration file', async () => {
+			const cwd = upath.resolve( import.meta.dirname, '..', 'fixtures', 'project-with-options-in-mrgitjson' );
+			const options = await getOptions( {}, cwd );
 
-			expect( options ).to.deep.equal( {
+			expect( options ).toEqual( {
 				dependencies: {
 					'simple-package': 'a/b'
 				},
 				cwd,
-				config: path.resolve( cwd, 'mrgit.json' ),
-				packages: path.resolve( cwd, 'foo' ),
-				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				config: upath.resolve( cwd, 'mrgit.json' ),
+				packages: upath.resolve( cwd, 'foo' ),
+				resolverPath: upath.resolve( import.meta.dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
@@ -89,34 +118,34 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'reads options from custom configuration file', () => {
-			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-custom-config' );
-			const options = getOptions( {
+		it( 'reads options from custom configuration file', async () => {
+			const cwd = upath.resolve( import.meta.dirname, '..', 'fixtures', 'project-with-custom-config' );
+			const options = await getOptions( {
 				config: 'mrgit-custom.json'
 			}, cwd );
 
-			expect( options.dependencies ).to.deep.equal( {
+			expect( options.dependencies ).toEqual( {
 				'simple-package': 'a/b'
 			} );
 
-			expect( options.config ).to.equal( path.resolve( cwd, 'mrgit-custom.json' ) );
+			expect( options.config ).toEqual( upath.resolve( cwd, 'mrgit-custom.json' ) );
 		} );
 
-		it( 'priorities passed options', () => {
-			const cwd = path.resolve( __dirname, '..', 'fixtures', 'project-with-options-in-mrgitjson' );
-			const options = getOptions( {
+		it( 'priorities passed options', async () => {
+			const cwd = upath.resolve( import.meta.dirname, '..', 'fixtures', 'project-with-options-in-mrgitjson' );
+			const options = await getOptions( {
 				resolverUrlTemplate: 'a/b/c',
 				packages: 'bar'
 			}, cwd );
 
-			expect( options ).to.deep.equal( {
+			expect( options ).toEqual( {
 				dependencies: {
 					'simple-package': 'a/b'
 				},
 				cwd,
-				config: path.resolve( cwd, 'mrgit.json' ),
-				packages: path.resolve( cwd, 'bar' ),
-				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				config: upath.resolve( cwd, 'mrgit.json' ),
+				packages: upath.resolve( cwd, 'bar' ),
+				resolverPath: upath.resolve( import.meta.dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'a/b/c',
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
@@ -129,8 +158,8 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'returns "packagesPrefix" as array', () => {
-			const options = getOptions( {
+		it( 'returns "packagesPrefix" as array', async () => {
+			const options = await getOptions( {
 				packagesPrefix: 'ckeditor5-'
 			}, cwd );
 
@@ -138,11 +167,11 @@ describe( 'utils', () => {
 
 			delete options.dependencies;
 
-			expect( options ).to.deep.equal( {
+			expect( options ).toEqual( {
 				cwd,
-				config: path.resolve( cwd, 'mrgit.json' ),
-				packages: path.resolve( cwd, 'packages' ),
-				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				config: upath.resolve( cwd, 'mrgit.json' ),
+				packages: upath.resolve( cwd, 'packages' ),
+				resolverPath: upath.resolve( import.meta.dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
@@ -159,26 +188,21 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		it( 'attaches to options branch name from the cwd directory (if in git repository)', () => {
-			const fsExistsStub = sinon.stub( fs, 'existsSync' );
-			const shelljsStub = sinon.stub( shell, 'exec' );
+		it( 'attaches to options branch name from the cwd directory (if in git repository)', async () => {
+			dotGitExists = true;
+			shelljs.exec.mockReturnValue( { stdout: 'master\n' } );
 
-			fsExistsStub.returns( true );
-			shelljsStub.returns( {
-				stdout: 'master\n'
-			} );
-
-			const options = getOptions( {}, cwd );
+			const options = await getOptions( {}, cwd );
 
 			expect( options ).to.have.property( 'dependencies' );
 
 			delete options.dependencies;
 
-			expect( options ).to.deep.equal( {
+			expect( options ).toEqual( {
 				cwd,
-				config: path.resolve( cwd, 'mrgit.json' ),
-				packages: path.resolve( cwd, 'packages' ),
-				resolverPath: path.resolve( __dirname, '../../lib/default-resolver.js' ),
+				config: upath.resolve( cwd, 'mrgit.json' ),
+				packages: upath.resolve( cwd, 'packages' ),
+				resolverPath: upath.resolve( import.meta.dirname, '../../lib/default-resolver.js' ),
 				resolverUrlTemplate: 'git@github.com:${ path }.git',
 				resolverTargetDirectory: 'git',
 				resolverDefaultBranch: 'master',
@@ -192,43 +216,48 @@ describe( 'utils', () => {
 				baseBranches: [],
 				cwdPackageBranch: 'master'
 			} );
-
-			fsExistsStub.restore();
-			shelljsStub.restore();
 		} );
 
-		it( 'throws an error when --preset option is used, but presets are not defined in configuration', () => {
-			expect( () => {
-				getOptions( { preset: 'foo' }, cwd );
-			} ).to.throw( Error, 'Preset "foo" is not defined in configuration file.' );
+		it( 'throws an error when --preset option is used, but presets are not defined in configuration', async () => {
+			try {
+				await getOptions( { preset: 'foo' }, cwd );
+
+				throw new Error( 'Expected the test to throw.' );
+			} catch ( error ) {
+				expect( error.message ).toEqual( 'Preset "foo" is not defined in configuration file.' );
+			}
 		} );
 
-		it( 'throws an error when --preset option is used, but the specific preset is not defined in configuration', () => {
-			const cwdForPresets = path.resolve( __dirname, '..', 'fixtures', 'project-with-presets' );
+		it( 'throws an error when --preset option is used, but the specific preset is not defined in configuration', async () => {
+			const cwdForPresets = upath.resolve( import.meta.dirname, '..', 'fixtures', 'project-with-presets' );
 
-			expect( () => {
-				getOptions( { preset: 'foo' }, cwdForPresets );
-			} ).to.throw( Error, 'Preset "foo" is not defined in configuration file.' );
+			try {
+				await getOptions( { preset: 'foo' }, cwdForPresets );
+
+				throw new Error( 'Expected the test to throw.' );
+			} catch ( error ) {
+				expect( error.message ).toEqual( 'Preset "foo" is not defined in configuration file.' );
+			}
 		} );
 
-		it( 'returns options with preset merged with dependencies when --preset option is used', () => {
-			const cwdForPresets = path.resolve( __dirname, '..', 'fixtures', 'project-with-presets' );
+		it( 'returns options with preset merged with dependencies when --preset option is used', async () => {
+			const cwdForPresets = upath.resolve( import.meta.dirname, '..', 'fixtures', 'project-with-presets' );
 
-			const options = getOptions( { preset: 'development' }, cwdForPresets );
+			const options = await getOptions( { preset: 'development' }, cwdForPresets );
 
 			expect( options ).to.have.property( 'dependencies' );
-			expect( options.dependencies ).to.deep.equal( {
+			expect( options.dependencies ).toEqual( {
 				'linters-config': 'foo/linters-config@latest',
 				'dev-tools': 'foo/dev-tools#developmentBranch'
 			} );
 		} );
 
-		it( 'returns options with "$rootRepository" taken from a preset if --preset option is used', () => {
-			const cwdForPresets = path.resolve( __dirname, '..', 'fixtures', 'project-with-defined-root' );
+		it( 'returns options with "$rootRepository" taken from a preset if --preset option is used', async () => {
+			const cwdForPresets = upath.resolve( import.meta.dirname, '..', 'fixtures', 'project-with-defined-root' );
 
-			const options = getOptions( { preset: 'development' }, cwdForPresets );
+			const options = await getOptions( { preset: 'development' }, cwdForPresets );
 
-			expect( options.$rootRepository ).to.equal( 'ckeditor/ckeditor5#developmentBranch' );
+			expect( options.$rootRepository ).toEqual( 'ckeditor/ckeditor5#developmentBranch' );
 		} );
 	} );
 } );

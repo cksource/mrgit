@@ -3,68 +3,64 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
+import { vi, describe, it, expect } from 'vitest';
+import { getCwd } from '../../lib/utils/getcwd.js';
+import fs from 'fs';
 
-'use strict';
-
-const fs = require( 'fs' );
-const getCwd = require( '../../lib/utils/getcwd' );
-const expect = require( 'chai' ).expect;
-const sinon = require( 'sinon' );
+vi.mock( 'fs' );
 
 describe( 'utils', () => {
-	afterEach( () => {
-		sinon.restore();
-	} );
-
 	describe( 'getCwd()', () => {
 		it( 'returns "process.cwd()" value if the "mrgit.json" has been found', () => {
-			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor/ckeditor5' );
-			sinon.stub( fs, 'existsSync' ).returns( true );
+			vi.spyOn( process, 'cwd' ).mockReturnValue( '/workspace/ckeditor/ckeditor5' );
+			fs.existsSync.mockReturnValue( true );
 
-			expect( getCwd( 'mrgit.json' ) ).to.equal( '/workspace/ckeditor/ckeditor5' );
+			expect( getCwd( 'mrgit.json' ) ).toEqual( '/workspace/ckeditor/ckeditor5' );
 		} );
 
 		it( 'returns a path to the "mrgit.json" when custom working directory is provided', () => {
-			sinon.stub( fs, 'existsSync' ).returns( true );
+			fs.existsSync.mockReturnValue( true );
 
-			expect( getCwd( 'mrgit.json', '/another-workspace/ckeditor/ckeditor5' ) ).to.equal( '/another-workspace/ckeditor/ckeditor5' );
+			expect( getCwd( 'mrgit.json', '/another-workspace/ckeditor/ckeditor5' ) ).toEqual( '/another-workspace/ckeditor/ckeditor5' );
 		} );
 
 		it( 'scans dir tree up in order to find configuration file', () => {
-			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor' );
+			vi.spyOn( process, 'cwd' ).mockReturnValue( '/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor' );
 
-			const existsSync = sinon.stub( fs, 'existsSync' );
+			fs.existsSync
+				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor
+				.mockReturnValueOnce( false )
+				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules
+				.mockReturnValueOnce( false )
+				// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine
+				.mockReturnValueOnce( false )
+				// /workspace/ckeditor/ckeditor5/packages
+				.mockReturnValueOnce( false )
+				// /workspace/ckeditor/ckeditor5
+				.mockReturnValueOnce( true );
 
-			// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor
-			existsSync.onCall( 0 ).returns( false );
-			// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules
-			existsSync.onCall( 1 ).returns( false );
-			// /workspace/ckeditor/ckeditor5/packages/ckeditor5-engine
-			existsSync.onCall( 2 ).returns( false );
-			// /workspace/ckeditor/ckeditor5/packages
-			existsSync.onCall( 3 ).returns( false );
-			// /workspace/ckeditor/ckeditor5
-			existsSync.onCall( 4 ).returns( true );
+			expect( getCwd( 'mrgit-custom.json' ) ).toEqual( '/workspace/ckeditor/ckeditor5' );
 
-			expect( getCwd( 'mrgit-custom.json' ) ).to.equal( '/workspace/ckeditor/ckeditor5' );
-
-			expect( existsSync.getCall( 0 ).args[ 0 ] ).to.equal(
+			expect( fs.existsSync.mock.calls[ 0 ] ).toEqual( [
 				'/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/@ckeditor/mrgit-custom.json'
-			);
-			expect( existsSync.getCall( 1 ).args[ 0 ] ).to.equal(
+			] );
+			expect( fs.existsSync.mock.calls[ 1 ] ).toEqual( [
 				'/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/node_modules/mrgit-custom.json'
-			);
-			expect( existsSync.getCall( 2 ).args[ 0 ] ).to.equal(
+			] );
+			expect( fs.existsSync.mock.calls[ 2 ] ).toEqual( [
 				'/workspace/ckeditor/ckeditor5/packages/ckeditor5-engine/mrgit-custom.json'
-			);
-			expect( existsSync.getCall( 3 ).args[ 0 ] ).to.equal( '/workspace/ckeditor/ckeditor5/packages/mrgit-custom.json' );
-			expect( existsSync.getCall( 4 ).args[ 0 ] ).to.equal( '/workspace/ckeditor/ckeditor5/mrgit-custom.json' );
+			] );
+			expect( fs.existsSync.mock.calls[ 3 ] ).toEqual( [
+				'/workspace/ckeditor/ckeditor5/packages/mrgit-custom.json'
+			] );
+			expect( fs.existsSync.mock.calls[ 4 ] ).toEqual( [
+				'/workspace/ckeditor/ckeditor5/mrgit-custom.json'
+			] );
 		} );
 
 		it( 'throws an error if the configuration file cannot be found', () => {
-			sinon.stub( process, 'cwd' ).returns( '/workspace/ckeditor' );
-			sinon.stub( fs, 'existsSync' ).returns( false );
+			vi.spyOn( process, 'cwd' ).mockReturnValue( '/workspace/ckeditor' );
+			fs.existsSync.mockReturnValue( false );
 
 			expect( () => getCwd( 'mrgit.json' ) ).to.throw( Error, 'Cannot find the configuration file.' );
 		} );

@@ -3,14 +3,15 @@
  * For licensing, see LICENSE.md.
  */
 
-'use strict';
+import upath from 'upath';
+import fs from 'fs';
 
-const path = require( 'path' );
-const fs = require( 'fs' );
-const ROOT_DIRECTORY = path.join( __dirname, '..' );
+const ROOT_DIRECTORY = upath.join( import.meta.dirname, '..' );
 
 // When installing a repository as a dependency, the `.git` directory does not exist.
 // In such a case, husky should not attach its hooks as npm treats it as a package, not a git repository.
-if ( fs.existsSync( path.join( ROOT_DIRECTORY, '.git' ) ) ) {
-	require( 'husky' ).install();
+if ( fs.existsSync( upath.join( ROOT_DIRECTORY, '.git' ) ) ) {
+	const { default: husky } = await import( 'husky' );
+
+	husky.install();
 }

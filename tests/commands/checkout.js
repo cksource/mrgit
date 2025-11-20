@@ -3,31 +3,18 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
+import { vi, beforeEach, describe, it, expect } from 'vitest';
+import { gitStatusParser } from '../../lib/utils/gitstatusparser.js';
+import checkoutCommand from '../../lib/commands/checkout.js';
+import execCommand from '../../lib/commands/exec.js';
 
-'use strict';
-
-const sinon = require( 'sinon' );
-const mockery = require( 'mockery' );
-const expect = require( 'chai' ).expect;
+vi.mock( '../../lib/utils/gitstatusparser.js' );
+vi.mock( '../../lib/commands/exec.js' );
 
 describe( 'commands/checkout', () => {
-	let checkoutCommand, stubs, commandData, toolOptions;
+	let commandData, toolOptions;
 
 	beforeEach( () => {
-		mockery.enable( {
-			useCleanCache: true,
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		stubs = {
-			execCommand: {
-				execute: sinon.stub()
-			},
-			gitStatusParser: sinon.stub()
-		};
-
 		toolOptions = {};
 
 		commandData = {
@@ -37,22 +24,11 @@ describe( 'commands/checkout', () => {
 			},
 			toolOptions
 		};
-
-		mockery.registerMock( './exec', stubs.execCommand );
-		mockery.registerMock( '../utils/gitstatusparser', stubs.gitStatusParser );
-
-		checkoutCommand = require( '../../lib/commands/checkout' );
-	} );
-
-	afterEach( () => {
-		sinon.restore();
-		mockery.deregisterAll();
-		mockery.disable();
 	} );
 
 	describe( '#helpMessage', () => {
 		it( 'defines help screen', () => {
-			expect( checkoutCommand.helpMessage ).is.a( 'string' );
+			expect( typeof checkoutCommand.helpMessage ).toEqual( 'string' );
 		} );
 	} );
 
@@ -66,7 +42,7 @@ describe( 'commands/checkout', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			stubs.execCommand.execute.rejects( {
+			execCommand.execute.mockRejectedValue( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -78,13 +54,13 @@ describe( 'commands/checkout', () => {
 						throw new Error( 'Supposed to be rejected.' );
 					},
 					response => {
-						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).to.equal( `Error: ${ error.message }` );
+						expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( `Error: ${ error.message }` );
 					}
 				);
 		} );
 
 		it( 'checkouts to the correct branch', () => {
-			stubs.execCommand.execute.resolves( {
+			execCommand.execute.mockResolvedValue( {
 				logs: {
 					info: [
 						'Already on \'master\'',
@@ -95,8 +71,8 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -104,7 +80,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Already on \'master\'',
 						'Already on \'master\'\nYour branch is up-to-date with \'origin/master\'.'
 					] );
@@ -114,7 +90,7 @@ describe( 'commands/checkout', () => {
 		it( 'checkouts to specified branch', () => {
 			commandData.arguments.push( 'develop' );
 
-			stubs.execCommand.execute.resolves( {
+			execCommand.execute.mockResolvedValue( {
 				logs: {
 					info: [
 						'Switched to branch \'develop\'',
@@ -125,8 +101,8 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -134,7 +110,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Switched to branch \'develop\'',
 						'Your branch is up to date with \'origin/develop\'.'
 					] );
@@ -144,29 +120,29 @@ describe( 'commands/checkout', () => {
 		it( 'creates a new branch if a repository has changes that could be committed and specified --branch option', () => {
 			toolOptions.branch = 'develop';
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
-				logs: {
-					info: [
-						'Response returned by "git status" command.'
-					]
-				}
-			} );
+			execCommand.execute
+				.mockResolvedValueOnce( {
+					logs: {
+						info: [
+							'Response returned by "git status" command.'
+						]
+					}
+				} )
+				.mockResolvedValueOnce( {
+					logs: {
+						info: [
+							'Switched to a new branch \'develop\''
+						]
+					}
+				} );
 
-			stubs.execCommand.execute.onSecondCall().resolves( {
-				logs: {
-					info: [
-						'Switched to a new branch \'develop\''
-					]
-				}
-			} );
-
-			stubs.gitStatusParser.returns( { anythingToCommit: true } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledTwice ).to.equal( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -174,7 +150,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( stubs.execCommand.execute.secondCall.args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
 						repository: {
 							branch: 'master'
 						},
@@ -182,7 +158,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Switched to a new branch \'develop\''
 					] );
 				} );
@@ -191,7 +167,7 @@ describe( 'commands/checkout', () => {
 		it( 'does not create a branch if a repository has no-changes that could be committed when specified --branch option', () => {
 			toolOptions.branch = 'develop';
 
-			stubs.execCommand.execute.onFirstCall().resolves( {
+			execCommand.execute.mockResolvedValueOnce( {
 				logs: {
 					info: [
 						'Response returned by "git status" command.'
@@ -199,13 +175,13 @@ describe( 'commands/checkout', () => {
 				}
 			} );
 
-			stubs.gitStatusParser.returns( { anythingToCommit: false } );
+			gitStatusParser.mockReturnValue( { anythingToCommit: false } );
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( stubs.execCommand.execute.calledOnce ).to.equal( true );
+					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
 
-					expect( stubs.execCommand.execute.firstCall.args[ 0 ] ).to.deep.equal( {
+					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
 						repository: {
 							branch: 'master'
 						},
@@ -213,7 +189,7 @@ describe( 'commands/checkout', () => {
 						toolOptions
 					} );
 
-					expect( commandResponse.logs.info ).to.deep.equal( [
+					expect( commandResponse.logs.info ).toEqual( [
 						'Repository does not contain changes to commit. New branch was not created.'
 					] );
 				} );

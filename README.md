@@ -252,9 +252,7 @@ Resolver is a simple Node.js module which exports the resolver function.
 For example, assuming that you want to clone all `@ckeditor/ckeditor5-*` packages, your resolver could look like this:
 
 ```js
-'use strict';
-
-const parseRepositoryUrl = require( 'mrgit/lib/utils/parserepositoryurl' );
+import { parseRepositoryUrl } from 'mrgit/lib/utils/parserepositoryurl';
 
 /**
  * Resolves repository URL for a given package name.
@@ -263,7 +261,7 @@ const parseRepositoryUrl = require( 'mrgit/lib/utils/parserepositoryurl' );
  * @param {Options} options The options object.
  * @returns {Repository|null}
  */
-module.exports = function resolver( packageName, options ) {
+export default function resolver( packageName, options ) {
     // If package name starts with '@ckeditor/ckeditor5-*' clone it from 'ckeditor/ckeditor5-*'.
     if ( packageName.startsWith( '@ckeditor/ckeditor5-' ) ) {
         const repositoryUrl = packageName.slice( 1 );

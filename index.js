@@ -5,16 +5,14 @@
  * For licensing, see LICENSE.md.
  */
 
-'use strict';
+import chalk from 'chalk';
+import meow from 'meow';
+import { mrgit } from './lib/mrgit.js';
+import { getCommandInstance } from './lib/utils/getcommandinstance.js';
 
-const chalk = require( 'chalk' );
-const meow = require( 'meow' );
-const mrgit = require( './lib/index' );
-const getCommandInstance = require( './lib/utils/getcommandinstance' );
+await handleCli();
 
-handleCli();
-
-function handleCli() {
+async function handleCli() {
 	const meowOptions = {
 		autoHelp: false,
 		flags: {
@@ -141,7 +139,7 @@ function handleCli() {
 		return cli.showHelp( 0 );
 	}
 
-	const commandInstance = getCommandInstance( commandName );
+	const commandInstance = await getCommandInstance( commandName );
 
 	if ( !commandInstance ) {
 		process.errorCode = 1;

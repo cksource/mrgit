@@ -3,12 +3,8 @@
  * For licensing, see LICENSE.md.
  */
 
-/* jshint mocha:true */
-
-'use strict';
-
-const expect = require( 'chai' ).expect;
-const gitStatusParser = require( '../../lib/utils/gitstatusparser' );
+import { describe, it, expect } from 'vitest';
+import { gitStatusParser } from '../../lib/utils/gitstatusparser.js';
 
 const gitStatusResponse = [
 	'## master...origin/master',
@@ -45,7 +41,7 @@ describe( 'utils', () => {
 
 				const status = gitStatusParser( gitStatusResponse );
 
-				expect( status.anythingToCommit ).to.equal( false );
+				expect( status.anythingToCommit ).toEqual( false );
 			} );
 
 			it( 'returns true for any tracked file', () => {
@@ -56,7 +52,7 @@ describe( 'utils', () => {
 
 				const status = gitStatusParser( gitStatusResponse );
 
-				expect( status.anythingToCommit ).to.equal( true );
+				expect( status.anythingToCommit ).toEqual( true );
 			} );
 
 			it( 'returns true for any tracked file and some untracked', () => {
@@ -68,44 +64,44 @@ describe( 'utils', () => {
 
 				const status = gitStatusParser( gitStatusResponse );
 
-				expect( status.anythingToCommit ).to.equal( true );
+				expect( status.anythingToCommit ).toEqual( true );
 			} );
 		} );
 
 		it( 'returns branch name for freshly created', () => {
 			const status = gitStatusParser( '## master' );
 
-			expect( status.branch ).to.equal( 'master' );
+			expect( status.branch ).toEqual( 'master' );
 		} );
 
 		it( 'returns branch name even if the upstream is set', () => {
 			const status = gitStatusParser( '## master...origin/master' );
 
-			expect( status.branch ).to.equal( 'master' );
+			expect( status.branch ).toEqual( 'master' );
 		} );
 
 		it( 'returns tag name if its available and the repository is in detached head mode', () => {
 			const status = gitStatusParser( '## HEAD (no branch)', 'v30.0.0' );
 
-			expect( status.tag ).to.equal( 'v30.0.0' );
+			expect( status.tag ).toEqual( 'v30.0.0' );
 		} );
 
 		it( 'returns number of commits being behind the remote branch', () => {
 			const status = gitStatusParser( '## master [behind 3 ahead 6]' );
 
-			expect( status.behind ).to.equal( 3 );
+			expect( status.behind ).toEqual( 3 );
 		} );
 
 		it( 'returns number of commits being ahead the remote branch', () => {
 			const status = gitStatusParser( '## master [behind 3 ahead 6]' );
 
-			expect( status.ahead ).to.equal( 6 );
+			expect( status.ahead ).toEqual( 6 );
 		} );
 
 		it( 'returns a list with modified files', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
-			expect( status.modified ).to.deep.equal( [
+			expect( status.modified ).toEqual( [
 				'README.txt',
 				'lib/index.js',
 				'lib/tasks/logger.js',
@@ -116,7 +112,7 @@ describe( 'utils', () => {
 		it( 'returns a list with deleted files', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
-			expect( status.deleted ).to.deep.equal( [
+			expect( status.deleted ).toEqual( [
 				'README.txt',
 				'lib/tasks/.gitkeep',
 				'tests/tasks/.gitkeep'
@@ -126,7 +122,7 @@ describe( 'utils', () => {
 		it( 'returns a list with renamed files', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
-			expect( status.renamed ).to.deep.equal( [
+			expect( status.renamed ).toEqual( [
 				'CHANGELOG.txt -> CHANGELOG.md'
 			] );
 		} );
@@ -134,7 +130,7 @@ describe( 'utils', () => {
 		it( 'returns a list with unmerged files (conflicts)', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
-			expect( status.unmerged ).to.deep.equal( [
+			expect( status.unmerged ).toEqual( [
 				'bin/unmerged_deleted-by-us',
 				'bin/unmerged_added-by-us',
 				'bin/unmerged_deleted-by-them',
@@ -148,7 +144,7 @@ describe( 'utils', () => {
 		it( 'returns a list with added files', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
-			expect( status.added ).to.deep.equal( [
+			expect( status.added ).toEqual( [
 				'.eslintrc.js'
 			] );
 		} );
@@ -156,7 +152,7 @@ describe( 'utils', () => {
 		it( 'returns a list with untracked files', () => {
 			const status = gitStatusParser( gitStatusResponse );
 
-			expect( status.untracked ).to.deep.equal( [
+			expect( status.untracked ).toEqual( [
 				'README.md',
 				'lib/utils/helper.js',
 				'tests/utils/helper.js'
@@ -173,12 +169,12 @@ describe( 'utils', () => {
 
 			const status = gitStatusParser( gitStatusResponse );
 
-			expect( status.staged ).to.deep.equal( [
+			expect( status.staged ).toEqual( [
 				'lib/tasks/logger.js',
 				'tests/index.js'
 			] );
 
-			expect( status.modified ).to.deep.equal( [
+			expect( status.modified ).toEqual( [
 				'lib/index.js',
 				'lib/tasks/logger.js'
 			] );
