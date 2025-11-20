@@ -105,7 +105,8 @@ const tasks = new Listr( [
 		title: 'Cleaning-up.',
 		task: () => {
 			return releaseTools.cleanUpPackages( {
-				packagesDirectory: RELEASE_DIRECTORY
+				packagesDirectory: RELEASE_DIRECTORY,
+				packageJsonFieldsToRemove: defaults => [ ...defaults, 'engines.yarn', 'engines.pnpm' ]
 			} );
 		}
 	},
