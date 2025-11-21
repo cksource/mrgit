@@ -32,6 +32,9 @@ importers:
       shelljs:
         specifier: ^0.10.0
         version: 0.10.0
+      simple-git:
+        specifier: ^3.30.0
+        version: 3.30.0
       upath:
         specifier: ^2.0.0
         version: 2.0.1
@@ -3460,8 +3463,8 @@ packages:
     resolution: {integrity: sha512-Gw/FgHtrLM9WP8P5lLcSGh9OQcrTruWCELAiS48ik1QbL0cH+dfjomiRTUE9zzz+D1N6rOLkwXUvVmXZAsNE0Q==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  simple-git@3.28.0:
-    resolution: {integrity: sha512-Rs/vQRwsn1ILH1oBUy8NucJlXmnnLeLCfcvbSehkPzbv3wwoFWIdtfd6Ndo6ZPhlPsCZ60CPI4rxurnwAa+a2w==}
+  simple-git@3.30.0:
+    resolution: {integrity: sha512-q6lxyDsCmEal/MEGhP1aVyQ3oxnagGlBDOVSIB4XUVLl1iZh0Pah6ebC9V4xBap/RfgP2WlI8EKs0WS0rMEJHg==}
 
   slack-notify@2.0.7:
     resolution: {integrity: sha512-DZ4J3RVszHUaJf5zXtAocxEhZRAvwWoswB6a/8sAG/QMWkuZdvk3e8d2YQQlPJNYNSbfak+rCtn3zrZ5UmMnYg==}
@@ -4180,7 +4183,7 @@ snapshots:
       inquirer: 12.9.6(@types/node@24.5.0)
       semver: 7.7.2
       shell-escape: 0.2.0
-      simple-git: 3.28.0
+      simple-git: 3.30.0
       upath: 2.0.1
     transitivePeerDependencies:
       - '@babel/core'
@@ -4237,7 +4240,7 @@ snapshots:
       postcss-nesting: 13.0.2(postcss@8.5.6)
       raw-loader: 4.0.2(webpack@5.101.3)
       shelljs: 0.10.0
-      simple-git: 3.28.0
+      simple-git: 3.30.0
       style-loader: 4.0.0(webpack@5.101.3)
       terser-webpack-plugin: 5.3.14(webpack@5.101.3)
       through2: 4.0.2
@@ -7976,7 +7979,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  simple-git@3.28.0:
+  simple-git@3.30.0:
     dependencies:
       '@kwsites/file-exists': 1.1.1
       '@kwsites/promise-deferred': 1.1.1
