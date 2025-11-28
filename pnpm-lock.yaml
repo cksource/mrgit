@@ -37,17 +37,17 @@ importers:
         version: 2.0.1
     devDependencies:
       '@ckeditor/ckeditor5-dev-bump-year':
-        specifier: ^54.1.0
-        version: 54.1.0
+        specifier: ^54.2.0
+        version: 54.2.0
       '@ckeditor/ckeditor5-dev-changelog':
-        specifier: ^54.1.0
-        version: 54.1.0(@babel/core@7.28.5)(@types/node@24.5.0)(typescript@4.9.5)(webpack@5.101.3)
+        specifier: ^54.2.0
+        version: 54.2.0(@babel/core@7.28.5)(@types/node@24.5.0)(typescript@4.9.5)(webpack@5.101.3)
       '@ckeditor/ckeditor5-dev-ci':
-        specifier: ^54.1.0
-        version: 54.1.0
+        specifier: ^54.2.0
+        version: 54.2.0
       '@ckeditor/ckeditor5-dev-release-tools':
-        specifier: ^54.1.0
-        version: 54.1.0(@babel/core@7.28.5)(@types/node@24.5.0)(typescript@4.9.5)(webpack@5.101.3)
+        specifier: ^54.2.0
+        version: 54.2.0(@babel/core@7.28.5)(@types/node@24.5.0)(typescript@4.9.5)(webpack@5.101.3)
       '@inquirer/prompts':
         specifier: ^7.8.3
         version: 7.8.6(@types/node@24.5.0)
@@ -97,10 +97,6 @@ packages:
 
   '@babel/core@7.28.5':
     resolution: {integrity: sha512-e7jT4DxYvIDLk1ZHmU/m/mB19rex9sv0c2ftBtjSBv+kVM/902eh0fINUzD7UwLLNR+jU585GxUJ8/EBfAM5fw==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/generator@7.28.3':
-    resolution: {integrity: sha512-3lSpxGgvnmZznmBkCRnVREPUFJv2wrv9iAoFDvADJc0ypmdOxdUtcLeBgBJ6zE0PMeTKnxeQzyk0xTBq4Ep7zw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/generator@7.28.5':
@@ -154,10 +150,6 @@ packages:
     resolution: {integrity: sha512-LPDZ85aEJyYSd18/DkjNh4/y1ntkE5KwUHWTiqgRxruuZL2F1yuHligVHLvcHY2vMHXttKFpJn6LwfI7cw7ODw==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/traverse@7.28.4':
-    resolution: {integrity: sha512-YEzuboP2qvQavAcjgQNVgsvHIDv6ZpwXvcvjmyySP2DIMuByS/6ioU5G9pYrWHM6T2YDfc7xga9iNzYOs12CFQ==}
-    engines: {node: '>=6.9.0'}
-
   '@babel/traverse@7.28.5':
     resolution: {integrity: sha512-TCCj4t55U90khlYkVV/0TfkJkAkUg3jZFA3Neb7unZT8CPok7iiRfaX0F+WnqWqt7OxhOn0uBKXCw4lbL8W0aQ==}
     engines: {node: '>=6.9.0'}
@@ -170,30 +162,30 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-  '@ckeditor/ckeditor5-dev-bump-year@54.1.0':
-    resolution: {integrity: sha512-yH/BPODsJzKsljGzkbOSL3DxOenw+ztW6LCoyjBQdbt8RTxmfjTPR8y9oXjGf/Pi+uxUET5mdSc72KQwCr7H2w==}
+  '@ckeditor/ckeditor5-dev-bump-year@54.2.0':
+    resolution: {integrity: sha512-l+Zp1qaeg/SiqrLGl85YhOcNurt5IHcIi1mL9KGBxUyQNvAjbuGSjGtffqKh1fiQ4UczkG3n0Kp3k2la05Nc6A==}
     engines: {node: '>=24.11.0', npm: '>=5.7.1'}
 
-  '@ckeditor/ckeditor5-dev-changelog@54.1.0':
-    resolution: {integrity: sha512-IQhGHGyfJgDho822DjgpT0TsZWj6+SMnN9J+FqYtUuB23999KZrWe3womGGPxWUEoEZluFbo7aa/AYI5AIoY8g==}
-    engines: {node: '>=24.11.0', npm: '>=5.7.1'}
-    hasBin: true
-
-  '@ckeditor/ckeditor5-dev-ci@54.1.0':
-    resolution: {integrity: sha512-YXvRSmk65pXzcogG3VDyCQ8Zok55DWXUJubt/abM1sh9cWfgHRxP0MEUeJj01N/D3vomfKJe2mktayFjQHOgkQ==}
+  '@ckeditor/ckeditor5-dev-changelog@54.2.0':
+    resolution: {integrity: sha512-s4vndhP8o+uNwaihxi6+6rgXUAJePrqP/e7XbFIupEtP+AMe6RbEZ7PiCHwpdP7IulpdyaMZQwN8xET4l4A9Wg==}
     engines: {node: '>=24.11.0', npm: '>=5.7.1'}
     hasBin: true
 
-  '@ckeditor/ckeditor5-dev-release-tools@54.1.0':
-    resolution: {integrity: sha512-nDJhvUaEKMMjdo5xuerYyXg5ViN7IB3YywNblBrLau3z6aVD1g4S9zo0E8iYHMtn35NBHcDArm8OiW05d1AKCQ==}
+  '@ckeditor/ckeditor5-dev-ci@54.2.0':
+    resolution: {integrity: sha512-6KG+aSH+uKrkjjN0vni9/4EjMOnxkRY+0IkYrSbxND3X9vehaZ/Ddd+8OCHDm6+1VfUmhGrS31913x3sXiAxdQ==}
+    engines: {node: '>=24.11.0', npm: '>=5.7.1'}
+    hasBin: true
+
+  '@ckeditor/ckeditor5-dev-release-tools@54.2.0':
+    resolution: {integrity: sha512-b2ynqs7YxuekwSfrWVz92CJf6EoINwou0I/426cZG/Z3ABI6vyaA466w6l14AgMFhXQqxyL2NZbOsGyX8YqcrQ==}
     engines: {node: '>=24.11.0', npm: '>=5.7.1'}
 
-  '@ckeditor/ckeditor5-dev-translations@54.1.0':
-    resolution: {integrity: sha512-kKBQeM5LN7xhzxV/UrMIjbljPTp143EsKsQXgDwR6UtnFCGOWBEFgitaT3e6aLWinOtOjUOKxLyPmt8A6tIYaQ==}
+  '@ckeditor/ckeditor5-dev-translations@54.2.0':
+    resolution: {integrity: sha512-8jx6LsWUhXKMGaGHA/YrYl8UW5iB2v48z3i2mDmzhiyTZXukvilcLa31DX/myTXvrYzv2FimhmbIHvXZUm4ajw==}
     engines: {node: '>=24.11.0', npm: '>=5.7.1'}
 
-  '@ckeditor/ckeditor5-dev-utils@54.1.0':
-    resolution: {integrity: sha512-4Ja75XvBNuxBDRiOYGcmFjzIFnDZd00NcDKL0vC+lDygVYAGR8hasDE0vR24182V2sGQlzV63fzThHMaRUpd5w==}
+  '@ckeditor/ckeditor5-dev-utils@54.2.0':
+    resolution: {integrity: sha512-6YEKr75E/3oAyjLovCyTIHAU9W+0U5HEqKk2NR0qAVT+uRms4aOfdxHJcuzQCUQ87A9kkazZbG998p9/gGpasw==}
     engines: {node: '>=24.11.0', npm: '>=5.7.1'}
 
   '@csstools/selector-resolve-nested@3.1.0':
@@ -1987,14 +1979,18 @@ packages:
   glob-to-regexp@0.4.1:
     resolution: {integrity: sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==}
 
-  glob@10.4.5:
-    resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
+  glob@10.5.0:
+    resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
     hasBin: true
 
   glob@11.0.3:
     resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
     engines: {node: 20 || >=22}
     hasBin: true
+
+  glob@13.0.0:
+    resolution: {integrity: sha512-tvZgpqk6fz4BaNZ66ZsRaZnbHvP/jG3uKJvAZOwEVUL4RTA5nJeeLYfyN9/VA8NX/V3IBG+hkeuGpKjvELkVhA==}
+    engines: {node: 20 || >=22}
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
@@ -2359,8 +2355,8 @@ packages:
     resolution: {integrity: sha512-okMH7OXXJ7YrN9Ok3/SXrnu4iX9yOk+25nqX4imS2npuvTYDmo/QEZoqwZkYaIDk3jVvBOTOIEgEhaLOynBS9g==}
     hasBin: true
 
-  js-yaml@4.1.0:
-    resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
+  js-yaml@4.1.1:
+    resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
 
   jsdoc-type-pratt-parser@4.1.0:
@@ -2701,6 +2697,10 @@ packages:
 
   minimatch@10.0.3:
     resolution: {integrity: sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==}
+    engines: {node: 20 || >=22}
+
+  minimatch@10.1.1:
+    resolution: {integrity: sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==}
     engines: {node: 20 || >=22}
 
   minimatch@3.1.2:
@@ -4053,14 +4053,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/generator@7.28.3':
-    dependencies:
-      '@babel/parser': 7.28.5
-      '@babel/types': 7.28.5
-      '@jridgewell/gen-mapping': 0.3.13
-      '@jridgewell/trace-mapping': 0.3.31
-      jsesc: 3.1.0
-
   '@babel/generator@7.28.5':
     dependencies:
       '@babel/parser': 7.28.5
@@ -4118,18 +4110,6 @@ snapshots:
       '@babel/parser': 7.28.5
       '@babel/types': 7.28.5
 
-  '@babel/traverse@7.28.4':
-    dependencies:
-      '@babel/code-frame': 7.27.1
-      '@babel/generator': 7.28.3
-      '@babel/helper-globals': 7.28.0
-      '@babel/parser': 7.28.5
-      '@babel/template': 7.27.2
-      '@babel/types': 7.28.5
-      debug: 4.4.3(supports-color@8.1.1)
-    transitivePeerDependencies:
-      - supports-color
-
   '@babel/traverse@7.28.5':
     dependencies:
       '@babel/code-frame': 7.27.1
@@ -4149,15 +4129,15 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@ckeditor/ckeditor5-dev-bump-year@54.1.0':
+  '@ckeditor/ckeditor5-dev-bump-year@54.2.0':
     dependencies:
-      glob: 11.0.3
+      glob: 13.0.0
 
-  '@ckeditor/ckeditor5-dev-changelog@54.1.0(@babel/core@7.28.5)(@types/node@24.5.0)(typescript@4.9.5)(webpack@5.101.3)':
+  '@ckeditor/ckeditor5-dev-changelog@54.2.0(@babel/core@7.28.5)(@types/node@24.5.0)(typescript@4.9.5)(webpack@5.101.3)':
     dependencies:
-      '@ckeditor/ckeditor5-dev-utils': 54.1.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)
+      '@ckeditor/ckeditor5-dev-utils': 54.2.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)
       date-fns: 4.1.0
-      glob: 11.0.3
+      glob: 13.0.0
       gray-matter: 4.0.3
       inquirer: 12.9.6(@types/node@24.5.0)
       semver: 7.7.2
@@ -4173,17 +4153,17 @@ snapshots:
       - uglify-js
       - webpack
 
-  '@ckeditor/ckeditor5-dev-ci@54.1.0':
+  '@ckeditor/ckeditor5-dev-ci@54.2.0':
     dependencies:
       '@octokit/rest': 22.0.0
       slack-notify: 2.0.7
 
-  '@ckeditor/ckeditor5-dev-release-tools@54.1.0(@babel/core@7.28.5)(@types/node@24.5.0)(typescript@4.9.5)(webpack@5.101.3)':
+  '@ckeditor/ckeditor5-dev-release-tools@54.2.0(@babel/core@7.28.5)(@types/node@24.5.0)(typescript@4.9.5)(webpack@5.101.3)':
     dependencies:
-      '@ckeditor/ckeditor5-dev-utils': 54.1.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)
+      '@ckeditor/ckeditor5-dev-utils': 54.2.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)
       '@octokit/rest': 22.0.0
       cli-columns: 4.0.0
-      glob: 11.0.3
+      glob: 13.0.0
       inquirer: 12.9.6(@types/node@24.5.0)
       semver: 7.7.2
       shell-escape: 0.2.0
@@ -4200,12 +4180,12 @@ snapshots:
       - uglify-js
       - webpack
 
-  '@ckeditor/ckeditor5-dev-translations@54.1.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)':
+  '@ckeditor/ckeditor5-dev-translations@54.2.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)':
     dependencies:
       '@babel/parser': 7.28.5
-      '@babel/traverse': 7.28.4
-      '@ckeditor/ckeditor5-dev-utils': 54.1.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)
-      glob: 11.0.3
+      '@babel/traverse': 7.28.5
+      '@ckeditor/ckeditor5-dev-utils': 54.2.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)
+      glob: 13.0.0
       plural-forms: 0.5.5
       pofile: 1.1.4
       rimraf: 6.0.1
@@ -4221,9 +4201,9 @@ snapshots:
       - uglify-js
       - webpack
 
-  '@ckeditor/ckeditor5-dev-utils@54.1.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)':
+  '@ckeditor/ckeditor5-dev-utils@54.2.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)':
     dependencies:
-      '@ckeditor/ckeditor5-dev-translations': 54.1.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)
+      '@ckeditor/ckeditor5-dev-translations': 54.2.0(@babel/core@7.28.5)(typescript@4.9.5)(webpack@5.101.3)
       '@types/postcss-import': 14.0.3
       '@types/through2': 2.0.41
       babel-loader: 10.0.0(@babel/core@7.28.5)(webpack@5.101.3)
@@ -4232,7 +4212,7 @@ snapshots:
       css-loader: 7.1.2(webpack@5.101.3)
       cssnano: 7.1.1(postcss@8.5.6)
       esbuild-loader: 4.3.0(webpack@5.101.3)
-      glob: 11.0.3
+      glob: 13.0.0
       is-interactive: 2.0.0
       mini-css-extract-plugin: 2.9.4(webpack@5.101.3)
       mocha: 11.7.2
@@ -4392,7 +4372,7 @@ snapshots:
       globals: 14.0.0
       ignore: 5.3.2
       import-fresh: 3.3.1
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       minimatch: 3.1.2
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
@@ -5350,7 +5330,7 @@ snapshots:
     dependencies:
       '@npmcli/fs': 4.0.0
       fs-minipass: 3.0.3
-      glob: 10.4.5
+      glob: 10.5.0
       lru-cache: 10.4.3
       minipass: 7.1.2
       minipass-collect: 2.0.1
@@ -5511,7 +5491,7 @@ snapshots:
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 4.9.5
@@ -6221,7 +6201,7 @@ snapshots:
 
   glob-to-regexp@0.4.1: {}
 
-  glob@10.4.5:
+  glob@10.5.0:
     dependencies:
       foreground-child: 3.3.1
       jackspeak: 3.4.3
@@ -6237,6 +6217,12 @@ snapshots:
       minimatch: 10.0.3
       minipass: 7.1.2
       package-json-from-dist: 1.0.1
+      path-scurry: 2.0.0
+
+  glob@13.0.0:
+    dependencies:
+      minimatch: 10.1.1
+      minipass: 7.1.2
       path-scurry: 2.0.0
 
   globals@14.0.0: {}
@@ -6567,7 +6553,7 @@ snapshots:
       argparse: 1.0.10
       esprima: 4.0.1
 
-  js-yaml@4.1.0:
+  js-yaml@4.1.1:
     dependencies:
       argparse: 2.0.1
 
@@ -7129,6 +7115,10 @@ snapshots:
     dependencies:
       '@isaacs/brace-expansion': 5.0.0
 
+  minimatch@10.1.1:
+    dependencies:
+      '@isaacs/brace-expansion': 5.0.0
+
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.12
@@ -7193,9 +7183,9 @@ snapshots:
       diff: 7.0.0
       escape-string-regexp: 4.0.0
       find-up: 5.0.0
-      glob: 10.4.5
+      glob: 10.5.0
       he: 1.2.0
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       log-symbols: 4.1.0
       minimatch: 9.0.5
       ms: 2.1.3
