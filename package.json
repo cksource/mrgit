@@ -62,6 +62,7 @@
     "postinstall": "node ./scripts/postinstall.js",
     "test": "vitest",
     "coverage": "vitest --coverage",
+    "test:scripts": "vitest --config ./scripts-tests/vitest.config.mjs --run",
     "lint": "eslint",
     "release:prepare-changelog": "node ./scripts/preparechangelog.mjs",
     "release:prepare-packages": "node ./scripts/preparepackages.mjs",
