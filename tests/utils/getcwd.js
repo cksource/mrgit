@@ -5,7 +5,7 @@
 
 import { vi, describe, it, expect } from 'vitest';
 import { getCwd } from '../../lib/utils/getcwd.js';
-import fs from 'fs';
+import fs from 'node:fs';
 
 vi.mock( 'fs' );
 

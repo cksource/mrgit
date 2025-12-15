@@ -6,7 +6,7 @@
 import { vi, beforeEach, describe, it, expect } from 'vitest';
 import pushCommand from '../../lib/commands/push.js';
 import execCommand from '../../lib/commands/exec.js';
-import fs from 'fs';
+import fs from 'node:fs';
 
 vi.mock( '../../lib/commands/exec.js' );
 vi.mock( 'fs' );

@@ -5,7 +5,7 @@
 
 import { vi, describe, it, expect } from 'vitest';
 import { updateJsonFile } from '../../lib/utils/updatejsonfile.js';
-import fs from 'fs';
+import fs from 'node:fs';
 
 vi.mock( 'fs' );
 
