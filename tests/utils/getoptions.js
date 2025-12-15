@@ -6,7 +6,7 @@
 import { vi, beforeEach, describe, it, expect } from 'vitest';
 import { getOptions } from '../../lib/utils/getoptions.js';
 
-import fs from 'fs';
+import fs from 'node:fs';
 import shelljs from 'shelljs';
 import upath from 'upath';
 

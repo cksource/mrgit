@@ -4,7 +4,7 @@
  */
 
 import upath from 'upath';
-import fs from 'fs';
+import fs from 'node:fs';
 
 const ROOT_DIRECTORY = upath.join( import.meta.dirname, '..' );
 

@@ -7,8 +7,8 @@ import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest';
 import syncCommand from '../../lib/commands/sync.js';
 import execCommand from '../../lib/commands/exec.js';
 import { shell } from '../../lib/utils/shell.js';
-import { pathToFileURL } from 'url';
-import fs from 'fs';
+import { pathToFileURL } from 'node:url';
+import fs from 'node:fs';
 
 vi.mock( '../../lib/commands/exec.js' );
 vi.mock( '../../lib/utils/shell.js' );
