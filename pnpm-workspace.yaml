@@ -1,6 +1,9 @@
 onlyBuiltDependencies:
   - esbuild
 
+overrides:
+  diff@^7.0.0: ^8.0.3
+
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
   - '@ckeditor/*'
