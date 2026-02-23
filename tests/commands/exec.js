@@ -6,9 +6,11 @@
 import { vi, beforeEach, describe, it, expect } from 'vitest';
 import execCommand from '../../lib/commands/exec.js';
 import { shell } from '../../lib/utils/shell.js';
+import { runGitCommand } from '../../lib/utils/rungitcommand.js';
 import fs from 'node:fs';
 
 vi.mock( '../../lib/utils/shell.js' );
+vi.mock( '../../lib/utils/rungitcommand.js' );
 vi.mock( 'fs' );
 
 describe( 'commands/exec', () => {
@@ -101,6 +103,94 @@ describe( 'commands/exec', () => {
 					expect( chdir ).toHaveBeenNthCalledWith( 2, import.meta.dirname );
 					expect( response.logs.info[ 0 ] ).toEqual( pwd );
 				} );
+		} );
+	} );
+
+	describe( 'executeGit()', () => {
+		it( 'does not execute git command if package is not available', () => {
+			fs.existsSync.mockReturnValue( false );
+
+			return execCommand.executeGit( commandData, [ 'status', '-s' ] )
+				.then(
+					() => {
+						throw new Error( 'Supposed to be rejected.' );
+					},
+					response => {
+						expect( runGitCommand ).not.toHaveBeenCalled();
+
+						const err = 'Package "test-package" is not available. Run "mrgit sync" in order to download the package.';
+						expect( response.logs.error[ 0 ] ).toEqual( err );
+					}
+				);
+		} );
+
+		it( 'uses package path as cwd for non-root repository', () => {
+			const commandOutput = 'On branch master';
+
+			fs.existsSync.mockReturnValue( true );
+			runGitCommand.mockResolvedValue( commandOutput );
+
+			return execCommand.executeGit( commandData, [ 'status', '-s' ] )
+				.then( response => {
+					expect( runGitCommand ).toHaveBeenCalledTimes( 1 );
+					expect( runGitCommand ).toHaveBeenNthCalledWith( 1,
+						[ 'status', '-s' ],
+						{ cwd: 'packages/test-package' }
+					);
+					expect( response.logs.info[ 0 ] ).toEqual( commandOutput );
+				} );
+		} );
+
+		it( 'uses tool cwd as cwd for root repository', () => {
+			const commandOutput = 'root output';
+
+			commandData.isRootRepository = true;
+			fs.existsSync.mockReturnValue( true );
+			runGitCommand.mockResolvedValue( commandOutput );
+
+			return execCommand.executeGit( commandData, [ 'status', '-s' ] )
+				.then( response => {
+					expect( runGitCommand ).toHaveBeenCalledTimes( 1 );
+					expect( runGitCommand ).toHaveBeenNthCalledWith( 1,
+						[ 'status', '-s' ],
+						{ cwd: import.meta.dirname }
+					);
+					expect( response.logs.info[ 0 ] ).toEqual( commandOutput );
+				} );
+		} );
+
+		it( 'rejects promise when git command throws error object', () => {
+			const error = new Error( 'Unexpected error.' );
+
+			fs.existsSync.mockReturnValue( true );
+			runGitCommand.mockRejectedValue( error );
+
+			return execCommand.executeGit( commandData, [ 'status', '-s' ] )
+				.then(
+					() => {
+						throw new Error( 'Supposed to be rejected.' );
+					},
+					response => {
+						expect( response.logs.error[ 0 ] ).toEqual( error.message );
+					}
+				);
+		} );
+
+		it( 'rejects promise when git command throws string', () => {
+			const error = 'fatal: Unexpected error.';
+
+			fs.existsSync.mockReturnValue( true );
+			runGitCommand.mockRejectedValue( error );
+
+			return execCommand.executeGit( commandData, [ 'status', '-s' ] )
+				.then(
+					() => {
+						throw new Error( 'Supposed to be rejected.' );
+					},
+					response => {
+						expect( response.logs.error[ 0 ] ).toEqual( error );
+					}
+				);
 		} );
 	} );
 } );
