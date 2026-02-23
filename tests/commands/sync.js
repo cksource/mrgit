@@ -6,12 +6,12 @@
 import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest';
 import syncCommand from '../../lib/commands/sync.js';
 import execCommand from '../../lib/commands/exec.js';
-import { shell } from '../../lib/utils/shell.js';
+import { runGitCommand } from '../../lib/utils/rungitcommand.js';
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
 
 vi.mock( '../../lib/commands/exec.js' );
-vi.mock( '../../lib/utils/shell.js' );
+vi.mock( '../../lib/utils/rungitcommand.js' );
 vi.mock( 'fs' );
 vi.mock( 'url' );
 
@@ -55,19 +55,21 @@ describe( 'commands/sync', () => {
 		describe( 'first call on a package', () => {
 			it( 'clones the repository if is not available', () => {
 				fs.existsSync.mockReturnValue( false );
-				shell.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
+				runGitCommand.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( shell ).toHaveBeenCalledTimes( 2 );
+						expect( runGitCommand ).toHaveBeenCalledTimes( 2 );
 
 						// Clone the repository.
-						expect( shell ).toHaveBeenNthCalledWith( 1,
-							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
+						expect( runGitCommand ).toHaveBeenNthCalledWith( 1,
+							[ 'clone', '--progress', 'git@github.com/organization/test-package.git', '/tmp/packages/test-package' ],
+							{ cwd: '/tmp/packages' }
 						);
 						// Change the directory to cloned package and check out to proper branch.
-						expect( shell ).toHaveBeenNthCalledWith( 2,
-							'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
+						expect( runGitCommand ).toHaveBeenNthCalledWith( 2,
+							[ 'checkout', '--quiet', 'master' ],
+							{ cwd: '/tmp/packages/test-package' }
 						);
 
 						expect( response.logs.info ).toEqual( [
@@ -81,19 +83,21 @@ describe( 'commands/sync', () => {
 				commandData.repository.tag = 'v30.0.0';
 
 				fs.existsSync.mockReturnValue( false );
-				shell.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
+				runGitCommand.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( shell ).toHaveBeenCalledTimes( 2 );
+						expect( runGitCommand ).toHaveBeenCalledTimes( 2 );
 
 						// Clone the repository.
-						expect( shell ).toHaveBeenNthCalledWith( 1,
-							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
+						expect( runGitCommand ).toHaveBeenNthCalledWith( 1,
+							[ 'clone', '--progress', 'git@github.com/organization/test-package.git', '/tmp/packages/test-package' ],
+							{ cwd: '/tmp/packages' }
 						);
 						// Change the directory to cloned package and check out to proper branch.
-						expect( shell ).toHaveBeenNthCalledWith( 2,
-							'cd "/tmp/packages/test-package" && git checkout --quiet "tags/v30.0.0"'
+						expect( runGitCommand ).toHaveBeenNthCalledWith( 2,
+							[ 'checkout', '--quiet', 'tags/v30.0.0' ],
+							{ cwd: '/tmp/packages/test-package' }
 						);
 
 						expect( response.logs.info ).toEqual( [
@@ -106,11 +110,14 @@ describe( 'commands/sync', () => {
 			it( 'clones the repository and checks the latest tag', () => {
 				commandData.repository.tag = 'latest';
 
-				const command = 'cd "/tmp/packages/test-package" && git log --tags --simplify-by-decoration --pretty="%S"';
+				const command = [ 'log', '--tags', '--simplify-by-decoration', '--pretty=%S' ];
 
 				fs.existsSync.mockReturnValue( false );
-				shell.mockImplementation( shellArg => {
-					if ( shellArg === command ) {
+				runGitCommand.mockImplementation( ( commandArguments, options ) => {
+					if (
+						options.cwd === '/tmp/packages/test-package' &&
+						JSON.stringify( commandArguments ) === JSON.stringify( command )
+					) {
 						return Promise.resolve( 'v35.3.2\nv35.3.1\nv35.3.0\nv35.2.1\nv35.2.0' );
 					}
 
@@ -119,17 +126,19 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( shell ).toHaveBeenCalledTimes( 3 );
+						expect( runGitCommand ).toHaveBeenCalledTimes( 3 );
 
 						// Clone the repository.
-						expect( shell ).toHaveBeenNthCalledWith( 1,
-							'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
+						expect( runGitCommand ).toHaveBeenNthCalledWith( 1,
+							[ 'clone', '--progress', 'git@github.com/organization/test-package.git', '/tmp/packages/test-package' ],
+							{ cwd: '/tmp/packages' }
 						);
 						// Look for the latest tag.
-						expect( shell ).toHaveBeenNthCalledWith( 2, command );
+						expect( runGitCommand ).toHaveBeenNthCalledWith( 2, command, { cwd: '/tmp/packages/test-package' } );
 						// Change the directory to cloned package and check out to proper branch.
-						expect( shell ).toHaveBeenNthCalledWith( 3,
-							'cd "/tmp/packages/test-package" && git checkout --quiet "tags/v35.3.2"'
+						expect( runGitCommand ).toHaveBeenNthCalledWith( 3,
+							[ 'checkout', '--quiet', 'tags/v35.3.2' ],
+							{ cwd: '/tmp/packages/test-package' }
 						);
 
 						expect( response.logs.info ).toEqual( [
@@ -145,7 +154,7 @@ describe( 'commands/sync', () => {
 				commandData.repository.directory = 'project-a';
 
 				fs.existsSync.mockReturnValue( false );
-				shell.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
+				runGitCommand.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -160,7 +169,7 @@ describe( 'commands/sync', () => {
 				commandData.repository.directory = 'project-with-options-in-mrgitjson';
 
 				fs.existsSync.mockReturnValue( false );
-				shell.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
+				runGitCommand.mockReturnValue( Promise.resolve( 'Git clone log.' ) );
 
 				return syncCommand.execute( commandData )
 					.then( response => {
@@ -173,7 +182,7 @@ describe( 'commands/sync', () => {
 				it( 'for errors with capital letters', async () => {
 					fs.existsSync.mockReturnValue( false );
 
-					shell
+					runGitCommand
 						.mockRejectedValueOnce( [
 							'exec: Cloning into \'/some/path\'...',
 							'remote: Enumerating objects: 6, done.',
@@ -192,22 +201,25 @@ describe( 'commands/sync', () => {
 
 					return promise
 						.then( response => {
-							expect( shell ).toHaveBeenCalledTimes( 3 );
+							expect( runGitCommand ).toHaveBeenCalledTimes( 3 );
 
 							// First attempt.
 							// Clone the repository.
-							expect( shell ).toHaveBeenNthCalledWith( 1,
-								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
+							expect( runGitCommand ).toHaveBeenNthCalledWith( 1,
+								[ 'clone', '--progress', 'git@github.com/organization/test-package.git', '/tmp/packages/test-package' ],
+								{ cwd: '/tmp/packages' }
 							);
 
 							// Second attempt.
 							// Clone the repository.
-							expect( shell ).toHaveBeenNthCalledWith( 2,
-								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
+							expect( runGitCommand ).toHaveBeenNthCalledWith( 2,
+								[ 'clone', '--progress', 'git@github.com/organization/test-package.git', '/tmp/packages/test-package' ],
+								{ cwd: '/tmp/packages' }
 							);
 							// Change the directory to cloned package and check out to proper branch.
-							expect( shell ).toHaveBeenNthCalledWith( 3,
-								'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
+							expect( runGitCommand ).toHaveBeenNthCalledWith( 3,
+								[ 'checkout', '--quiet', 'master' ],
+								{ cwd: '/tmp/packages/test-package' }
 							);
 
 							expect( response.logs.info ).toEqual( [
@@ -220,7 +232,7 @@ describe( 'commands/sync', () => {
 				it( 'for errors with small letters', async () => {
 					fs.existsSync.mockReturnValue( false );
 
-					shell
+					runGitCommand
 						.mockRejectedValueOnce( [
 							'exec: Cloning into \'/some/path\'...',
 							'remote: Enumerating objects: 6, done.',
@@ -239,22 +251,25 @@ describe( 'commands/sync', () => {
 
 					return promise
 						.then( response => {
-							expect( shell ).toHaveBeenCalledTimes( 3 );
+							expect( runGitCommand ).toHaveBeenCalledTimes( 3 );
 
 							// First attempt.
 							// Clone the repository.
-							expect( shell ).toHaveBeenNthCalledWith( 1,
-								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
+							expect( runGitCommand ).toHaveBeenNthCalledWith( 1,
+								[ 'clone', '--progress', 'git@github.com/organization/test-package.git', '/tmp/packages/test-package' ],
+								{ cwd: '/tmp/packages' }
 							);
 
 							// Second attempt.
 							// Clone the repository.
-							expect( shell ).toHaveBeenNthCalledWith( 2,
-								'git clone --progress "git@github.com/organization/test-package.git" "/tmp/packages/test-package"'
+							expect( runGitCommand ).toHaveBeenNthCalledWith( 2,
+								[ 'clone', '--progress', 'git@github.com/organization/test-package.git', '/tmp/packages/test-package' ],
+								{ cwd: '/tmp/packages' }
 							);
 							// Change the directory to cloned package and check out to proper branch.
-							expect( shell ).toHaveBeenNthCalledWith( 3,
-								'cd "/tmp/packages/test-package" && git checkout --quiet "master"'
+							expect( runGitCommand ).toHaveBeenNthCalledWith( 3,
+								[ 'checkout', '--quiet', 'master' ],
+								{ cwd: '/tmp/packages/test-package' }
 							);
 
 							expect( response.logs.info ).toEqual( [
@@ -278,7 +293,7 @@ describe( 'commands/sync', () => {
 						'fatal: index-pack failed'
 					].join( '\n' );
 
-					shell
+					runGitCommand
 						.mockRejectedValueOnce( new Error( errorMessage ) )
 						.mockRejectedValueOnce( new Error( errorMessage ) );
 
@@ -302,7 +317,7 @@ describe( 'commands/sync', () => {
 								throw new Error( 'Expected that the Promise fails.' );
 							},
 							response => {
-								expect( shell ).toHaveBeenCalledTimes( 2 );
+								expect( runGitCommand ).toHaveBeenCalledTimes( 2 );
 
 								expect( response.logs.info ).toEqual( [
 									'Package "test-package" was not found. Cloning...'
@@ -321,7 +336,7 @@ describe( 'commands/sync', () => {
 			it( 'resolves promise after pulling the changes', () => {
 				fs.existsSync.mockReturnValue( true );
 
-				execCommand.execute
+				execCommand.executeGit
 					.mockResolvedValueOnce( {
 						logs: getCommandLogs( '' )
 					} )
@@ -340,28 +355,18 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
-							{ arguments: [ 'git status -s' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, expect.objectContaining(
-							{ arguments: [ 'git fetch' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, expect.objectContaining(
-							{ arguments: [ 'git checkout "master"' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, expect.objectContaining(
-							{ arguments: [ 'git branch' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, expect.objectContaining(
-							{ arguments: [ 'git pull origin "master"' ] }
-						) );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1, commandData, [ 'status', '-s' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2, commandData, [ 'fetch' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 3, commandData, [ 'checkout', 'master' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 4, commandData, [ 'branch' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 5, commandData, [ 'pull', 'origin', 'master' ] );
 
 						expect( response.logs.info ).toEqual( [
 							'Already on \'master\'.',
 							'Already up-to-date.'
 						] );
 
-						expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
+						expect( execCommand.executeGit ).toHaveBeenCalledTimes( 5 );
 					} );
 			} );
 
@@ -370,7 +375,7 @@ describe( 'commands/sync', () => {
 
 				fs.existsSync.mockReturnValue( true );
 
-				execCommand.execute
+				execCommand.executeGit
 					.mockResolvedValueOnce( {
 						logs: getCommandLogs( '' )
 					} )
@@ -392,25 +397,17 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
-							{ arguments: [ 'git status -s' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, expect.objectContaining(
-							{ arguments: [ 'git fetch' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, expect.objectContaining(
-							{ arguments: [ 'git checkout "tags/v35.3.0"' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, expect.objectContaining(
-							{ arguments: [ 'git branch' ] }
-						) );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1, commandData, [ 'status', '-s' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2, commandData, [ 'fetch' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 3, commandData, [ 'checkout', 'tags/v35.3.0' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 4, commandData, [ 'branch' ] );
 
 						expect( response.logs.info ).toEqual( [
 							'Note: checking out \'tags/v35.3.0\'.',
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( execCommand.execute ).toHaveBeenCalledTimes( 4 );
+						expect( execCommand.executeGit ).toHaveBeenCalledTimes( 4 );
 					} );
 			} );
 
@@ -419,7 +416,7 @@ describe( 'commands/sync', () => {
 
 				fs.existsSync.mockReturnValue( true );
 
-				execCommand.execute
+				execCommand.executeGit
 					.mockResolvedValueOnce( {
 						logs: getCommandLogs( '' )
 					} )
@@ -444,28 +441,22 @@ describe( 'commands/sync', () => {
 
 				return syncCommand.execute( commandData )
 					.then( response => {
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
-							{ arguments: [ 'git status -s' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, expect.objectContaining(
-							{ arguments: [ 'git fetch' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, expect.objectContaining(
-							{ arguments: [ 'git log --tags --simplify-by-decoration --pretty="%S"' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, expect.objectContaining(
-							{ arguments: [ 'git checkout "tags/v35.3.2"' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, expect.objectContaining(
-							{ arguments: [ 'git branch' ] }
-						) );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1, commandData, [ 'status', '-s' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2, commandData, [ 'fetch' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith(
+							3,
+							commandData,
+							[ 'log', '--tags', '--simplify-by-decoration', '--pretty=%S' ]
+						);
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 4, commandData, [ 'checkout', 'tags/v35.3.2' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 5, commandData, [ 'branch' ] );
 
 						expect( response.logs.info ).toEqual( [
 							'Note: checking out \'tags/v35.3.2\'.',
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
+						expect( execCommand.executeGit ).toHaveBeenCalledTimes( 5 );
 					} );
 			} );
 
@@ -474,7 +465,7 @@ describe( 'commands/sync', () => {
 
 				fs.existsSync.mockReturnValue( true );
 
-				execCommand.execute
+				execCommand.executeGit
 					.mockResolvedValueOnce( {
 						logs: getCommandLogs( '' )
 					} )
@@ -490,17 +481,15 @@ describe( 'commands/sync', () => {
 						throw new Error( 'Expected to throw' );
 					} )
 					.catch( response => {
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
-							{ arguments: [ 'git status -s' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, expect.objectContaining(
-							{ arguments: [ 'git fetch' ] }
-						) );
-						expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, expect.objectContaining(
-							{ arguments: [ 'git log --tags --simplify-by-decoration --pretty="%S"' ] }
-						) );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1, commandData, [ 'status', '-s' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2, commandData, [ 'fetch' ] );
+						expect( execCommand.executeGit ).toHaveBeenNthCalledWith(
+							3,
+							commandData,
+							[ 'log', '--tags', '--simplify-by-decoration', '--pretty=%S' ]
+						);
 
-						expect( execCommand.execute ).toHaveBeenCalledTimes( 3 );
+						expect( execCommand.executeGit ).toHaveBeenCalledTimes( 3 );
 
 						expect( response.logs.error[ 0 ] ).toEqual(
 							'Can\'t check out the latest tag as package "test-package" has no tags. Aborted.'
@@ -511,7 +500,7 @@ describe( 'commands/sync', () => {
 			it( 'aborts if package has uncommitted changes', () => {
 				fs.existsSync.mockReturnValue( true );
 
-				execCommand.execute.mockReturnValue( Promise.resolve( {
+				execCommand.executeGit.mockReturnValue( Promise.resolve( {
 					logs: getCommandLogs( ' M first-file.js\n ?? second-file.js' )
 				} ) );
 
@@ -524,9 +513,7 @@ describe( 'commands/sync', () => {
 							const errMsg = 'Package "test-package" has uncommitted changes. Aborted.';
 
 							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
-							expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, expect.objectContaining(
-								{ arguments: [ 'git status -s' ] }
-							) );
+							expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1, commandData, [ 'status', '-s' ] );
 						}
 					);
 			} );
@@ -536,7 +523,7 @@ describe( 'commands/sync', () => {
 
 				commandData.repository.branch = '1a0ff0a';
 
-				execCommand.execute
+				execCommand.executeGit
 					.mockResolvedValueOnce( {
 						logs: getCommandLogs( '' )
 					} )
@@ -560,7 +547,7 @@ describe( 'commands/sync', () => {
 							'Package "test-package" is on a detached commit.'
 						] );
 
-						expect( execCommand.execute ).toHaveBeenCalledTimes( 4 );
+						expect( execCommand.executeGit ).toHaveBeenCalledTimes( 4 );
 					} );
 			} );
 
@@ -569,7 +556,7 @@ describe( 'commands/sync', () => {
 
 				commandData.repository.branch = 'develop';
 
-				execCommand.execute
+				execCommand.executeGit
 					.mockResolvedValueOnce( {
 						logs: getCommandLogs( '' )
 					} )
@@ -599,7 +586,7 @@ describe( 'commands/sync', () => {
 							const errMsg = 'fatal: Couldn\'t find remote ref develop';
 							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
 
-							expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
+							expect( execCommand.executeGit ).toHaveBeenCalledTimes( 5 );
 						}
 					);
 			} );
@@ -609,7 +596,7 @@ describe( 'commands/sync', () => {
 
 				commandData.repository.branch = 'non-existing-branch';
 
-				execCommand.execute
+				execCommand.executeGit
 					.mockResolvedValueOnce( {
 						logs: getCommandLogs( '' )
 					} )
@@ -629,7 +616,7 @@ describe( 'commands/sync', () => {
 							const errMsg = 'error: pathspec \'ggdfgd\' did not match any file(s) known to git.';
 							expect( response.logs.error[ 0 ].split( '\n' )[ 0 ] ).toEqual( errMsg );
 
-							expect( execCommand.execute ).toHaveBeenCalledTimes( 3 );
+							expect( execCommand.executeGit ).toHaveBeenCalledTimes( 3 );
 						}
 					);
 			} );

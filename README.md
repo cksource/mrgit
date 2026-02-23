@@ -372,6 +372,8 @@ mrgit fetch
 
 Executes specified shell command in existing repositories.
 
+`mrgit exec` is intentionally a raw shell entry point. Run only trusted commands and do not pass untrusted input.
+
 Example:
 
 ```bash

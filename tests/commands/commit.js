@@ -64,7 +64,7 @@ describe( 'commands/commit', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			execCommand.execute.mockRejectedValue( {
+			execCommand.executeGit.mockRejectedValue( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -84,7 +84,7 @@ describe( 'commands/commit', () => {
 		it( 'commits all changes', () => {
 			toolOptions.message = 'Test.';
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( {
 					logs: {
 						info: [
@@ -104,23 +104,17 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git commit -a -m "Test."' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'commit', '-a', '-m', 'Test.' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test.'
@@ -132,7 +126,7 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( {
 					logs: {
 						info: [
@@ -152,23 +146,17 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git commit -a -m "Test."' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'commit', '-a', '-m', 'Test.' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test.'
@@ -181,7 +169,7 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test' );
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( {
 					logs: {
 						info: [
@@ -201,23 +189,17 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git commit -a -m "Test" -n' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'commit', '-a', '-m', 'Test', '-n' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test'
@@ -231,7 +213,7 @@ describe( 'commands/commit', () => {
 				'Foo.'
 			];
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( {
 					logs: {
 						info: [
@@ -251,23 +233,17 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git commit -a -m "Test." -m "Foo."' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'commit', '-a', '-m', 'Test.', '-m', 'Foo.' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test.'
@@ -281,7 +257,7 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '-m' );
 			commandData.arguments.push( 'Foo.' );
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( {
 					logs: {
 						info: [
@@ -301,23 +277,17 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git commit -a -m "Test." -m "Foo."' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'commit', '-a', '-m', 'Test.', '-m', 'Foo.' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'[master a89f9ee] Test.'
@@ -329,7 +299,7 @@ describe( 'commands/commit', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			execCommand.execute.mockResolvedValueOnce( {
+			execCommand.executeGit.mockResolvedValueOnce( {
 				logs: {
 					info: [
 						'Response returned by "git status" command.'
@@ -341,15 +311,12 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Nothing to commit.'
@@ -360,7 +327,7 @@ describe( 'commands/commit', () => {
 		it( 'does not commit if repository is in detached head mode', () => {
 			toolOptions.message = 'Test.';
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( {
 					logs: {
 						info: [
@@ -380,19 +347,43 @@ describe( 'commands/commit', () => {
 
 			return commitCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'This repository is currently in detached head mode - skipping.'
 					] );
+				} );
+		} );
+
+		it( 'passes message with shell-like content as a literal argument', () => {
+			commandData.arguments.push( '--message' );
+			commandData.arguments.push( 'Test; touch HACKED; #' );
+
+			execCommand.executeGit
+				.mockResolvedValueOnce( {
+					logs: {
+						info: [ 'Response returned by "git status" command.' ]
+					}
+				} )
+				.mockResolvedValueOnce( {
+					logs: {
+						info: [ '[master a89f9ee] Test; touch HACKED; #' ]
+					}
+				} );
+
+			gitStatusParser.mockReturnValue( { anythingToCommit: true } );
+
+			return commitCommand.execute( commandData )
+				.then( () => {
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'commit', '-a', '-m', 'Test; touch HACKED; #' ]
+					);
 				} );
 		} );
 	} );

@@ -48,7 +48,7 @@ describe( 'commands/close', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			execCommand.execute.mockRejectedValue( {
+			execCommand.executeGit.mockRejectedValue( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -68,7 +68,7 @@ describe( 'commands/close', () => {
 		it( 'merges specified branch and remove it from local and remote', () => {
 			commandData.arguments.push( 'develop' );
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( { logs: {
 					info: [
 						'* develop'
@@ -103,47 +103,32 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 5 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --list develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--list', 'develop' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --show-current' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'branch', '--show-current' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'"' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 3,
+						commandData,
+						[ 'merge', 'develop', '--no-ff', '-m', 'Merge branch \'develop\'' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch -d develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 4,
+						commandData,
+						[ 'branch', '-d', 'develop' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git push origin :develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 5,
+						commandData,
+						[ 'push', 'origin', ':develop' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
@@ -166,7 +151,7 @@ describe( 'commands/close', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( { logs: {
 					info: [
 						'* develop'
@@ -201,47 +186,32 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 5 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --list develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--list', 'develop' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --show-current' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'branch', '--show-current' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 3,
+						commandData,
+						[ 'merge', 'develop', '--no-ff', '-m', 'Merge branch \'develop\'', '-m', 'Test.' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch -d develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 4,
+						commandData,
+						[ 'branch', '-d', 'develop' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git push origin :develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 5,
+						commandData,
+						[ 'push', 'origin', ':develop' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
@@ -264,7 +234,7 @@ describe( 'commands/close', () => {
 
 			toolOptions.message = 'Test.';
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( { logs: {
 					info: [
 						'* develop'
@@ -299,47 +269,32 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 5 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 5 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --list develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--list', 'develop' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --show-current' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'branch', '--show-current' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 3, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git merge develop --no-ff -m "Merge branch \'develop\'" -m "Test."' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 3,
+						commandData,
+						[ 'merge', 'develop', '--no-ff', '-m', 'Merge branch \'develop\'', '-m', 'Test.' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 4, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch -d develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 4,
+						commandData,
+						[ 'branch', '-d', 'develop' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 5, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git push origin :develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 5,
+						commandData,
+						[ 'push', 'origin', ':develop' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Merge made by the \'recursive\' strategy.',
@@ -361,7 +316,7 @@ describe( 'commands/close', () => {
 			commandData.arguments.push( '--message' );
 			commandData.arguments.push( 'Test.' );
 
-			execCommand.execute.mockResolvedValueOnce( {
+			execCommand.executeGit.mockResolvedValueOnce( {
 				logs: {
 					info: [
 						''
@@ -372,15 +327,12 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --list develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--list', 'develop' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Branch does not exist.'
@@ -391,7 +343,7 @@ describe( 'commands/close', () => {
 		it( 'does not merge branch if in detached head mode', () => {
 			commandData.arguments.push( 'develop' );
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( { logs: {
 					info: [
 						'* develop'
@@ -407,27 +359,40 @@ describe( 'commands/close', () => {
 
 			return closeCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --list develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--list', 'develop' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git branch --show-current' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'branch', '--show-current' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'This repository is currently in detached head mode - skipping.'
 					] );
+				} );
+		} );
+
+		it( 'passes branch name with shell-like tokens as a literal argument', () => {
+			commandData.arguments.push( 'develop; touch HACKED; #' );
+
+			execCommand.executeGit.mockResolvedValueOnce( {
+				logs: {
+					info: [ '' ],
+					error: []
+				}
+			} );
+
+			return closeCommand.execute( commandData )
+				.then( () => {
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--list', 'develop; touch HACKED; #' ]
+					);
 				} );
 		} );
 	} );

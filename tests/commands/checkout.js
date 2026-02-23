@@ -42,7 +42,7 @@ describe( 'commands/checkout', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			execCommand.execute.mockRejectedValue( {
+			execCommand.executeGit.mockRejectedValue( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -60,7 +60,7 @@ describe( 'commands/checkout', () => {
 		} );
 
 		it( 'checkouts to the correct branch', () => {
-			execCommand.execute.mockResolvedValue( {
+			execCommand.executeGit.mockResolvedValue( {
 				logs: {
 					info: [
 						'Already on \'master\'',
@@ -71,14 +71,11 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git checkout master' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'checkout', 'master' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Already on \'master\'',
@@ -90,7 +87,7 @@ describe( 'commands/checkout', () => {
 		it( 'checkouts to specified branch', () => {
 			commandData.arguments.push( 'develop' );
 
-			execCommand.execute.mockResolvedValue( {
+			execCommand.executeGit.mockResolvedValue( {
 				logs: {
 					info: [
 						'Switched to branch \'develop\'',
@@ -101,14 +98,11 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git checkout develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'checkout', 'develop' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Switched to branch \'develop\'',
@@ -120,7 +114,7 @@ describe( 'commands/checkout', () => {
 		it( 'creates a new branch if a repository has changes that could be committed and specified --branch option', () => {
 			toolOptions.branch = 'develop';
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( {
 					logs: {
 						info: [
@@ -140,23 +134,17 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git checkout -b develop' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'checkout', '-b', 'develop' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Switched to a new branch \'develop\''
@@ -167,7 +155,7 @@ describe( 'commands/checkout', () => {
 		it( 'does not create a branch if a repository has no-changes that could be committed when specified --branch option', () => {
 			toolOptions.branch = 'develop';
 
-			execCommand.execute.mockResolvedValueOnce( {
+			execCommand.executeGit.mockResolvedValueOnce( {
 				logs: {
 					info: [
 						'Response returned by "git status" command.'
@@ -179,19 +167,29 @@ describe( 'commands/checkout', () => {
 
 			return checkoutCommand.execute( commandData )
 				.then( commandResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
 
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1, {
-						repository: {
-							branch: 'master'
-						},
-						arguments: [ 'git status --branch --porcelain' ],
-						toolOptions
-					} );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'status', '--branch', '--porcelain' ]
+					);
 
 					expect( commandResponse.logs.info ).toEqual( [
 						'Repository does not contain changes to commit. New branch was not created.'
 					] );
+				} );
+		} );
+
+		it( 'passes branch with special characters as a literal checkout argument', () => {
+			commandData.arguments.push( 'feature; touch HACKED; #' );
+			execCommand.executeGit.mockResolvedValue( { logs: { info: [ 'ok' ] } } );
+
+			return checkoutCommand.execute( commandData )
+				.then( () => {
+					expect( execCommand.executeGit ).toHaveBeenCalledWith(
+						commandData,
+						[ 'checkout', 'feature; touch HACKED; #' ]
+					);
 				} );
 		} );
 	} );
