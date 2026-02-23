@@ -39,7 +39,7 @@ describe( 'commands/diff', () => {
 		it( 'rejects promise if called command returned an error', () => {
 			const error = new Error( 'Unexpected error.' );
 
-			execCommand.execute.mockRejectedValue( {
+			execCommand.executeGit.mockRejectedValue( {
 				logs: {
 					error: [ error.stack ]
 				}
@@ -67,7 +67,7 @@ describe( 'commands/diff', () => {
 				' gulp.task( \'pre-commit\', [ \'lint-staged\' ] );\n' +
 				'+// Some comment.';
 
-			execCommand.execute.mockResolvedValue( {
+			execCommand.executeGit.mockResolvedValue( {
 				logs: {
 					info: [ diffResult ]
 				}
@@ -75,9 +75,10 @@ describe( 'commands/diff', () => {
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
-						expect.objectContaining( { arguments: [ 'git diff --color' ] } )
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'diff', '--color' ]
 					);
 
 					expect( diffResponse.logs.info[ 0 ] ).toEqual( diffResult );
@@ -85,18 +86,18 @@ describe( 'commands/diff', () => {
 		} );
 
 		it( 'does not return the logs when repository has not changed', () => {
-			execCommand.execute.mockResolvedValue( { logs: { info: [] } } );
+			execCommand.executeGit.mockResolvedValue( { logs: { info: [] } } );
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
 
 					expect( diffResponse ).toEqual( {} );
 				} );
 		} );
 
 		it( 'allows modifying the "git diff" command', () => {
-			execCommand.execute.mockResolvedValue( { logs: { info: [] } } );
+			execCommand.executeGit.mockResolvedValue( { logs: { info: [] } } );
 
 			commandData.arguments = [
 				'--stat',
@@ -105,12 +106,27 @@ describe( 'commands/diff', () => {
 
 			return diffCommand.execute( commandData )
 				.then( diffResponse => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
-						expect.objectContaining( { arguments: [ 'git diff --color --stat --staged' ] } )
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'diff', '--color', '--stat', '--staged' ]
 					);
 
 					expect( diffResponse ).toEqual( {} );
+				} );
+		} );
+
+		it( 'treats special characters in arguments as literal values', () => {
+			execCommand.executeGit.mockResolvedValue( { logs: { info: [] } } );
+
+			commandData.arguments = [ 'origin/master; touch HACKED; #' ];
+
+			return diffCommand.execute( commandData )
+				.then( () => {
+					expect( execCommand.executeGit ).toHaveBeenCalledWith(
+						commandData,
+						[ 'diff', '--color', 'origin/master; touch HACKED; #' ]
+					);
 				} );
 		} );
 	} );

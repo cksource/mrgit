@@ -49,15 +49,16 @@ describe( 'commands/push', () => {
 		it( 'skips a package if its in detached head mode', () => {
 			fs.existsSync.mockReturnValue( true );
 
-			execCommand.execute.mockReturnValueOnce( Promise.resolve( {
+			execCommand.executeGit.mockReturnValueOnce( Promise.resolve( {
 				logs: getCommandLogs( '' )
 			} ) );
 
 			return pushCommand.execute( commandData )
 				.then( response => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 1 );
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
-						expect.objectContaining( { arguments: [ 'git branch --show-current' ] } )
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 1 );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--show-current' ]
 					);
 
 					expect( response.logs.info ).toEqual( [
@@ -69,7 +70,7 @@ describe( 'commands/push', () => {
 		it( 'resolves promise after pushing the changes', () => {
 			fs.existsSync.mockReturnValue( true );
 
-			execCommand.execute
+			execCommand.executeGit
 				.mockResolvedValueOnce( {
 					logs: getCommandLogs( 'master' )
 				} )
@@ -79,12 +80,14 @@ describe( 'commands/push', () => {
 
 			return pushCommand.execute( commandData )
 				.then( response => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
-						expect.objectContaining( { arguments: [ 'git branch --show-current' ] } )
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--show-current' ]
 					);
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2,
-						expect.objectContaining( { arguments: [ 'git push' ] } )
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'push' ]
 					);
 
 					expect( response.logs.info ).toEqual( [
@@ -98,23 +101,42 @@ describe( 'commands/push', () => {
 			commandData.arguments.push( '--all' );
 			fs.existsSync.mockReturnValue( true );
 
-			execCommand.execute.mockReturnValue( Promise.resolve( {
+			execCommand.executeGit.mockReturnValue( Promise.resolve( {
 				logs: getCommandLogs( 'Everything up-to-date' )
 			} ) );
 
 			return pushCommand.execute( commandData )
 				.then( response => {
-					expect( execCommand.execute ).toHaveBeenCalledTimes( 2 );
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 1,
-						expect.objectContaining( { arguments: [ 'git branch --show-current' ] } )
+					expect( execCommand.executeGit ).toHaveBeenCalledTimes( 2 );
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 1,
+						commandData,
+						[ 'branch', '--show-current' ]
 					);
-					expect( execCommand.execute ).toHaveBeenNthCalledWith( 2,
-						expect.objectContaining( { arguments: [ 'git push --verbose --all' ] } )
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'push', '--verbose', '--all' ]
 					);
 
 					expect( response.logs.info ).toEqual( [
 						'Everything up-to-date'
 					] );
+				} );
+		} );
+
+		it( 'passes shell-like fragments as plain push arguments', () => {
+			commandData.arguments.push( 'origin; touch HACKED; #' );
+			fs.existsSync.mockReturnValue( true );
+
+			execCommand.executeGit
+				.mockResolvedValueOnce( { logs: getCommandLogs( 'master' ) } )
+				.mockResolvedValueOnce( { logs: getCommandLogs( 'Everything up-to-date' ) } );
+
+			return pushCommand.execute( commandData )
+				.then( () => {
+					expect( execCommand.executeGit ).toHaveBeenNthCalledWith( 2,
+						commandData,
+						[ 'push', 'origin; touch HACKED; #' ]
+					);
 				} );
 		} );
 	} );
