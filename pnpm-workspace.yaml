@@ -1,8 +1,13 @@
+packages:
+  - .
+  - '!tests/fixtures/**'
+
 onlyBuiltDependencies:
   - esbuild
 
 overrides:
-  'diff@^7': ^8.0.3
+  'diff@^7': '^8.0.3'
+  'serialize-javascript@^6': '^7.0.3'
 
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
