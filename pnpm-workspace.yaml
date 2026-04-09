@@ -4,6 +4,7 @@ packages:
 
 onlyBuiltDependencies:
   - esbuild
+  - lightningcss
 
 overrides:
   'diff@^7': '^8.0.3'
