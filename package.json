@@ -27,10 +27,10 @@
     "upath": "^2.0.0"
   },
   "devDependencies": {
-    "@ckeditor/ckeditor5-dev-bump-year": "^55.4.0",
-    "@ckeditor/ckeditor5-dev-changelog": "^55.4.0",
-    "@ckeditor/ckeditor5-dev-ci": "^55.4.0",
-    "@ckeditor/ckeditor5-dev-release-tools": "^55.4.0",
+    "@ckeditor/ckeditor5-dev-bump-year": "^55.6.0",
+    "@ckeditor/ckeditor5-dev-changelog": "^55.6.0",
+    "@ckeditor/ckeditor5-dev-ci": "^55.6.0",
+    "@ckeditor/ckeditor5-dev-release-tools": "^55.6.0",
     "@inquirer/prompts": "^7.8.3",
     "@listr2/prompt-adapter-inquirer": "^3.0.2",
     "@vitest/coverage-v8": "4.0.8",
