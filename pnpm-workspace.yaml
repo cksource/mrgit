@@ -15,7 +15,6 @@ minimumReleaseAgeExclude:
   - '@ckeditor/*'
   - '@cksource/*'
   - '*ckeditor5*'
-  - 'postcss' # Needed for version 8.5.15. Remove after 2026-05-22T09:51:29Z
 
 shellEmulator: true
 shamefullyHoist: true
