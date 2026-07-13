@@ -35,6 +35,11 @@ commands:
       - add_ssh_keys:
           fingerprints:
             - "a0:41:a2:56:c8:7d:3f:29:41:d1:87:92:fd:50:2b:6b"
+      - run:
+          name: Add GitHub to known hosts
+          command: >-
+            printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl'
+            >> ~/.ssh/known_hosts
 
   npm_oidc_command:
     description: "Enable publishing to `npm` using OIDC"
