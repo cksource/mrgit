@@ -1,6 +1,22 @@
 Changelog
 =========
 
+## [5.0.0](https://github.com/cksource/mrgit/compare/v4.1.0...v5.0.0) (July 13, 2026)
+
+### BREAKING CHANGES
+
+* Upgrade to and require at least Node v24.11.
+* `mrgit` is now pure ESM and no longer supports CommonJS. Closes [#197](https://github.com/cksource/mrgit/issues/197).
+
+### Bug fixes
+
+* Harden internal Git command execution by running `diff`, `push`, `checkout`, `close`, `commit`, and `sync` commands without shell interpolation, so command arguments are treated as literal values. Closes [#216](https://github.com/cksource/mrgit/issues/216).
+
+### Other changes
+
+* Update the `glob`, `js-yaml`, and `@ckeditor/ckeditor5-dev-*` packages.
+
+
 ## [4.1.0](https://github.com/cksource/mrgit/compare/v4.0.0...v4.1.0) (September 16, 2025)
 
 ### Features
@@ -51,11 +67,6 @@ Changelog
     * `sync`
 
   To disable executing a command in the root repository without modifying the configuration file, you can add the `--skip-root` modifier to mrgit. Example: `mrgit status --skip-root`.
-
-
-## [2.0.3](https://github.com/cksource/mrgit/compare/v2.0.2...v2.0.3) (2023-06-05)
-
-Internal changes only (updated dependencies, documentation, etc.).
 
 ---
 
