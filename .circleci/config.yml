@@ -36,12 +36,14 @@ commands:
           fingerprints:
             - "a0:41:a2:56:c8:7d:3f:29:41:d1:87:92:fd:50:2b:6b"
 
-  npm_login_command:
-    description: "Enable interacting with `npm` using an auth token"
+  npm_oidc_command:
+    description: "Enable publishing to `npm` using OIDC"
     steps:
       - run:
-          name: Login to the npm registry using '.npmrc' file
-          command: echo "//registry.npmjs.org/:_authToken=\${CKE5_NPM_TOKEN}" > ~/.npmrc
+          name: Get npm OIDC token
+          command: |
+            echo "export NPM_ID_TOKEN=$(circleci run oidc get \
+              --claims '{\"aud\":\"npm:registry.npmjs.org\"}')" >> "$BASH_ENV"
 
   gpg_credentials_command:
     description: "Setup GPG configuration"
@@ -65,6 +67,7 @@ commands:
             git config --global user.signingkey 3F615B600F38B27B
             git config --global commit.gpgsign true
             git config --global tag.gpgSign true
+            git remote set-url origin git@github.com:cksource/mrgit.git
 
 jobs:
   notify_ci_failure:
@@ -160,7 +163,11 @@ jobs:
             fi
       - run:
           name: Trigger the release pipeline
-          command: pnpm ckeditor5-dev-ci-trigger-circle-build --slug cksource/mrgit --release-branch master
+          command: >-
+            pnpm ckeditor5-dev-ci-trigger-circle-build
+            --slug cksource/mrgit
+            --release-branch master
+            --pipeline-definition-id 1c140db5-ff0e-4b39-9b9f-b1f385956810
 
   release_project:
     docker:
@@ -180,7 +187,7 @@ jobs:
               echo "There is a newer commit in the repository on the \`#master\` branch. Use its build to start the release."
               circleci-agent step halt
             fi
-      - npm_login_command
+      - npm_oidc_command
       - git_credentials_command
       - run:
           name: Verify if a releaser triggered the job
