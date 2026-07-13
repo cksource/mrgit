@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [5.0.1](https://github.com/cksource/mrgit/compare/v5.0.0...v5.0.1) (July 13, 2026)
+
+### Other changes
+
+* This release does not include any user-facing changes. It was published solely to verify the release process.
+
+
 ## [5.0.0](https://github.com/cksource/mrgit/compare/v4.1.0...v5.0.0) (July 13, 2026)
 
 ### BREAKING CHANGES
@@ -44,29 +51,6 @@ Changelog
 ### Other changes
 
 * Updated the required version of Node.js to 20. ([commit](https://github.com/cksource/mrgit/commit/1f598905e2da7b7fe9fdf9fdfea22d43d9ae9cc3))
-
-
-## [2.1.0](https://github.com/cksource/mrgit/compare/v2.0.3...v2.1.0) (2023-08-28)
-
-### Features
-
-* Added support for executing commands in the root repository. Closes [#160](https://github.com/cksource/mrgit/issues/160). ([commit](https://github.com/cksource/mrgit/commit/2271a029d30cba2abd7209888361e2fde646e748))
-
-  Add [the `$rootRepository` option](https://github.com/cksource/mrgit/#the-rootrepository-option) to the `mrgit.json` configuration file to enable this feature. Its value should be a repository GitHub identifier (the same as defining the `dependencies` values). You can also define the option within [the preset feature](https://github.com/cksource/mrgit/#the-presets-option).
-
-  Below, you can find a list of supported commands that take into consideration the root repository if specified:
-
-    * `checkout`
-    * `commit`
-    * `diff`
-    * `exec`
-    * `fetch`
-    * `pull`
-    * `push`
-    * `status`
-    * `sync`
-
-  To disable executing a command in the root repository without modifying the configuration file, you can add the `--skip-root` modifier to mrgit. Example: `mrgit status --skip-root`.
 
 ---
 
