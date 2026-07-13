@@ -42,8 +42,9 @@ commands:
       - run:
           name: Get npm OIDC token
           command: |
-            echo "export NPM_ID_TOKEN=$(circleci run oidc get \
-              --claims '{\"aud\":\"npm:registry.npmjs.org\"}')" >> "$BASH_ENV"
+            NPM_ID_TOKEN=$(circleci run oidc get \
+              --claims '{"aud":"npm:registry.npmjs.org"}')
+            printf 'export NPM_ID_TOKEN=%q\n' "$NPM_ID_TOKEN" >> "$BASH_ENV"
 
   gpg_credentials_command:
     description: "Setup GPG configuration"
