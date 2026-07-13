@@ -40,6 +40,9 @@ commands:
     description: "Enable publishing to `npm` using OIDC"
     steps:
       - run:
+          name: Install npm with CircleCI OIDC support
+          command: sudo npm i -g npm@^11.11.0
+      - run:
           name: Get npm OIDC token
           command: |
             NPM_ID_TOKEN=$(circleci run oidc get \
