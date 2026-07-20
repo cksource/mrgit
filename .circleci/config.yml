@@ -79,32 +79,6 @@ commands:
             git remote set-url origin git@github.com:cksource/mrgit.git
 
 jobs:
-  notify_ci_failure:
-    docker:
-      - image: cimg/node:24.11.0
-    resource_class: small
-    parameters:
-      hideAuthor:
-        type: string
-        default: "false"
-    steps:
-      - checkout
-      - bootstrap_repository_command
-      - run:
-          # In the PRs that comes from forked repositories, we do not share secret variables.
-          # Hence, some of the scripts will not be executed.
-          name: 👤 Verify if the build was triggered by community - Check if the build should continue
-          command: |
-            #!/bin/bash
-            if [[ -z ${CODECOV_TOKEN} ]];
-            then
-              circleci-agent step halt
-            fi
-      - run:
-          name: Waiting for other jobs to finish and sending notification on failure
-          command: pnpm ckeditor5-dev-ci-circle-workflow-notifier --task "pnpm ckeditor5-dev-ci-notify-circle-status --pipeline-id << pipeline.number >> --hide-author << parameters.hideAuthor >>"
-          no_output_timeout: 1h
-
   validate_and_tests:
     docker:
       - image: cimg/node:24.11.0
@@ -253,11 +227,6 @@ workflows:
             branches:
               only:
                 - master
-      - notify_ci_failure:
-          filters:
-            branches:
-              only:
-                - master
 
   release:
     when:
@@ -278,9 +247,3 @@ workflows:
         - equal: [ false, << pipeline.parameters.isRelease >> ]
     jobs:
       - validate_and_tests
-      - notify_ci_failure:
-          hideAuthor: "true"
-          filters:
-            branches:
-              only:
-                - master
