@@ -6,7 +6,6 @@ allowBuilds:
   'esbuild': true
   'lightningcss': true
   'snyk': true
-  'unrs-resolver': true
 
 overrides:
   '@typescript-eslint/utils@^8.32': '^8.57.0'

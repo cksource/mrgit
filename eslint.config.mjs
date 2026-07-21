@@ -7,7 +7,7 @@ import globals from 'globals';
 import { defineConfig } from 'eslint/config';
 import ckeditor5Rules from 'eslint-plugin-ckeditor5-rules';
 import ckeditor5Config from 'eslint-config-ckeditor5';
-import eslintPluginImportX from 'eslint-plugin-import-x';
+import * as eslintPluginImport from 'eslint-plugin-import';
 
 export default defineConfig( [
 	{
@@ -35,7 +35,7 @@ export default defineConfig( [
 
 		plugins: {
 			'ckeditor5-rules': ckeditor5Rules,
-			'import-x': eslintPluginImportX
+			'import': eslintPluginImport
 		},
 
 		rules: {
@@ -45,7 +45,7 @@ export default defineConfig( [
 				' * For licensing, see LICENSE.md.',
 				' */'
 			] } ],
-			'import-x/extensions': [ 'error', 'ignorePackages', {
+			'import/extensions': [ 'error', {
 				js: 'always',
 				mjs: 'always',
 				json: 'always'
