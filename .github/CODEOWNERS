@@ -1,0 +1,7 @@
+/.github/                            @cksource/ckeditor-5-platform
+/.circleci/                          @cksource/ckeditor-5-platform
+/lib/                                @cksource/ckeditor-5-platform
+/scripts/                            @cksource/ckeditor-5-platform
+/package.json                        @cksource/ckeditor-5-platform
+/pnpm-lock.yaml                      @cksource/ckeditor-5-platform
+/pnpm-workspace.yaml                 @cksource/ckeditor-5-platform
