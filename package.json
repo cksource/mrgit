@@ -33,7 +33,7 @@
     "@ckeditor/ckeditor5-dev-release-tools": "^58.0.0",
     "@inquirer/prompts": "^7.8.3",
     "@listr2/prompt-adapter-inquirer": "^3.0.2",
-    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/coverage-v8": "4.1.11",
     "eslint": "^10.0.0",
     "eslint-config-ckeditor5": "^19.0.0",
     "eslint-plugin-ckeditor5-rules": "^19.0.0",
@@ -41,7 +41,7 @@
     "husky": "^8.0.2",
     "lint-staged": "^10.2.11",
     "listr2": "^9.0.2",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "repository": {
     "type": "git",
