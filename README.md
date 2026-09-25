@@ -1,5 +1,17 @@
 # Mr. Git
 
+> [!WARNING]
+> **mrgit is no longer maintained.**
+>
+> v5.1.0 is the final release. The package stays published on npm and existing
+> installations continue to work, but there will be no further releases, bug
+> fixes, or security patches.
+>
+> Every command prints a deprecation notice to stderr. Set the
+> `MRGIT_NO_DEPRECATION_WARNING=1` environment variable to hide it.
+>
+> See [#254](https://github.com/cksource/mrgit/issues/254) for context.
+
 ![Mrgit npm package badge](https://img.shields.io/npm/v/mrgit.svg)
 [![Build Status](https://circleci.com/gh/cksource/mrgit.svg?style=shield)](https://app.circleci.com/pipelines/github/cksource/mrgit?branch=master)
 [![Coverage Status](https://codecov.io/github/cksource/mrgit/graph/badge.svg)](https://codecov.io/github/cksource/mrgit)
