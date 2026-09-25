@@ -10,7 +10,7 @@
 > Every command prints a deprecation notice to stderr. Set the
 > `MRGIT_NO_DEPRECATION_WARNING=1` environment variable to hide it.
 >
-> See #TODO for context.
+> See [#254](https://github.com/cksource/mrgit/issues/254) for context.
 
 ![Mrgit npm package badge](https://img.shields.io/npm/v/mrgit.svg)
 [![Build Status](https://circleci.com/gh/cksource/mrgit.svg?style=shield)](https://app.circleci.com/pipelines/github/cksource/mrgit?branch=master)
