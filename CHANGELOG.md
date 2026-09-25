@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [5.1.0](https://github.com/cksource/mrgit/compare/v5.0.1...v5.1.0) (September 25, 2026)
+
+### Features
+
+* mrgit is now deprecated and this is the final release. Every command prints a deprecation notice to stderr. The exit code and the stdout output do not change. Set the `MRGIT_NO_DEPRECATION_WARNING=1` environment variable to hide the notice.
+
+
 ## [5.0.1](https://github.com/cksource/mrgit/compare/v5.0.0...v5.0.1) (July 13, 2026)
 
 ### Other changes
@@ -40,17 +47,6 @@ Changelog
 ### Bug fixes
 
 * The `mrgit status` command should not print an error when processing a repository without tags or with a partially cloned history that causes tags to be assigned to non-existing commits. Closes [#179](https://github.com/cksource/mrgit/issues/179).
-
-
-## [3.0.0](https://github.com/cksource/mrgit/compare/v2.1.0...v3.0.0) (2025-03-14)
-
-### BREAKING CHANGES
-
-* Upgraded the minimal version of Node.js to 20.0.0 due to the end of LTS.
-
-### Other changes
-
-* Updated the required version of Node.js to 20. ([commit](https://github.com/cksource/mrgit/commit/1f598905e2da7b7fe9fdf9fdfea22d43d9ae9cc3))
 
 ---
 
