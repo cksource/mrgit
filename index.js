@@ -9,10 +9,14 @@ import chalk from 'chalk';
 import meow from 'meow';
 import { mrgit } from './lib/mrgit.js';
 import { getCommandInstance } from './lib/utils/getcommandinstance.js';
+import { printDeprecationNotice } from './lib/utils/printdeprecationnotice.js';
 
 await handleCli();
 
 async function handleCli() {
+	// Printed before `meow()`, because it exits the process on its own when the `--version` flag is used.
+	printDeprecationNotice();
+
 	const meowOptions = {
 		autoHelp: false,
 		flags: {
